@@ -1,9 +1,55 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background-color: #f5eddc;
   color: #2f4f3e;
   line-height: 1.6;
+}
+
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(245, 237, 220, 0.94);
+  border-bottom: 1px solid #d6c7ad;
+  backdrop-filter: blur(6px);
+}
+
+.nav-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand {
+  font-weight: bold;
+  color: #2d4737;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.nav-links a {
+  color: #4a6853;
+  text-decoration: none;
+  font-size: 0.98rem;
+}
+
+.nav-links a:hover,
+.brand:hover {
+  color: #2d4737;
 }
 
 .hero {
@@ -68,6 +114,7 @@ p {
 
 .section {
   padding: 70px 20px;
+  scroll-margin-top: 84px;
 }
 
 .alt-section {
@@ -106,6 +153,16 @@ a {
 }
 
 @media (max-width: 700px) {
+  .nav-inner {
+    flex-direction: column;
+    padding: 12px 18px;
+  }
+
+  .nav-links {
+    justify-content: center;
+    gap: 14px;
+  }
+
   .hero {
     min-height: 56vh;
     padding: 44px 18px 36px;
