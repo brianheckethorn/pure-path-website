@@ -1,1 +1,1 @@
-console.log("Pure Path website is ready.");
+console.log("Pure Path homepage is loaded.");
