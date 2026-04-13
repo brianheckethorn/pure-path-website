@@ -30,9 +30,19 @@ body {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-weight: bold;
   color: #2d4737;
   text-decoration: none;
+}
+
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .nav-links {
@@ -53,18 +63,27 @@ body {
 }
 
 .hero {
-  min-height: 68vh;
+  min-height: 64vh;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 56px 20px 48px;
+  padding: 44px 20px 42px;
   background: linear-gradient(180deg, #dce8d4 0%, #e8decb 100%);
 }
 
 .hero-content {
   max-width: 620px;
-  padding: 12px 0;
+  padding: 8px 0;
+}
+
+.hero-image {
+  display: block;
+  width: min(100%, 420px);
+  height: auto;
+  margin: 0 auto 24px;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(47, 79, 62, 0.12);
 }
 
 h1,
@@ -198,12 +217,18 @@ a {
   }
 
   .hero {
-    min-height: 56vh;
-    padding: 44px 18px 36px;
+    min-height: 54vh;
+    padding: 34px 18px 32px;
   }
 
   .hero-content {
     max-width: 100%;
+  }
+
+  .hero-image {
+    width: min(100%, 320px);
+    margin-bottom: 20px;
+    border-radius: 16px;
   }
 
   .hero p {
