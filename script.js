@@ -1,1 +1,1 @@
-console.log("Pure Path homepage is loaded.");
+console.log("Your Pure Path homepage is loaded.");
