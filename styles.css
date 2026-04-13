@@ -205,6 +205,72 @@ a {
   color: #2d4737;
 }
 
+@media (min-width: 901px) {
+  .nav-inner {
+    max-width: 1120px;
+    padding: 16px 28px;
+  }
+
+  .brand {
+    font-size: 1.1rem;
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .nav-links a {
+    font-size: 1.08rem;
+  }
+
+  .hero {
+    min-height: 56vh;
+    padding: 28px 24px 34px;
+  }
+
+  .hero-content {
+    max-width: 700px;
+  }
+
+  .hero-image {
+    width: min(100%, 430px);
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 2.2rem;
+    margin-bottom: 18px;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 1.18rem;
+  }
+
+  .hero p {
+    font-size: 1.24rem;
+    margin-bottom: 22px;
+  }
+
+  .container {
+    max-width: 1120px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    padding: 30px;
+    border-radius: 16px;
+  }
+}
+
 @media (max-width: 700px) {
   .nav-inner {
     flex-direction: column;
