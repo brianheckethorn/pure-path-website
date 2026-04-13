@@ -7,17 +7,18 @@ body {
 }
 
 .hero {
-  min-height: 100vh;
+  min-height: 68vh;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 40px 20px;
-  background-color: #dce8d4;
+  padding: 56px 20px 48px;
+  background: linear-gradient(180deg, #dce8d4 0%, #e8decb 100%);
 }
 
 .hero-content {
-  max-width: 700px;
+  max-width: 620px;
+  padding: 12px 0;
 }
 
 h1,
@@ -27,8 +28,10 @@ h3 {
 }
 
 h1 {
-  margin-bottom: 12px;
-  font-size: 3rem;
+  margin-bottom: 14px;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 p {
@@ -37,21 +40,30 @@ p {
   font-size: 1.1rem;
 }
 
+.hero p {
+  margin-bottom: 24px;
+  font-size: 1.15rem;
+  color: #3d5c49;
+}
+
 .button {
   display: inline-block;
-  padding: 12px 24px;
+  padding: 13px 26px;
   font-size: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 999px;
   background-color: #7ea37c;
   color: #fffaf2;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.2s ease;
+  box-shadow: 0 10px 24px rgba(72, 101, 73, 0.14);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .button:hover {
   background-color: #6a8e68;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(72, 101, 73, 0.18);
 }
 
 .section {
@@ -91,4 +103,19 @@ a {
   padding: 24px 20px;
   background-color: #d2dfc8;
   color: #2d4737;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    min-height: 56vh;
+    padding: 44px 18px 36px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+  }
 }
