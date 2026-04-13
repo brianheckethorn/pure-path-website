@@ -141,6 +141,40 @@ p {
   box-shadow: 0 4px 12px rgba(47, 79, 62, 0.08);
 }
 
+.contact-card {
+  max-width: 760px;
+  background-color: #fffaf2;
+  border: 1px solid #d6c7ad;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 8px 20px rgba(47, 79, 62, 0.08);
+}
+
+.contact-intro {
+  margin-bottom: 24px;
+  color: #3d5c49;
+}
+
+.contact-details p {
+  margin-bottom: 14px;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.button-secondary {
+  background-color: #d2dfc8;
+  color: #2d4737;
+}
+
+.button-secondary:hover {
+  background-color: #bfd0b2;
+}
+
 a {
   color: #5f7f5d;
 }
@@ -174,5 +208,9 @@ a {
 
   .hero p {
     font-size: 1.05rem;
+  }
+
+  .contact-card {
+    padding: 22px;
   }
 }
