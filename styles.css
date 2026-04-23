@@ -1,4 +1,5 @@
 :root {
+  --nav-offset: 90px;
   --bg: #f6f0e6;
   --bg-soft: #efe5d6;
   --surface: rgba(255, 250, 243, 0.86);
@@ -30,7 +31,9 @@ body {
   margin: 0;
   font-family: "Manrope", sans-serif;
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 1.06rem;
+  padding-top: var(--nav-offset);
   background:
     radial-gradient(circle at top left, rgba(212, 224, 191, 0.65), transparent 28%),
     radial-gradient(circle at top right, rgba(211, 186, 148, 0.28), transparent 22%),
@@ -82,7 +85,7 @@ li,
 label,
 input,
 button {
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 p {
@@ -100,8 +103,10 @@ p {
 }
 
 .top-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   backdrop-filter: blur(14px);
   background: rgba(246, 240, 230, 0.82);
@@ -158,7 +163,9 @@ p {
 }
 
 .hero {
-  padding: 58px 0 42px;
+  position: relative;
+  z-index: 1;
+  padding: 30px 0 42px;
 }
 
 .hero-shell {
@@ -187,7 +194,7 @@ p {
 .hero-text {
   max-width: 60ch;
   color: var(--text-soft);
-  font-size: 1.08rem;
+  font-size: 1.14rem;
 }
 
 .hero-actions {
@@ -232,8 +239,8 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 50px;
-  padding: 13px 24px;
+  min-height: 54px;
+  padding: 14px 26px;
   border: none;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
@@ -255,9 +262,21 @@ p {
   color: #fffaf5;
 }
 
+.button-tertiary {
+  background: rgba(255, 250, 243, 0.8);
+  color: var(--text-soft);
+  border: 1px solid rgba(116, 104, 82, 0.18);
+  box-shadow: none;
+}
+
+.button-tertiary:hover {
+  box-shadow: none;
+  background: rgba(244, 236, 225, 0.95);
+}
+
 .section {
   padding: 36px 0 82px;
-  scroll-margin-top: 96px;
+  scroll-margin-top: calc(var(--nav-offset) + 24px);
 }
 
 .intro-section {
@@ -301,7 +320,7 @@ p {
 .feature-card,
 .contact-card {
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 28px;
 }
 
 .card-heading p,
@@ -311,11 +330,15 @@ p {
   color: var(--text-soft);
 }
 
+.card-heading {
+  margin-bottom: 18px;
+}
+
 .form-grid,
 .question-grid,
 .stats-grid {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .form-grid-4 {
@@ -335,15 +358,16 @@ p {
 .field > span,
 .field legend {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-weight: 700;
   color: #31443a;
+  font-size: 1.06rem;
 }
 
 .field input[type="number"] {
   width: 100%;
-  min-height: 52px;
-  padding: 14px 16px;
+  min-height: 56px;
+  padding: 15px 17px;
   border-radius: 14px;
   border: 1px solid rgba(108, 101, 80, 0.20);
   background: rgba(255, 255, 255, 0.74);
@@ -359,7 +383,7 @@ p {
 .radio-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .radio-grid.compact {
@@ -383,12 +407,14 @@ p {
 .option-card span,
 .option-pill span {
   width: 100%;
-  padding: 14px 15px;
+  padding: 16px 16px;
   border-radius: 14px;
   border: 1px solid rgba(108, 101, 80, 0.18);
   background: rgba(255, 255, 255, 0.62);
   color: #405347;
   font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.5;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -413,7 +439,21 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  padding-top: 4px;
+  padding-top: 6px;
+  align-items: center;
+}
+
+.form-trust-note {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 251, 245, 0.68);
+  border: 1px solid rgba(116, 104, 82, 0.14);
+  color: var(--text-soft);
+}
+
+.form-trust-note p {
+  margin: 0;
+  font-size: 0.98rem;
 }
 
 .results-panel {
@@ -422,7 +462,7 @@ p {
 
 .results-sticky {
   position: sticky;
-  top: 96px;
+  top: calc(var(--nav-offset) + 18px);
   background:
     linear-gradient(180deg, rgba(255, 251, 245, 0.95), rgba(250, 242, 232, 0.95));
 }
@@ -432,8 +472,8 @@ p {
 }
 
 .score-ring {
-  width: 210px;
-  height: 210px;
+  width: 220px;
+  height: 220px;
   margin: 0 auto 24px;
   border-radius: 50%;
   background:
@@ -455,7 +495,7 @@ p {
 
 .score-ring strong {
   display: block;
-  font-size: 3rem;
+  font-size: 3.2rem;
   line-height: 1;
   font-family: "Cormorant Garamond", serif;
   color: #273830;
@@ -466,10 +506,14 @@ p {
   margin-bottom: 22px;
 }
 
+.stats-grid-primary {
+  margin-bottom: 18px;
+}
+
 .stat-card,
 .disclaimer-card {
   border-radius: 16px;
-  padding: 16px;
+  padding: 18px;
   background: rgba(255, 255, 255, 0.58);
   border: 1px solid rgba(116, 104, 82, 0.14);
 }
@@ -477,8 +521,12 @@ p {
 .stat-card strong {
   display: block;
   margin-top: 8px;
-  font-size: 1.1rem;
+  font-size: 1.18rem;
   color: #24352c;
+}
+
+.stat-card-wide {
+  grid-column: 1 / -1;
 }
 
 .result-block + .result-block,
@@ -490,6 +538,10 @@ p {
   margin: 0;
   padding-left: 20px;
   color: var(--text-soft);
+}
+
+.improvement-list li + li {
+  margin-top: 12px;
 }
 
 .disclaimer-card {
@@ -507,7 +559,7 @@ p {
 
 .contact-card {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .contact-details p {
@@ -518,7 +570,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 6px;
+  margin-top: 12px;
 }
 
 .footer {
@@ -563,7 +615,7 @@ p {
   }
 
   .hero {
-    padding-top: 28px;
+    padding-top: 18px;
   }
 
   .hero-copy,
@@ -572,7 +624,7 @@ p {
   .results-sticky,
   .feature-card,
   .contact-card {
-    padding: 20px;
+    padding: 22px;
   }
 
   .form-grid-4,
@@ -589,6 +641,10 @@ p {
 
   h1 {
     font-size: clamp(2.6rem, 12vw, 4.4rem);
+  }
+
+  .form-actions .button {
+    width: 100%;
   }
 
   .section {

@@ -79,11 +79,11 @@
     <section class="section assessment-section" id="assessment">
       <div class="container">
         <div class="section-heading">
-          <p class="eyebrow">Health Age assessment</p>
+          <p class="eyebrow">Health Age Assessment</p>
           <h2>Complete the questionnaire for your estimated result.</h2>
           <p>
-            Answer each section as honestly as you can. Your result uses a weighted wellness model to estimate
-            how your current habits and health markers may compare with your chronological age.
+            Answer each section as honestly as you can. This weighted wellness model estimates how your
+            current habits and health markers may compare with your chronological age in a clear, encouraging way.
           </p>
         </div>
 
@@ -91,8 +91,8 @@
           <form class="assessment-form" id="health-age-form">
             <section class="question-card">
               <div class="card-heading">
-                <h3>Foundational details</h3>
-                <p>Basic body metrics help us estimate BMI and anchor your result.</p>
+                <h3>Foundational Details</h3>
+                <p>These basics help estimate BMI and create a stronger starting point for your Health Age result.</p>
               </div>
 
               <div class="form-grid form-grid-4">
@@ -129,8 +129,8 @@
 
             <section class="question-card">
               <div class="card-heading">
-                <h3>Movement and recovery</h3>
-                <p>These factors strongly shape resilience, recovery, and long-term vitality.</p>
+                <h3>Movement and Recovery</h3>
+                <p>These habits play a major role in resilience, recovery, mobility, and long-term vitality.</p>
               </div>
 
               <div class="question-grid">
@@ -188,8 +188,8 @@
 
             <section class="question-card">
               <div class="card-heading">
-                <h3>Nutrition and hydration</h3>
-                <p>Food and hydration patterns are weighted heavily because they influence many systems at once.</p>
+                <h3>Nutrition and Hydration</h3>
+                <p>Food quality and hydration influence energy, recovery, and many core systems at the same time.</p>
               </div>
 
               <div class="question-grid">
@@ -247,8 +247,8 @@
 
             <section class="question-card">
               <div class="card-heading">
-                <h3>Lifestyle resilience and health history</h3>
-                <p>Stress, support, energy, and long-term markers give the assessment more whole-person context.</p>
+                <h3>Lifestyle Resilience and Health History</h3>
+                <p>Stress, support, energy, and health history help give your Health Age estimate fuller context.</p>
               </div>
 
               <div class="question-grid">
@@ -330,9 +330,13 @@
               </div>
             </section>
 
+            <div class="form-trust-note">
+              <p>This assessment is for educational wellness purposes and does not replace medical advice.</p>
+            </div>
+
             <div class="form-actions">
               <button class="button" type="submit">Calculate My Health Age</button>
-              <button class="button button-secondary" type="reset">Reset</button>
+              <button class="button button-tertiary" type="reset">Reset</button>
             </div>
           </form>
 
@@ -349,12 +353,27 @@
                 <span class="score-ring-subtext">years</span>
               </div>
 
+              <div class="stats-grid stats-grid-primary">
+                <div class="stat-card">
+                  <span class="stat-label">Actual Age</span>
+                  <strong id="actual-age-value">--</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Estimated Health Age</span>
+                  <strong id="estimated-health-age-value">--</strong>
+                </div>
+              </div>
+
               <div class="stats-grid">
+                <div class="stat-card">
+                  <span class="stat-label">Difference</span>
+                  <strong id="difference-value">--</strong>
+                </div>
                 <div class="stat-card">
                   <span class="stat-label">Estimated BMI</span>
                   <strong id="bmi-value">--</strong>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card stat-card-wide">
                   <span class="stat-label">Result category</span>
                   <strong id="category-value">Complete the form</strong>
                 </div>
@@ -370,7 +389,7 @@
               <div class="result-block">
                 <h4>Top improvement opportunities</h4>
                 <ul class="improvement-list" id="improvements-list">
-                  <li>Balanced movement, nourishment, and recovery habits can meaningfully shift your result over time.</li>
+                  <li>Balanced movement, nourishing meals, and consistent recovery habits can meaningfully shift your Health Age over time.</li>
                 </ul>
               </div>
 
@@ -414,7 +433,7 @@
             <p class="eyebrow">Connect with Your Pure Path</p>
             <h2>Ready for more personalized support?</h2>
             <p class="contact-intro">
-              Reach out to learn how functional nutrition counseling and individualized wellness support can help you build a healthier path forward.
+              Mario offers functional nutrition counseling and wellness support to help you improve energy, habits, and long-term health with practical next steps.
             </p>
           </div>
 

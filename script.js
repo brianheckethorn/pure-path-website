@@ -1,11 +1,15 @@
 const form = document.getElementById("health-age-form");
 const healthAgeValue = document.getElementById("health-age-value");
+const actualAgeValue = document.getElementById("actual-age-value");
+const estimatedHealthAgeValue = document.getElementById("estimated-health-age-value");
+const differenceValue = document.getElementById("difference-value");
 const bmiValue = document.getElementById("bmi-value");
 const categoryValue = document.getElementById("category-value");
 const summaryText = document.getElementById("summary-text");
 const improvementsList = document.getElementById("improvements-list");
 const scoreRing = document.getElementById("score-ring");
 const currentYear = document.getElementById("current-year");
+const topNav = document.querySelector(".top-nav");
 
 const weights = {
   bmi: 5,
@@ -51,26 +55,32 @@ const scoringMaps = {
 };
 
 const improvementMessages = {
-  bmi: "Aim for a sustainable body composition shift through consistent movement, strength work, and nutrition habits if weight management is a current goal.",
-  nicotine: "Reducing or eliminating nicotine use is one of the highest-impact changes for long-term health resilience.",
-  exercise: "Build toward regular weekly cardio or brisk movement to support heart health, energy, and metabolic function.",
-  strength: "Add strength training to preserve muscle, mobility, and functional independence over time.",
-  sedentary: "Break up long sitting periods with short walking, stretching, or standing breaks through the day.",
-  sleepDuration: "Prioritize a steadier sleep window, with most adults benefiting from around 7 to 8 hours nightly.",
-  sleepQuality: "Improve sleep quality with a calming wind-down routine, darker sleep space, and more consistent bedtime habits.",
-  dietQuality: "Focus on more whole, minimally processed meals built around protein, fiber, and nutrient-dense foods.",
-  sugaryDrinks: "Cutting back on sugary drinks can improve energy regulation, appetite balance, and metabolic health.",
-  vegetables: "Increase daily vegetable intake to strengthen fiber, micronutrient, and gut health support.",
-  water: "Drinking more water consistently can support energy, digestion, and exercise recovery.",
-  alcohol: "Reducing alcohol intake may improve sleep, recovery, stress resilience, and cardiometabolic wellness.",
-  stress: "Support your nervous system with stress-reduction habits like walking, breath work, boundaries, and recovery time.",
-  socialSupport: "Strong relationships are protective for health, so invest in supportive connection where you can.",
-  bloodPressure: "If blood pressure has been elevated, consistent lifestyle changes and medical follow-up are both worth prioritizing.",
-  bloodSugar: "If blood sugar has been a concern, nutrition quality, movement after meals, and professional monitoring can make a meaningful difference.",
-  cholesterol: "Improving food quality, activity, and follow-up care can help support healthier cholesterol patterns.",
-  energy: "Low daily energy is often a signal to review sleep, nutrition quality, stress load, and recovery capacity.",
-  functionalFitness: "Improving mobility, balance, and everyday strength can meaningfully lower your functional health age."
+  bmi: "If weight management is one of your goals, a steady focus on protein, fiber, walking, and strength work can improve body composition over time.",
+  nicotine: "Reducing or eliminating nicotine use would be one of the most meaningful steps you could take for long-term Health Age improvement.",
+  exercise: "A realistic next step is building toward regular weekly cardio or brisk walking to support heart health, energy, and metabolic resilience.",
+  strength: "Adding even two short strength sessions each week can support muscle, mobility, and a younger functional Health Age.",
+  sedentary: "Try breaking up sitting time with brief walks, stretching, or standing breaks every hour to support circulation and energy.",
+  sleepDuration: "A more consistent sleep window, with most nights landing around 7 to 8 hours, could meaningfully improve your recovery profile.",
+  sleepQuality: "Improving sleep quality with a calmer evening routine, less screen exposure, and a darker room may help your Health Age trend in a better direction.",
+  dietQuality: "Shifting more meals toward whole, minimally processed foods would likely have a broad positive effect on your overall wellness score.",
+  sugaryDrinks: "Replacing sugary drinks with water, tea, or sparkling water is a practical way to support steadier energy and metabolic health.",
+  vegetables: "A simple next step is adding vegetables more consistently at lunch and dinner to improve fiber and nutrient intake.",
+  water: "More consistent hydration could support energy, digestion, and recovery throughout the day.",
+  alcohol: "Reducing alcohol intake may help improve sleep quality, recovery, and stress resilience.",
+  stress: "Daily stress regulation habits such as walking, prayer, journaling, breath work, or quiet recovery time may have an outsized benefit here.",
+  socialSupport: "Investing in supportive relationships, community, or regular connection can strengthen resilience in ways that matter for long-term wellness.",
+  bloodPressure: "If blood pressure has been elevated, prioritizing movement, food quality, sleep, and medical follow-up would be especially worthwhile.",
+  bloodSugar: "If blood sugar has been a concern, a strong next step would be pairing balanced meals with regular movement and ongoing professional follow-up.",
+  cholesterol: "Improving food quality, activity, and follow-up care could help support healthier cholesterol patterns over time.",
+  energy: "Low energy often improves when sleep, nourishment, stress load, and movement rhythm become more supportive and consistent.",
+  functionalFitness: "Mobility work, walking, and strength training could help improve how capable and energetic your body feels day to day."
 };
+
+function setNavOffset() {
+  if (!topNav) return;
+  const navHeight = Math.ceil(topNav.getBoundingClientRect().height);
+  document.documentElement.style.setProperty("--nav-offset", `${navHeight + 8}px`);
+}
 
 function calculateBmi(heightInches, weightPounds) {
   return (weightPounds / (heightInches * heightInches)) * 703;
@@ -98,21 +108,21 @@ function getCategory(diff) {
   if (diff <= -6) {
     return {
       title: "Thriving foundation",
-      tone: "Your current habits are supporting a health age meaningfully younger than your chronological age."
+      tone: "Your current habits are supporting a Health Age that appears meaningfully younger than your chronological age."
     };
   }
 
   if (diff <= 1) {
     return {
       title: "Steady and supported",
-      tone: "Your estimated health age is close to your chronological age, suggesting a fairly balanced wellness foundation."
+      tone: "Your estimated Health Age is close to your chronological age, suggesting a fairly balanced wellness foundation."
     };
   }
 
   if (diff <= 6) {
     return {
       title: "Growth opportunity",
-      tone: "A few habit or health-history factors may be pulling your estimated health age upward right now."
+      tone: "A few habit or health-history factors may be pulling your estimated Health Age upward right now."
     };
   }
 
@@ -127,7 +137,7 @@ function buildSummary(actualAge, healthAge, score, bmi, bmiLabel, category) {
   const direction = diff > 0 ? `${diff} years older` : `${Math.abs(diff)} years younger`;
   const neutralPhrase = diff === 0 ? "about the same as your chronological age" : `${direction} than your chronological age`;
 
-  return `${category.tone} Based on this weighted wellness model, your estimated health age is ${neutralPhrase}. Your wellness score is ${score}/100, and your estimated BMI is ${bmi.toFixed(1)} (${bmiLabel}).`;
+  return `${category.tone} Based on this weighted wellness model, your estimated Health Age is ${neutralPhrase}. Your wellness score is ${score}/100, and your estimated BMI is ${bmi.toFixed(1)} (${bmiLabel}).`;
 }
 
 function getTopImprovements(factorScores) {
@@ -140,6 +150,9 @@ function getTopImprovements(factorScores) {
 
 function renderResults(result) {
   healthAgeValue.textContent = result.healthAge.toString();
+  actualAgeValue.textContent = result.actualAge.toString();
+  estimatedHealthAgeValue.textContent = `${result.healthAge} years`;
+  differenceValue.textContent = result.differenceLabel;
   bmiValue.textContent = `${result.bmi.toFixed(1)} - ${result.bmiLabel}`;
   categoryValue.textContent = result.category.title;
   summaryText.textContent = result.summary;
@@ -181,16 +194,19 @@ function calculateHealthAge() {
   const ageAdjustment = clamp(((70 - score) / 30) * 10, -12, 15);
   const healthAge = Math.round(clamp(age + ageAdjustment, 18, 95));
   const diff = healthAge - age;
+  const differenceLabel = diff === 0 ? "0 years" : `${diff > 0 ? "+" : "-"}${Math.abs(diff)} years`;
   const category = getCategory(diff);
   const bmiLabel = getBmiLabel(bmi);
   const summary = buildSummary(age, healthAge, score, bmi, bmiLabel, category);
   const improvements = getTopImprovements(factorScores);
 
   renderResults({
+    actualAge: age,
     bmi,
     bmiLabel,
     score,
     healthAge,
+    differenceLabel,
     category,
     summary,
     improvements
@@ -199,10 +215,13 @@ function calculateHealthAge() {
 
 function resetResults() {
   healthAgeValue.textContent = "--";
+  actualAgeValue.textContent = "--";
+  estimatedHealthAgeValue.textContent = "--";
+  differenceValue.textContent = "--";
   bmiValue.textContent = "--";
   categoryValue.textContent = "Complete the form";
-  summaryText.textContent = "Fill out the questionnaire to see a personalized educational estimate and your strongest wellness opportunities.";
-  improvementsList.innerHTML = "<li>Balanced movement, nourishment, and recovery habits can meaningfully shift your result over time.</li>";
+  summaryText.textContent = "Fill out the questionnaire to see a clear educational estimate, a practical summary, and the habits most likely to support a healthier direction.";
+  improvementsList.innerHTML = "<li>Balanced movement, nourishing meals, and consistent recovery habits can meaningfully shift your Health Age over time.</li>";
   scoreRing.style.background = `
     radial-gradient(circle at center, #fffaf5 0 59%, transparent 60%),
     conic-gradient(#7a8f66 0deg, #c59b6c 180deg, rgba(197, 155, 108, 0.16) 180deg, rgba(197, 155, 108, 0.16) 360deg)
@@ -212,6 +231,10 @@ function resetResults() {
 if (currentYear) {
   currentYear.textContent = new Date().getFullYear().toString();
 }
+
+setNavOffset();
+window.addEventListener("resize", setNavOffset);
+window.addEventListener("load", setNavOffset);
 
 if (form) {
   form.addEventListener("submit", (event) => {
