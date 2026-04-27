@@ -335,6 +335,19 @@ p {
   align-items: start;
 }
 
+.assessment-layout-bottom-results {
+  grid-template-columns: 1fr;
+}
+
+.assessment-layout-bottom-results .results-panel {
+  width: min(100%, 860px);
+  justify-self: center;
+}
+
+.assessment-layout-bottom-results .results-sticky {
+  position: static;
+}
+
 .assessment-form {
   display: grid;
   gap: 20px;
