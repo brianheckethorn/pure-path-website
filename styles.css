@@ -162,6 +162,25 @@ p {
   color: var(--accent-deep);
 }
 
+.language-toggle {
+  min-height: 36px;
+  padding: 7px 13px;
+  border: 1px solid rgba(116, 104, 82, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 250, 243, 0.72);
+  color: var(--accent-deep);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.language-toggle:hover {
+  background: rgba(244, 236, 225, 0.95);
+  transform: translateY(-1px);
+}
+
 .hero {
   position: relative;
   z-index: 1;
