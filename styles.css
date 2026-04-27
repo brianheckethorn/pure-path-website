@@ -290,6 +290,12 @@ p {
   gap: 28px;
 }
 
+.three-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
 .intro-copy {
   color: var(--text-soft);
 }
@@ -549,8 +555,33 @@ p {
   background: rgba(237, 223, 204, 0.56);
 }
 
+.result-actions {
+  margin-top: 18px;
+}
+
+.result-actions .button {
+  width: 100%;
+}
+
 .feature-card {
   min-height: 100%;
+}
+
+.cta-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.cta-panel p {
+  max-width: 68ch;
+  color: var(--text-soft);
 }
 
 .contact-section {
@@ -583,8 +614,14 @@ p {
   .hero-shell,
   .assessment-layout,
   .intro-grid,
+  .three-card-grid,
   .support-grid {
     grid-template-columns: 1fr;
+  }
+
+  .cta-panel {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .results-sticky {
@@ -623,6 +660,7 @@ p {
   .question-card,
   .results-sticky,
   .feature-card,
+  .cta-panel,
   .contact-card {
     padding: 22px;
   }
