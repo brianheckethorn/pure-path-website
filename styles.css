@@ -616,6 +616,62 @@ p {
   color: var(--text-soft);
 }
 
+.testimonials-section {
+  padding-top: 18px;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.testimonial-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100%;
+  padding: 26px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 250, 243, 0.88);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.testimonial-card::before {
+  content: "“";
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(122, 143, 102, 0.14);
+  color: var(--accent-deep);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.7rem;
+  line-height: 1;
+}
+
+.testimonial-quote {
+  margin-bottom: 0;
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1.72;
+}
+
+.testimonial-name {
+  margin: auto 0 0;
+  padding-top: 4px;
+  color: #28382f;
+  font-weight: 800;
+}
+
+.testimonials-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
 .contact-section {
   padding-top: 10px;
 }
@@ -647,6 +703,7 @@ p {
   .assessment-layout,
   .intro-grid,
   .three-card-grid,
+  .testimonials-grid,
   .support-grid {
     grid-template-columns: 1fr;
   }
@@ -692,9 +749,14 @@ p {
   .question-card,
   .results-sticky,
   .feature-card,
+  .testimonial-card,
   .cta-panel,
   .contact-card {
     padding: 22px;
+  }
+
+  .testimonials-actions .button {
+    width: 100%;
   }
 
   .form-grid-4,
