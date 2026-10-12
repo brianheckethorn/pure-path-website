@@ -1,6 +1,6 @@
 {
   "format": "yourpurepath-copy-manifest-v1",
-  "generatedAt": "2026-10-12T20:57:35.019Z",
+  "generatedAt": "2026-10-12T21:32:46.798Z",
   "sourceHost": "QUORRA",
   "sourceProject": "/Users/brianheckethorn/Projects/YourPurePath",
   "baselineManifestSHA256": "e7b84315f59724bd9a297f8e7e2bc02c6278955068ed809aba5b594f436d5ec6",
@@ -113,23 +113,23 @@
     },
     {
       "path": "components/educational-age/age.css",
-      "bytes": 1367,
-      "sha256": "5418a06a20fc87b604dec60053e9a5736f5f21284bacd1da7741f953b3ab4ed1"
+      "bytes": 1862,
+      "sha256": "037b58d5fb3865875e384506bbbb9468810aae30451a5f38c0dee0ce3ebb2352"
     },
     {
       "path": "components/educational-age/component.js",
-      "bytes": 13296,
-      "sha256": "acd1f689c4b0c7b88b95e1f139601571cbfd0f28aba436f7006bf0c25d1e5b84"
+      "bytes": 13774,
+      "sha256": "187a3398abffceb1d6d273f38296b142ca3690d5db6a2a3e2d28b7f0a63ebca7"
     },
     {
       "path": "components/educational-age/content.js",
-      "bytes": 16674,
-      "sha256": "9fa1ad53c83206383676a27096d46912cb224b48da780dda28f404d1e20f0977"
+      "bytes": 16784,
+      "sha256": "9a344b30d62e50a6083397d1353d275344511b672c6d209700e69c9f34c4e757"
     },
     {
       "path": "components/educational-age/results.js",
-      "bytes": 5302,
-      "sha256": "d619d050c29474d90fa6cadb260ce129a6431d2e945e5b40541f9a6afd7ffd0b"
+      "bytes": 6274,
+      "sha256": "0f2269f9592645d3ce199a831fb67bcf69d14e5cf551941930be21e298e57c7b"
     },
     {
       "path": "components/educational-age/scoring.js",
@@ -228,23 +228,23 @@
     },
     {
       "path": "docs/components/educational-age/age.css",
-      "bytes": 1367,
-      "sha256": "5418a06a20fc87b604dec60053e9a5736f5f21284bacd1da7741f953b3ab4ed1"
+      "bytes": 1862,
+      "sha256": "037b58d5fb3865875e384506bbbb9468810aae30451a5f38c0dee0ce3ebb2352"
     },
     {
       "path": "docs/components/educational-age/component.js",
-      "bytes": 13296,
-      "sha256": "acd1f689c4b0c7b88b95e1f139601571cbfd0f28aba436f7006bf0c25d1e5b84"
+      "bytes": 13774,
+      "sha256": "187a3398abffceb1d6d273f38296b142ca3690d5db6a2a3e2d28b7f0a63ebca7"
     },
     {
       "path": "docs/components/educational-age/content.js",
-      "bytes": 16674,
-      "sha256": "9fa1ad53c83206383676a27096d46912cb224b48da780dda28f404d1e20f0977"
+      "bytes": 16784,
+      "sha256": "9a344b30d62e50a6083397d1353d275344511b672c6d209700e69c9f34c4e757"
     },
     {
       "path": "docs/components/educational-age/results.js",
-      "bytes": 5302,
-      "sha256": "d619d050c29474d90fa6cadb260ce129a6431d2e945e5b40541f9a6afd7ffd0b"
+      "bytes": 6274,
+      "sha256": "0f2269f9592645d3ce199a831fb67bcf69d14e5cf551941930be21e298e57c7b"
     },
     {
       "path": "docs/components/educational-age/scoring.js",
@@ -293,13 +293,13 @@
     },
     {
       "path": "docs/health-age-assessment/index.html",
-      "bytes": 2293,
-      "sha256": "69b1ed0de05b063bcfd658443cf4833a7c52d908f79678ab3043105c38470ed0"
+      "bytes": 2299,
+      "sha256": "936a5bb1faa17784f122505a154766dbd8c5090ca71c8b7a1f7e3445f3f00948"
     },
     {
       "path": "docs/health-age-assessment/page.js",
-      "bytes": 2488,
-      "sha256": "7e2366a551288607b379dc62049339b5790882efc89f6bed711455ca7f0dcb76"
+      "bytes": 2523,
+      "sha256": "25bbb12df39937ff4b941f0d2c7083363ded164843b6a135cae3e41daf9b17ca"
     },
     {
       "path": "docs/health-age.html",
@@ -308,8 +308,8 @@
     },
     {
       "path": "docs/index.html",
-      "bytes": 14448,
-      "sha256": "76d02c85bf53486b9c7565e5374cd9157807d00ec756c9b845df818d315f6640"
+      "bytes": 14350,
+      "sha256": "c25b57d0094465fd332afb4d99f807a0458b4f6f698c2dc3f3697321f06977eb"
     },
     {
       "path": "docs/wellness-snapshot/index.html",
@@ -328,13 +328,13 @@
     },
     {
       "path": "health-age-assessment/index.html",
-      "bytes": 2293,
-      "sha256": "69b1ed0de05b063bcfd658443cf4833a7c52d908f79678ab3043105c38470ed0"
+      "bytes": 2299,
+      "sha256": "936a5bb1faa17784f122505a154766dbd8c5090ca71c8b7a1f7e3445f3f00948"
     },
     {
       "path": "health-age-assessment/page.js",
-      "bytes": 2488,
-      "sha256": "7e2366a551288607b379dc62049339b5790882efc89f6bed711455ca7f0dcb76"
+      "bytes": 2523,
+      "sha256": "25bbb12df39937ff4b941f0d2c7083363ded164843b6a135cae3e41daf9b17ca"
     },
     {
       "path": "health-age.html",
@@ -343,8 +343,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 14448,
-      "sha256": "76d02c85bf53486b9c7565e5374cd9157807d00ec756c9b845df818d315f6640"
+      "bytes": 14350,
+      "sha256": "c25b57d0094465fd332afb4d99f807a0458b4f6f698c2dc3f3697321f06977eb"
     },
     {
       "path": "package.json",
@@ -358,8 +358,8 @@
     },
     {
       "path": "scripts/build-illustrative-home.mjs",
-      "bytes": 2889,
-      "sha256": "170b387172cca5edd0edc2c3808d025970da3f8b8ca55a6d1cbb615972e38a5f"
+      "bytes": 3622,
+      "sha256": "ba0357915e7392c997fad2ed67f6d0416c226c3a7e2f8ffd060f18541ad01884"
     },
     {
       "path": "scripts/build-site.mjs",
@@ -403,18 +403,18 @@
     },
     {
       "path": "tests/dom-harness.mjs",
-      "bytes": 2957,
-      "sha256": "7498371e006360e50466a2e68d61a06f2c92378a3f7708cf70efd6a159e38f14"
+      "bytes": 3044,
+      "sha256": "3c1592a502c016bf9c56d724733b6167184ba30c667e72521bb9f3ac9c020aa5"
     },
     {
       "path": "tests/educational-age.test.mjs",
-      "bytes": 7461,
-      "sha256": "6079d78f6c53af6cc8706cc3625f48ec301938aa0258ce315ee3c8996d1cfa47"
+      "bytes": 9010,
+      "sha256": "41d41de3e6839112315f4528a98f2ed51d4672926c3e6f16827c4a578020f783"
     },
     {
       "path": "tests/educational-component.test.mjs",
-      "bytes": 7943,
-      "sha256": "9e69aff63a9f543ff3a1274dff2972eee284ac740c4177ad8a322eeaf9366d56"
+      "bytes": 9102,
+      "sha256": "443d7003fe625fdaaa05737b0e92d456d4e17ef3325f98043ca82080a9eff85d"
     },
     {
       "path": "tests/no-email.test.mjs",
@@ -423,8 +423,8 @@
     },
     {
       "path": "tests/preferences.test.mjs",
-      "bytes": 9640,
-      "sha256": "8b2c4a746391fa5e71f147ea85e9bfd5071fa55100890e4a0d8008fee412ca5f"
+      "bytes": 10063,
+      "sha256": "49fff85a75de2ce28faf8fbcf5934d30e4d81b25f315ab4ab432047cacfb5b11"
     },
     {
       "path": "tests/public-build.test.mjs",

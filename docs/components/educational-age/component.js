@@ -83,15 +83,14 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     begin(); languageToggle();
     const result = state.result;
     const title = heading(t('resultTitle'));
-    // The requested note is adjacent to the number, never hidden in a footer.
-    root.append(node('p', disclosure[state.language], 'heuristic-disclosure'));
     if (result.status === 'complete') {
       const comparison = node('dl', undefined, 'age-comparison');
-      for (const [label, value] of [[t('actual'), result.actualAge], [t('estimate'), result.quizAge], [t('difference'), `${result.difference > 0 ? '+' : ''}${result.difference}`]]) {
-        const row = node('div'); row.append(node('dt', label), node('dd', `${value} ${t('years')}`)); comparison.append(row);
+      for (const [label, value] of [[t('actual'), result.actualAge], [t('estimate'), result.quizAge]]) {
+        const row = node('div'); const age = node('dd');
+        age.append(node('strong', String(value), 'age-number'), node('span', ` ${t('years')}`, 'age-unit'));
+        row.append(node('dt', label), age); comparison.append(row);
       }
-      root.append(comparison, node('p', t('comparisonNote'), 'snapshot-small'), node('p', `${t('bmi')}: ${result.bmi.toFixed(1)}`, 'snapshot-small'), node('p', t('bmiNote'), 'snapshot-small'));
-      const bmiLink = node('a', state.language === 'en' ? 'CDC: about BMI' : 'CDC: información sobre el IMC'); bmiLink.href = 'https://www.cdc.gov/bmi/about/index.html'; bmiLink.target = '_blank'; bmiLink.rel = 'noopener noreferrer'; root.append(bmiLink);
+      root.append(comparison);
     } else {
       root.append(node('h3', t('withheld')), node('p', t('withheldWhy')));
       const errors = node('ul', undefined, 'missing-list');
@@ -101,10 +100,16 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       }
       root.append(errors);
     }
-    root.append(node('p', t('care'), 'snapshot-small'), node('h3', t('suggestions')));
-    const ideas = discussionIdeas(state.answers); const list = node('ul');
+    // Keep the unvalidated-estimate disclosure immediately below the age pair.
+    root.append(node('p', disclosure[state.language], 'heuristic-disclosure'), node('h3', t('suggestions')), node('p', t('care'), 'snapshot-small'));
+    const ideas = discussionIdeas(state.answers); const list = node('ol', undefined, 'health-next-steps');
     for (const idea of ideas) list.append(node('li', idea[state.language]));
     root.append(ideas.length ? list : node('p', t('none')));
+    if (result.status === 'complete') {
+      const details = node('details', undefined, 'comparison-details'); details.append(node('summary', t('calculationDetails')));
+      details.append(node('p', `${t('difference')}: ${result.difference > 0 ? '+' : ''}${result.difference} ${t('years')}`, 'snapshot-small'), node('p', t('comparisonNote'), 'snapshot-small'), node('p', `${t('bmi')}: ${result.bmi.toFixed(1)}`, 'snapshot-small'), node('p', t('bmiNote'), 'snapshot-small'));
+      const bmiLink = node('a', state.language === 'en' ? 'CDC: about BMI' : 'CDC: información sobre el IMC'); bmiLink.href = 'https://www.cdc.gov/bmi/about/index.html'; bmiLink.target = '_blank'; bmiLink.rel = 'noopener noreferrer'; details.append(bmiLink); root.append(details);
+    }
     root.append(actions(button(t('edit'), () => { clearDelivery(); state.step = 0; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
     const summary = node('details'); summary.append(node('summary', t('review')));
     for (const question of questions) { const paragraph = node('p', undefined, 'result-answer'); paragraph.append(node('span', question.prompt[state.language]), node('br'), node('strong', answerText(question, state.answers[question.id], state.language))); summary.append(paragraph); }
@@ -112,7 +117,7 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     appendSpiritualSupport(root, { document, state, instance, language: state.language });
     appendResultTools(root, { document, text: resultEmailText(state.result, state.answers, state.language), language: state.language, onDownload });
     if (showDeliveryPreview) root.append(emailOptions());
-    if (focus) title.focus();
+    if (focus) { title.focus({ preventScroll: true }); title.scrollIntoView({ block: 'start', behavior: 'auto' }); }
   }
   function emailOptions() {
     const section = node('section', undefined, 'optional-delivery'); section.setAttribute('aria-label', t('emailTitle'));

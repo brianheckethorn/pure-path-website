@@ -29,11 +29,15 @@ test('frozen scoring bytes and all 22 question IDs are untouched; spirituality c
   for(const choice of ['',...spiritualChoices.map(c=>c.id)]) assert.deepEqual(calculateIllustrativeAge({...answers,spiritualSupport:choice}),original);
   assert.equal(supportIdea('not-now'),''); assert.equal(supportIdea('prefer-not'),''); assert.equal(supportIdea(''),'');
 });
-test('practical health steps respond to explicit answers, are limited to two, and make no age-lowering claim',()=>{
+test('practical health steps respond to explicit answers, prioritize at most three, and make no age-lowering promise',()=>{
   const favorable=discussionIdeas({nicotine:'never',exercise:'5+',strength:'4+',dietQuality:'excellent',vegetables:'6+'});
-  assert.equal(favorable.length,1); assert.equal(favorable[0].key,'maintenance'); assert.match(favorable[0].en,/variety/);
+  assert.equal(favorable.length,2); assert.equal(favorable[0].key,'maintenance'); assert.match(favorable[0].en,/variety/);
+  assert.equal(favorable[1].key,'maintainMovement');
   const ideas=discussionIdeas({dietQuality:'poor',exercise:'rarely',strength:'none'});
   assert.equal(ideas.length,2); assert.match(ideas[0].en,/next meal/); assert.match(ideas[1].en,/movement break/);
+  const priority=discussionIdeas({nicotine:'current',bloodSugar:'diagnosed',sleepQuality:'poor',dietQuality:'poor',exercise:'rarely'});
+  assert.deepEqual(priority.map(idea=>idea.key),['nicotine','history','sleep']);
+  assert.deepEqual(discussionIdeas({dietQuality:'unknown',sleepQuality:'skip',exercise:'unknown',nicotine:'never'}).map(idea=>idea.key),['general']);
   assert.match(snapshotSteps({fruit:'none'})[0],/next meal/);
   assert.match(snapshotSteps({movement:'none'})[0],/movement break/);
   assert.match(snapshotSteps({tobacco:'former'})[0],/staying tobacco-free/);
@@ -57,7 +61,7 @@ for(const kind of ['age','snapshot']) {
     assert.equal(ui.nodes().some(n=>n.checked),false);
     ui.select('Growing closer to Christ');
     assert.equal(ui.nodes().filter(n=>n.type==='checkbox').some(n=>n.checked),false);
-    const resultPre=ui.nodes().find(n=>n.tagName==='PRE'&&n.textContent.startsWith(kind==='age'?'Your illustrative comparison':'Your Wellness Snapshot'));
+    const resultPre=ui.nodes().find(n=>n.tagName==='PRE'&&n.textContent.startsWith(kind==='age'?'Your Health Age Results':'Your Wellness Snapshot'));
     assert.doesNotMatch(resultPre.textContent,/Growing closer|Christ|prayer|spiritual/);
     ui.select('Growing closer to God'); ui.fillEmail('synthetic@example.test');
     assert.equal(ui.inputByLabel(newsletterConsentText(['closer-to-god'])).checked,false);

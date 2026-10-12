@@ -14,6 +14,7 @@ class TestNode {
   addEventListener(type, callback) { const callbacks = this.listeners.get(type) || []; callbacks.push(callback); this.listeners.set(type, callbacks); }
   emit(type) { for (const callback of this.listeners.get(type) || []) callback({ target: this }); }
   focus() { this.ownerDocument.activeElement = this; }
+  scrollIntoView(options) { this.ownerDocument.lastScroll = { node: this, options }; }
 }
 
 export function componentHarness() {

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { questions, disclosure } from '../components/educational-age/content.js';
+import { questions, disclosure, text } from '../components/educational-age/content.js';
 import { weights, scoringMaps, bmiFactor, calculateIllustrativeAge, inputBounds } from '../components/educational-age/scoring.js';
 import { discussionIdeas, resultEmailText } from '../components/educational-age/results.js';
 import { illustrativeHome } from '../scripts/build-illustrative-home.mjs';
@@ -73,9 +73,22 @@ test('recommendations cannot pressure never/former users to quit or propose weig
   assert.doesNotMatch(JSON.stringify(discussionIdeas({ weight: '80', height: '84', functionalFitness: 'limited' })), /weight loss|lose weight|younger|stop medicine/i);
 });
 test('disclosure is exact, adjacent in component, and included in both-language email previews', () => {
-  assert.equal(disclosure.en, 'This is an educational estimate from a custom lifestyle quiz. It does not measure biological age or diagnose health conditions.');
+  assert.equal(disclosure.en, 'Educational estimate from a custom lifestyle quiz. Not scientifically validated. It does not measure biological age or diagnose health conditions.');
   for (const language of ['en', 'es']) {
     for (const answers of [syntheticAnswers(), {}]) assert.ok(resultEmailText(calculateIllustrativeAge(answers), answers, language).includes(disclosure[language]));
+  }
+});
+test('download leads with the same age pair, disclosure, and prioritized steps in both languages', () => {
+  for (const language of ['en', 'es']) {
+    const answers = syntheticAnswers(); const result = calculateIllustrativeAge(answers);
+    const copy = resultEmailText(result, answers, language); const lines = copy.split('\n\n');
+    assert.deepEqual(lines.slice(0, 4), [text.resultTitle[language], `${text.actual[language]}: 42 ${text.years[language]}`, `${text.estimate[language]}: 32 ${text.years[language]}`, disclosure[language]]);
+    const ideas = discussionIdeas(answers); assert.equal(ideas.length, 3);
+    for (const [index, idea] of ideas.entries()) assert.ok(copy.includes(`${index + 1}. ${idea[language]}`));
+    assert.ok(copy.indexOf(text.suggestions[language]) < copy.indexOf(text.review[language]));
+    const incomplete = resultEmailText(calculateIllustrativeAge({}), {}, language);
+    assert.ok(incomplete.includes(text.withheld[language]));
+    assert.equal(incomplete.includes(`${text.estimate[language]}:`), false);
   }
 });
 test('JS failure cannot expose native health forms/inputs; no submission, storage, URL answer encoding or logging', () => {
@@ -89,4 +102,11 @@ test('homepage has separate stable links and preserves the Snapshot home version
   assert.equal(readFileSync(new URL('../index.html', import.meta.url), 'utf8'), illustrativeHome(source));
   assert.match(illustrativeHome(source), /href="\.\/health-age-assessment\/"/);
   assert.match(illustrativeHome(source), /href="\.\/wellness-snapshot\/"/);
+  const callout = illustrativeHome(source).match(/<section id="quiz"[\s\S]*?<\/section>/)[0];
+  const links = [...callout.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g)];
+  assert.equal(links[0][1], './health-age-assessment/');
+  assert.equal(links[0][2], 'Start my Health Age Assessment');
+  assert.equal(links[1][1], './wellness-snapshot/');
+  assert.match(links[1][2], /no age estimate/);
+  assert.doesNotMatch(callout, /Start my snapshot|Try the original|eat fruit/);
 });

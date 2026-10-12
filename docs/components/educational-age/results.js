@@ -13,9 +13,11 @@ export function discussionIdeas(answers) {
   if (['high', 'moderate'].includes(answers.stress) || ['low', 'some'].includes(answers.socialSupport)) ideas.push(tip('support', 'A small calming routine or a conversation with someone you trust may be a place to start.', 'Una pequeña rutina tranquila o una conversación con alguien de confianza puede ser un comienzo.'));
   if (['heavy', 'moderate'].includes(answers.alcohol)) ideas.push(tip('alcohol', 'If alcohol is something you want to discuss, a health professional can help you explore your goals and options.', 'Si quieres conversar sobre el alcohol, un profesional puede ayudarte a explorar tus metas y opciones.'));
   if (['low', 'mixed'].includes(answers.energy) || answers.functionalFitness === 'limited') ideas.push(tip('dailyLife', 'You could discuss changes in energy or everyday activities with your usual care team, in a way that fits your abilities.', 'Puedes conversar con tu equipo de atención sobre cambios de energía o actividades diarias, según tus capacidades.'));
-  if (!ideas.length && (['good', 'excellent'].includes(answers.dietQuality) || ['4-5', '6+'].includes(answers.vegetables))) ideas.push(tip('maintenance', 'For variety, choose a different vegetable you enjoy for a meal, if it fits your care plan.', 'Para variar, elige una verdura diferente que disfrutes para una comida, si se ajusta a tu plan de atención.'));
+  if (ideas.length < 3 && !ideas.some(idea => idea.key === 'food') && (['good', 'excellent'].includes(answers.dietQuality) || ['4-5', '6+'].includes(answers.vegetables))) ideas.push(tip('maintenance', 'For variety, choose a different vegetable you enjoy for a meal, if it fits your care plan.', 'Para variar, elige una verdura diferente que disfrutes para una comida, si se ajusta a tu plan de atención.'));
+  if (ideas.length < 3 && !ideas.some(idea => idea.key === 'movement') && ['3-4', '5+'].includes(answers.exercise)) ideas.push(tip('maintainMovement', 'Keep a comfortable movement routine you enjoy, adjusting it to your abilities and care plan.', 'Mantén una rutina cómoda de movimiento que disfrutes, adaptándola a tus capacidades y plan de atención.'));
+  if (ideas.length < 3 && !ideas.some(idea => idea.key === 'sleep') && ['good', 'excellent'].includes(answers.sleepQuality)) ideas.push(tip('maintainSleep', 'Keep the sleep routine that helps you feel rested; choose one bedtime cue to keep consistent.', 'Mantén la rutina de sueño que te ayuda a descansar; elige una señal para acostarte de forma constante.'));
   if (!ideas.length) ideas.push(tip('general', 'General idea: choose one everyday habit or question you would like to discuss. No missing answer is interpreted as a problem.', 'Idea general: elige un hábito diario o una pregunta que quieras conversar. Una respuesta que falta no se interpreta como un problema.'));
-  return ideas.slice(0, 2);
+  return ideas.slice(0, 3);
 }
 
 export function answerText(question, value, language) {
@@ -27,10 +29,17 @@ export function answerText(question, value, language) {
 }
 
 export function resultEmailText(result, answers, language) {
-  return [text.resultTitle[language], disclosure[language], ...(result.status === 'complete' ? [
+  const ageLines = result.status === 'complete' ? [
     `${text.actual[language]}: ${result.actualAge} ${text.years[language]}`,
-    `${text.estimate[language]}: ${result.quizAge} ${text.years[language]}`,
+    `${text.estimate[language]}: ${result.quizAge} ${text.years[language]}`
+  ] : [text.withheld[language], text.withheldWhy[language]];
+  const details = result.status === 'complete' ? [
+    text.calculationDetails[language],
     `${text.difference[language]}: ${result.difference > 0 ? '+' : ''}${result.difference} ${text.years[language]}`,
     text.comparisonNote[language], `${text.bmi[language]}: ${result.bmi.toFixed(1)}`, text.bmiNote[language]
-  ] : [text.withheld[language], text.withheldWhy[language]]), text.care[language], ...questions.map(question => `${question.prompt[language]}\n${answerText(question, answers[question.id], language)}`), text.suggestions[language], ...discussionIdeas(answers).map(idea => idea[language])].join('\n\n');
+  ] : [];
+  return [text.resultTitle[language], ...ageLines, disclosure[language], text.suggestions[language], text.care[language],
+    ...discussionIdeas(answers).map((idea, index) => `${index + 1}. ${idea[language]}`), ...details,
+    text.review[language], ...questions.map(question => `${question.prompt[language]}\n${answerText(question, answers[question.id], language)}`)
+  ].join('\n\n');
 }
