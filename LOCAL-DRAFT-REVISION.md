@@ -67,3 +67,22 @@ artifact routes and all five local font files. An independent source review
 confirmed payload separation, optional spiritual/topic choices, unchanged scoring,
 and completeness of the 29-file public artifact. Rendered browser checks are
 separate from automated tests; no screen-reader certification is claimed.
+
+## No-email publication follow-up
+
+Brian then requested no email for now and supplied an optional Google Form. The
+public page entry points explicitly disable delivery previews. Results remain
+visible without signup and can be downloaded as a plain-text file generated only
+in the browser. Spiritual-support answers are excluded from that download.
+The older mock newsletter/topic implementation is retained only as an explicitly
+opt-in development preview, not public UI and not a live provider integration.
+
+The provided form was inspected read-only in QUORRA Chrome: its title is Health
+& Wellness Connection and its purpose is contact/event information and newsletter
+choices. It requests name, email, an event, optional phone/contact preferences,
+and topic choices. No response was entered or submitted. Public results link
+voluntarily to the exact supplied short URL in a new tab, with no prefilling,
+query construction, auto redirect, or transfer of quiz or spiritual answers.
+The form’s owner, retention practices, and medical topic wording are not validated
+by this project. No sender, email account, provider, subscription, or DNS change
+is made. The public allowlist now has 30 runtime files, including result-tools.js.

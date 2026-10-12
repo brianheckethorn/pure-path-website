@@ -41,7 +41,7 @@ export function appendSpiritualSupport(parent, { document, state, instance, lang
   const section = node(document, 'section', undefined, 'optional-support');
   const fieldset = node(document, 'fieldset');
   fieldset.append(node(document, 'legend', language === 'es' ? '¿Te gustaría apoyo en tu vida espiritual?' : 'Would you like support with your spiritual life?'));
-  section.append(node(document, 'p', language === 'es' ? 'Opcional. Esta elección no cambia el cálculo ni clasifica tus creencias. Queda en esta página y no se añade al correo ni al boletín.' : 'Optional. This choice does not change the calculation or grade your beliefs. It stays on this page and is not added to result email or newsletter requests.', 'snapshot-small'));
+  section.append(node(document, 'p', language === 'es' ? 'Opcional. Esta elección no cambia el cálculo ni clasifica tus creencias. Queda en esta página y no se añade a los resultados descargados ni al formulario externo.' : 'Optional. This choice does not change the calculation or grade your beliefs. It stays on this page and is not added to downloaded results or the external form.', 'snapshot-small'));
   const feedback = node(document, 'p', supportIdea(state.spiritualSupport, language), 'snapshot-small'); feedback.setAttribute('role', 'status');
   const inputs = [];
   for (const choice of spiritualChoices) {

@@ -4,10 +4,12 @@ import { createMockDeliveryAdapter } from '../components/wellness-snapshot/deliv
 
 const ui = mountEducationalAge(document.querySelector('#educational-age'), {
   delivery: createMockDeliveryAdapter(),
+  showDeliveryPreview: false,
   onLanguage(language) {
     document.documentElement.lang = language;
     document.title = language === 'en' ? 'Illustrative Health-Age Quiz | Your Pure Path' : 'Cuestionario ilustrativo de edad de salud | Your Pure Path';
-    for (const [id, key] of [['quiz-title', 'title'], ['intro', 'intro'], ['adult', 'adult'], ['privacy-copy', 'privacy']]) document.getElementById(id).textContent = text[key][language];
+    for (const [id, key] of [['quiz-title', 'title'], ['intro', 'intro'], ['adult', 'adult']]) document.getElementById(id).textContent = text[key][language];
+    document.getElementById('privacy-copy').textContent = language === 'en' ? 'Answers stay in this page’s memory and clear when you start over, reload, or leave. Results are visible and downloadable without email. Email and newsletter signups are not enabled. The separate optional Google Form receives no quiz data from this page.' : 'Las respuestas quedan en la memoria de esta página y se borran al reiniciar, recargar o salir. Puedes ver y descargar resultados sin correo. No hay envíos ni suscripciones activas. El formulario opcional de Google no recibe datos del cuestionario desde esta página.';
     document.querySelector('.skip-link').textContent = language === 'en' ? 'Skip to quiz' : 'Ir al cuestionario';
     document.querySelector('.snapshot-footer').textContent = language === 'en' ? 'Your Pure Path · Educational local preview' : 'Your Pure Path · Vista previa educativa local';
     document.getElementById('eyebrow').textContent = language === 'en' ? 'A conversation, not a medical test' : 'Una conversación, no una prueba médica';

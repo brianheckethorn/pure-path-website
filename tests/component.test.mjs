@@ -10,7 +10,7 @@ const resultConsent = 'Yes, email this snapshot to me.';
 const listConsent = 'Yes, send me wellness tips and news from Your Pure Path. I can unsubscribe at any time.';
 function setup(delivery = createMockDeliveryAdapter()) {
   const ui = componentHarness();
-  ui.controller = mountWellnessSnapshot(ui.root, { content: snapshotContent, delivery });
+  ui.controller = mountWellnessSnapshot(ui.root, { content: snapshotContent, delivery, showDeliveryPreview: true });
   return ui;
 }
 function start(ui) { ui.select('Yes'); ui.click('Start my snapshot'); }

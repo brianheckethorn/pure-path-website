@@ -9,7 +9,7 @@ import { createPreviewServer } from '../scripts/serve.mjs';
 
 test('public build contains precisely approved runtime files and excludes design/prototype pages',async()=>{
   const root=new URL('../docs/',import.meta.url);
-  const actual=(await readdir(root,{recursive:true,withFileTypes:true})).filter(entry=>entry.isFile()).map(entry=>path.relative(fileURLToPath(root),path.join(entry.parentPath || entry.path,entry.name)).split(path.sep).join('/')).sort();
+  const actual=(await readdir(root,{recursive:true,withFileTypes:true})).filter(entry=>entry.isFile()&&entry.name!=='.DS_Store').map(entry=>path.relative(fileURLToPath(root),path.join(entry.parentPath || entry.path,entry.name)).split(path.sep).join('/')).sort();
   assert.deepEqual(actual,[...publicFiles].sort());
   for(const file of publicFiles) assert.deepEqual(await readFile(new URL(file,root)),await readFile(new URL(`../${file}`,import.meta.url)),file);
   assert.doesNotMatch(actual.join('\n'),/Neighbor|snapshot-home|tests\/|scripts\/|REVISION|MANIFEST/);

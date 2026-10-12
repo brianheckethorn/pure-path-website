@@ -11,13 +11,14 @@ export const publicFiles = [
   'assets/fonts/fonts.css', 'assets/fonts/DM-Serif-Display-OFL.txt', 'assets/fonts/Karla-OFL.txt',
   'assets/fonts/dm-serif-display-regular.ttf', 'assets/fonts/dm-serif-display-italic.ttf',
   'assets/fonts/karla-regular.ttf', 'assets/fonts/karla-medium.ttf', 'assets/fonts/karla-bold.ttf',
-  'components/support-preferences.js',
+  'components/support-preferences.js', 'components/result-tools.js',
   ...['age.css', 'component.js', 'content.js', 'results.js', 'scoring.js'].map(name => `components/educational-age/${name}`),
   ...['component.js', 'content.js', 'delivery.js', 'model.js', 'snapshot.css'].map(name => `components/wellness-snapshot/${name}`)
 ];
 async function files(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   return (await Promise.all(entries.map(async entry => {
+    if (entry.name === '.DS_Store') return []; // Finder metadata is never a published asset.
     const target = path.join(directory, entry.name);
     if (entry.isSymbolicLink()) throw new Error('Unexpected symbolic link in published folder.');
     return entry.isDirectory() ? await files(target) : [path.relative(path.join(root, 'docs'), target).split(path.sep).join('/')];

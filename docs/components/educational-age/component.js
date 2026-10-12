@@ -2,10 +2,11 @@ import { questions, sections, text, disclosure } from './content.js';
 import { calculateIllustrativeAge, inputBounds } from './scoring.js';
 import { discussionIdeas, answerText, resultEmailText } from './results.js';
 import { previewDelivery, isValidEmail } from '../wellness-snapshot/delivery.js';
+import { appendResultTools } from '../result-tools.js';
 import { appendSpiritualSupport, appendNewsletterTopics, newsletterConsentText, newsletterRequestText } from '../support-preferences.js';
 
 let nextInstance = 0;
-export function mountEducationalAge(root, { delivery, onLanguage = () => {} }) {
+export function mountEducationalAge(root, { delivery, onLanguage = () => {}, showDeliveryPreview = false, onDownload }) {
   if (!root || delivery.mode !== 'mock') throw new Error('A root and mock adapter are required.');
   const document = root.ownerDocument;
   const instance = `educational-age-${++nextInstance}`;
@@ -109,7 +110,8 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {} }) {
     for (const question of questions) { const paragraph = node('p', undefined, 'result-answer'); paragraph.append(node('span', question.prompt[state.language]), node('br'), node('strong', answerText(question, state.answers[question.id], state.language))); summary.append(paragraph); }
     root.append(summary);
     appendSpiritualSupport(root, { document, state, instance, language: state.language });
-    root.append(emailOptions());
+    appendResultTools(root, { document, text: resultEmailText(state.result, state.answers, state.language), language: state.language, onDownload });
+    if (showDeliveryPreview) root.append(emailOptions());
     if (focus) title.focus();
   }
   function emailOptions() {

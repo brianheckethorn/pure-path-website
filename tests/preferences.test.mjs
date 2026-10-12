@@ -18,7 +18,7 @@ function finish(ui, kind) {
 }
 function setup(kind, delivery = createMockDeliveryAdapter()) {
   const ui = componentHarness();
-  ui.controller = kind === 'age' ? mountEducationalAge(ui.root,{delivery}) : mountWellnessSnapshot(ui.root,{content:snapshotContent,delivery});
+  ui.controller = kind === 'age' ? mountEducationalAge(ui.root,{delivery,showDeliveryPreview:true}) : mountWellnessSnapshot(ui.root,{content:snapshotContent,delivery,showDeliveryPreview:true});
   finish(ui,kind); return ui;
 }
 test('frozen scoring bytes and all 22 question IDs are untouched; spirituality cannot change arithmetic', () => {

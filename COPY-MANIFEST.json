@@ -1,6 +1,6 @@
 {
   "format": "yourpurepath-copy-manifest-v1",
-  "generatedAt": "2026-10-12T20:45:37.368Z",
+  "generatedAt": "2026-10-12T20:57:35.019Z",
   "sourceHost": "QUORRA",
   "sourceProject": "/Users/brianheckethorn/Projects/YourPurePath",
   "baselineManifestSHA256": "e7b84315f59724bd9a297f8e7e2bc02c6278955068ed809aba5b594f436d5ec6",
@@ -11,6 +11,11 @@
     ".git (repository metadata)"
   ],
   "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 10,
+      "sha256": "cf237c7aff44efbe6e502e645c3e06da03a69d7bdeb43392108ef3348143417e"
+    },
     {
       "path": ".nojekyll",
       "bytes": 0,
@@ -33,8 +38,8 @@
     },
     {
       "path": "LOCAL-DRAFT-REVISION.md",
-      "bytes": 4473,
-      "sha256": "765c264b18a9a2b3b4c9b1ac5902baf1a008fcfc528ac1e648f246e9d3322719"
+      "bytes": 5707,
+      "sha256": "9362f0eec6c1df2f606d72072a026b73aaabfc690d4bcf0a91aa7f845a73bb9e"
     },
     {
       "path": "Neighbor.dc.html",
@@ -113,8 +118,8 @@
     },
     {
       "path": "components/educational-age/component.js",
-      "bytes": 13025,
-      "sha256": "20f33f5ed6def190f3e0b4d37d9a07b285735d63ab82877309499800f2dff102"
+      "bytes": 13296,
+      "sha256": "acd1f689c4b0c7b88b95e1f139601571cbfd0f28aba436f7006bf0c25d1e5b84"
     },
     {
       "path": "components/educational-age/content.js",
@@ -132,14 +137,19 @@
       "sha256": "bd7c82029db9d837912e6faa259cd6ec1f0aab96facd36b36acb36e507f246c7"
     },
     {
+      "path": "components/result-tools.js",
+      "bytes": 2326,
+      "sha256": "c6cb9f0c0f6f936f504e824a66b5f899d43174f05d105b9bb75d1334342dd468"
+    },
+    {
       "path": "components/support-preferences.js",
-      "bytes": 7318,
-      "sha256": "0e5a4e4d7a0c3f167daad215ef5085c0fa72b7ef0fecbb799f9bff93a365e741"
+      "bytes": 7351,
+      "sha256": "31132bb39aee4c4dbc2c677ad1f2486ff2d4d35f3125e6311bda811cf79d3560"
     },
     {
       "path": "components/wellness-snapshot/component.js",
-      "bytes": 12179,
-      "sha256": "9ff434492a0d6f743419c727f89a99f868e30661f9e444292875ec142296f2d2"
+      "bytes": 12391,
+      "sha256": "4cb74a896a50a0c631e75df6a401670da48b3b9d34d179c30619987a2e3ecb14"
     },
     {
       "path": "components/wellness-snapshot/content.js",
@@ -223,8 +233,8 @@
     },
     {
       "path": "docs/components/educational-age/component.js",
-      "bytes": 13025,
-      "sha256": "20f33f5ed6def190f3e0b4d37d9a07b285735d63ab82877309499800f2dff102"
+      "bytes": 13296,
+      "sha256": "acd1f689c4b0c7b88b95e1f139601571cbfd0f28aba436f7006bf0c25d1e5b84"
     },
     {
       "path": "docs/components/educational-age/content.js",
@@ -242,14 +252,19 @@
       "sha256": "bd7c82029db9d837912e6faa259cd6ec1f0aab96facd36b36acb36e507f246c7"
     },
     {
+      "path": "docs/components/result-tools.js",
+      "bytes": 2326,
+      "sha256": "c6cb9f0c0f6f936f504e824a66b5f899d43174f05d105b9bb75d1334342dd468"
+    },
+    {
       "path": "docs/components/support-preferences.js",
-      "bytes": 7318,
-      "sha256": "0e5a4e4d7a0c3f167daad215ef5085c0fa72b7ef0fecbb799f9bff93a365e741"
+      "bytes": 7351,
+      "sha256": "31132bb39aee4c4dbc2c677ad1f2486ff2d4d35f3125e6311bda811cf79d3560"
     },
     {
       "path": "docs/components/wellness-snapshot/component.js",
-      "bytes": 12179,
-      "sha256": "9ff434492a0d6f743419c727f89a99f868e30661f9e444292875ec142296f2d2"
+      "bytes": 12391,
+      "sha256": "4cb74a896a50a0c631e75df6a401670da48b3b9d34d179c30619987a2e3ecb14"
     },
     {
       "path": "docs/components/wellness-snapshot/content.js",
@@ -278,13 +293,13 @@
     },
     {
       "path": "docs/health-age-assessment/index.html",
-      "bytes": 2190,
-      "sha256": "46feba0a5df57ce905cdc94f95a271062d39ec6ae90853362492fb37fa9b5dbe"
+      "bytes": 2293,
+      "sha256": "69b1ed0de05b063bcfd658443cf4833a7c52d908f79678ab3043105c38470ed0"
     },
     {
       "path": "docs/health-age-assessment/page.js",
-      "bytes": 1877,
-      "sha256": "082fb0d88eb0a765c0cee6d6d69f5bd7b2ac85237ae816bee2e0144960c8b929"
+      "bytes": 2488,
+      "sha256": "7e2366a551288607b379dc62049339b5790882efc89f6bed711455ca7f0dcb76"
     },
     {
       "path": "docs/health-age.html",
@@ -298,13 +313,13 @@
     },
     {
       "path": "docs/wellness-snapshot/index.html",
-      "bytes": 1948,
-      "sha256": "0a6c259db2633adb8ae7e453facbc9d6d23616bb49158524e2cedae61ccc200c"
+      "bytes": 2026,
+      "sha256": "897f31d7e8601e6fdcd313004c2171a98edb9e5e07d39d936f8db7753ac0ba87"
     },
     {
       "path": "docs/wellness-snapshot/page.js",
-      "bytes": 560,
-      "sha256": "6d526bd10e3a78f3495d934d4cd2f20c8e25360c79e2c44746c34b82baaf44f8"
+      "bytes": 590,
+      "sha256": "cdc06913cd7cc104559dbe05cf476c591d84c06bec867b90c7c94a23fa9e5e24"
     },
     {
       "path": "health-age-assessment.html",
@@ -313,13 +328,13 @@
     },
     {
       "path": "health-age-assessment/index.html",
-      "bytes": 2190,
-      "sha256": "46feba0a5df57ce905cdc94f95a271062d39ec6ae90853362492fb37fa9b5dbe"
+      "bytes": 2293,
+      "sha256": "69b1ed0de05b063bcfd658443cf4833a7c52d908f79678ab3043105c38470ed0"
     },
     {
       "path": "health-age-assessment/page.js",
-      "bytes": 1877,
-      "sha256": "082fb0d88eb0a765c0cee6d6d69f5bd7b2ac85237ae816bee2e0144960c8b929"
+      "bytes": 2488,
+      "sha256": "7e2366a551288607b379dc62049339b5790882efc89f6bed711455ca7f0dcb76"
     },
     {
       "path": "health-age.html",
@@ -348,8 +363,8 @@
     },
     {
       "path": "scripts/build-site.mjs",
-      "bytes": 2325,
-      "sha256": "955046976325225f6b8bfdc8bf014be84b79285da5be6ff8aa0d834e04ced9b3"
+      "bytes": 2449,
+      "sha256": "4f517f90c4e389262e79447fcb75249356bbf5ee7fe2a629eeff83e6b112f30f"
     },
     {
       "path": "scripts/capture-scoring-reference.py",
@@ -383,8 +398,8 @@
     },
     {
       "path": "tests/component.test.mjs",
-      "bytes": 5882,
-      "sha256": "60ff827de5d4d8a9209c43eed284ceeb797e57d97a9d403b28b63ffea9a503ef"
+      "bytes": 5909,
+      "sha256": "26046e7c8d02d0ee7e0c8642ec4ffbe93d13f2e4df8af694a8f22a8d6e4be94c"
     },
     {
       "path": "tests/dom-harness.mjs",
@@ -398,18 +413,23 @@
     },
     {
       "path": "tests/educational-component.test.mjs",
-      "bytes": 7916,
-      "sha256": "e1d547c504ad8a7372ed11e9c7506176437c5c43f9f18e177b2a62b81f600826"
+      "bytes": 7943,
+      "sha256": "9e69aff63a9f543ff3a1274dff2972eee284ac740c4177ad8a322eeaf9366d56"
+    },
+    {
+      "path": "tests/no-email.test.mjs",
+      "bytes": 3795,
+      "sha256": "929c96a3125bdb81319f081c4551c2bbcfa903ae663d7cbabcfc002ba02933ff"
     },
     {
       "path": "tests/preferences.test.mjs",
-      "bytes": 9590,
-      "sha256": "4c9967d84101dbe7d6961f4f6f3e4490a9e2ab5e2f832ef4fcc09d61ca50d706"
+      "bytes": 9640,
+      "sha256": "8b2c4a746391fa5e71f147ea85e9bfd5071fa55100890e4a0d8008fee412ca5f"
     },
     {
       "path": "tests/public-build.test.mjs",
-      "bytes": 1991,
-      "sha256": "c626d0317b183e5a0fbd3ba56781574a09d0add38463720ce7b3e40204f4d434"
+      "bytes": 2017,
+      "sha256": "bed9ac8d39bcf1ffe27a7681c3b41131e1191e939eba79a5c1f20f6548d9a3e0"
     },
     {
       "path": "tests/server.test.mjs",
@@ -438,13 +458,13 @@
     },
     {
       "path": "wellness-snapshot/index.html",
-      "bytes": 1948,
-      "sha256": "0a6c259db2633adb8ae7e453facbc9d6d23616bb49158524e2cedae61ccc200c"
+      "bytes": 2026,
+      "sha256": "897f31d7e8601e6fdcd313004c2171a98edb9e5e07d39d936f8db7753ac0ba87"
     },
     {
       "path": "wellness-snapshot/page.js",
-      "bytes": 560,
-      "sha256": "6d526bd10e3a78f3495d934d4cd2f20c8e25360c79e2c44746c34b82baaf44f8"
+      "bytes": 590,
+      "sha256": "cdc06913cd7cc104559dbe05cf476c591d84c06bec867b90c7c94a23fa9e5e24"
     }
   ]
 }

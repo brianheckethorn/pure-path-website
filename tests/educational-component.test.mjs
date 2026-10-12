@@ -9,7 +9,7 @@ import { scoringMaps } from '../components/educational-age/scoring.js';
 const tick = () => new Promise(resolve => setImmediate(resolve));
 function setup(delivery = createMockDeliveryAdapter()) {
   const ui = componentHarness(); ui.languages = [];
-  ui.controller = mountEducationalAge(ui.root, { delivery, onLanguage: language => ui.languages.push(language) });
+  ui.controller = mountEducationalAge(ui.root, { delivery, showDeliveryPreview: true, onLanguage: language => ui.languages.push(language) });
   return ui;
 }
 function fillNumber(ui, value) { const input = ui.find(node => node.tagName === 'INPUT' && node.type === 'number')[0]; input.value = value; input.emit('input'); }

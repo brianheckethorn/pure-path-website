@@ -4,7 +4,8 @@ import { createMockDeliveryAdapter } from '../components/wellness-snapshot/deliv
 
 const snapshot = mountWellnessSnapshot(document.querySelector('#wellness-snapshot'), {
   content: snapshotContent,
-  delivery: createMockDeliveryAdapter()
+  delivery: createMockDeliveryAdapter(),
+  showDeliveryPreview: false
 });
 
 // Clear in-memory answers when leaving the page, including browser back-cache.

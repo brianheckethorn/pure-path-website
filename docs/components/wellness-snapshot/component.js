@@ -1,10 +1,11 @@
 import { createSnapshotState, buildSnapshot, snapshotEmailText } from './model.js';
 import { previewDelivery } from './delivery.js';
 import { sources } from './content.js';
+import { appendResultTools } from '../result-tools.js';
 import { appendSpiritualSupport, appendNewsletterTopics, newsletterConsentText, newsletterRequestText } from '../support-preferences.js';
 
 let nextInstance = 0;
-export function mountWellnessSnapshot(root, { content, delivery }) {
+export function mountWellnessSnapshot(root, { content, delivery, showDeliveryPreview = false, onDownload }) {
   if (!root || !content || delivery.mode !== 'mock') throw new Error('A root, content, and mock adapter are required.');
   const document = root.ownerDocument;
   const instance = `wellness-${++nextInstance}`;
@@ -127,7 +128,8 @@ export function mountWellnessSnapshot(root, { content, delivery }) {
       button('Start over', () => reset(), true)
     ));
     appendSpiritualSupport(root, { document, state, instance });
-    root.append(emailOptions(snapshot));
+    appendResultTools(root, { document, text: snapshotEmailText(snapshot), onDownload });
+    if (showDeliveryPreview) root.append(emailOptions(snapshot));
     focus(title, shouldFocus);
   }
 
