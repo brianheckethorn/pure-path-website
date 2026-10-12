@@ -1,0 +1,7 @@
+/* Local copies of the Google Fonts families referenced by Neighbor.dc.html.
+ * Licenses: DM-Serif-Display-OFL.txt and Karla-OFL.txt in this directory. */
+@font-face { font-family: 'DM Serif Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('./dm-serif-display-regular.ttf') format('truetype'); }
+@font-face { font-family: 'DM Serif Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('./dm-serif-display-italic.ttf') format('truetype'); }
+@font-face { font-family: 'Karla'; font-style: normal; font-weight: 400; font-display: swap; src: url('./karla-regular.ttf') format('truetype'); }
+@font-face { font-family: 'Karla'; font-style: normal; font-weight: 500; font-display: swap; src: url('./karla-medium.ttf') format('truetype'); }
+@font-face { font-family: 'Karla'; font-style: normal; font-weight: 700; font-display: swap; src: url('./karla-bold.ttf') format('truetype'); }

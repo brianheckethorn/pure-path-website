@@ -1,0 +1,13 @@
+{
+  "name": "your-pure-path-local-snapshot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:home": "node scripts/build-illustrative-home.mjs",
+    "build": "node scripts/build-illustrative-home.mjs && node scripts/build-site.mjs",
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node scripts/verify-preservation.mjs",
+    "verify:copy": "node scripts/checksum.mjs verify"
+  }
+}

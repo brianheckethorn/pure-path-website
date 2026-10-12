@@ -1,0 +1,14 @@
+@import url('../wellness-snapshot/snapshot.css');
+.educational-age .snapshot-layout { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); }
+.educational-age .heuristic-disclosure { border: 2px solid #4E3F17; padding: 18px; border-radius: 10px; background: #F5F7EC; font-weight: 700; margin: 20px 0; }
+.educational-age .language-row { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+.educational-age .snapshot-card input[type=number] { display: block; width: 100%; font: inherit; border: 1.5px solid #69744C; padding: 14px; border-radius: 8px; margin: 12px 0; }
+.educational-age .age-comparison { display: grid; gap: 18px; margin: 24px 0; }
+.educational-age .age-comparison > div { border-top: 1px solid #D7DFC1; padding-top: 16px; }
+.educational-age .age-comparison dt { font-size: 17px; }
+.educational-age .age-comparison dd { margin: 4px 0 0; font: 400 36px/1.2 'DM Serif Display', Georgia, serif; }
+.educational-age .missing-list { padding-left: 20px; }
+.educational-age .missing-list button { font-size: 16px; padding: 8px; margin: 4px 0; text-align: left; }
+.educational-age .snapshot-card details { margin: 24px 0; }
+@media (max-width: 860px) { .educational-age .snapshot-layout { grid-template-columns: 1fr; } }
+@media print { .educational-age .language-row { display: none; } .educational-age .heuristic-disclosure { display: block; } }

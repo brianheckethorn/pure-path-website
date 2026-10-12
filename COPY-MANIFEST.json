@@ -1,0 +1,450 @@
+{
+  "format": "yourpurepath-copy-manifest-v1",
+  "generatedAt": "2026-10-12T20:45:37.368Z",
+  "sourceHost": "QUORRA",
+  "sourceProject": "/Users/brianheckethorn/Projects/YourPurePath",
+  "baselineManifestSHA256": "e7b84315f59724bd9a297f8e7e2bc02c6278955068ed809aba5b594f436d5ec6",
+  "algorithm": "SHA-256",
+  "exclusions": [
+    "COPY-MANIFEST.json (this manifest)",
+    ".DS_Store (Mac metadata)",
+    ".git (repository metadata)"
+  ],
+  "files": [
+    {
+      "path": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "CNAME",
+      "bytes": 17,
+      "sha256": "49f628eb19ede83f63ed7aa0aa0261bf6d4f4dff66e3822ba7b74114cf47a9e4"
+    },
+    {
+      "path": "ILLUSTRATIVE-AGE-REVIEW.md",
+      "bytes": 12603,
+      "sha256": "fe513190506180f78c8a2c7022e5553330b7e5966d0d64b834ea2fd7925c2627"
+    },
+    {
+      "path": "ILLUSTRATIVE-SCORING-REFERENCE.json",
+      "bytes": 3148,
+      "sha256": "0c82b003540907a9e5cc1be7c0237f3e5abbd5a68ebf798b399a1430a867f5b0"
+    },
+    {
+      "path": "LOCAL-DRAFT-REVISION.md",
+      "bytes": 4473,
+      "sha256": "765c264b18a9a2b3b4c9b1ac5902baf1a008fcfc528ac1e648f246e9d3322719"
+    },
+    {
+      "path": "Neighbor.dc.html",
+      "bytes": 14167,
+      "sha256": "2a74a130790aa38be595670d416b80aeec10b74d4a977cf9e4936f9a659c2cc3"
+    },
+    {
+      "path": "ORIGINAL-ASSESSMENT-INVENTORY.json",
+      "bytes": 14637,
+      "sha256": "0d2c0d00135ded71e723779661b1943fc4cae810f6453ce10a1caf78d32987ff"
+    },
+    {
+      "path": "ORIGINAL-QUESTION-MAPPING.md",
+      "bytes": 11213,
+      "sha256": "1de9861003a4259b0f4eee57da18a4614c1a15cf91ad3451f3e733090931d6ac"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1316,
+      "sha256": "b62f2eb8c554e42ce102a018696aeb8c65d05657ef6d4008c19b39d11012d3b3"
+    },
+    {
+      "path": "WELLNESS-SNAPSHOT.md",
+      "bytes": 6969,
+      "sha256": "3b3fffb75e79196db05c5ea07d913a75ba172e7d13a0dd615dec17cb9e9e93c5"
+    },
+    {
+      "path": "assets/a143c2a9960446d649523f272677f609.jpg",
+      "bytes": 83341,
+      "sha256": "b07e604c8033cca684ee7d781beb98d42c877e4f3ee298f9db2b5e4c2b613958"
+    },
+    {
+      "path": "assets/fonts/DM-Serif-Display-OFL.txt",
+      "bytes": 4605,
+      "sha256": "a3e5cdd67d4571dd0a24fcc968de0efde7ae97ef752daf0906e4767619dd7231"
+    },
+    {
+      "path": "assets/fonts/Karla-OFL.txt",
+      "bytes": 4384,
+      "sha256": "edf2c840acb9570fe02f40721126aa0da4e4011a0030cc6dce30780569f609b6"
+    },
+    {
+      "path": "assets/fonts/dm-serif-display-italic.ttf",
+      "bytes": 68312,
+      "sha256": "0ab2fcacedaafc0a7536453d4a763f131ba83a636706d3ec2d685cf04478a920"
+    },
+    {
+      "path": "assets/fonts/dm-serif-display-regular.ttf",
+      "bytes": 70348,
+      "sha256": "c03775f8cc3db88cfea259b231abe13f94e6a3d3cb01c09477a2e42a1f5919e1"
+    },
+    {
+      "path": "assets/fonts/fonts.css",
+      "bytes": 929,
+      "sha256": "71780fea0b7779e4ebb8b1218e6419c31870f5cd59eb95285eb88fa33e33a307"
+    },
+    {
+      "path": "assets/fonts/karla-bold.ttf",
+      "bytes": 41572,
+      "sha256": "0513554cac9d5c8c9fa1f789dae0e3db1a3c7278fc532143ccf932502f2ddb46"
+    },
+    {
+      "path": "assets/fonts/karla-medium.ttf",
+      "bytes": 41556,
+      "sha256": "315cfca1a67430ba66e88100432f2221defec13718a3ffaee021d3b36837659b"
+    },
+    {
+      "path": "assets/fonts/karla-regular.ttf",
+      "bytes": 41512,
+      "sha256": "312f8ebaede0db3bb202ee6b116cbe0d467e109b69b93b1e8ff869fc76a210d1"
+    },
+    {
+      "path": "components/educational-age/age.css",
+      "bytes": 1367,
+      "sha256": "5418a06a20fc87b604dec60053e9a5736f5f21284bacd1da7741f953b3ab4ed1"
+    },
+    {
+      "path": "components/educational-age/component.js",
+      "bytes": 13025,
+      "sha256": "20f33f5ed6def190f3e0b4d37d9a07b285735d63ab82877309499800f2dff102"
+    },
+    {
+      "path": "components/educational-age/content.js",
+      "bytes": 16674,
+      "sha256": "9fa1ad53c83206383676a27096d46912cb224b48da780dda28f404d1e20f0977"
+    },
+    {
+      "path": "components/educational-age/results.js",
+      "bytes": 5302,
+      "sha256": "d619d050c29474d90fa6cadb260ce129a6431d2e945e5b40541f9a6afd7ffd0b"
+    },
+    {
+      "path": "components/educational-age/scoring.js",
+      "bytes": 4582,
+      "sha256": "bd7c82029db9d837912e6faa259cd6ec1f0aab96facd36b36acb36e507f246c7"
+    },
+    {
+      "path": "components/support-preferences.js",
+      "bytes": 7318,
+      "sha256": "0e5a4e4d7a0c3f167daad215ef5085c0fa72b7ef0fecbb799f9bff93a365e741"
+    },
+    {
+      "path": "components/wellness-snapshot/component.js",
+      "bytes": 12179,
+      "sha256": "9ff434492a0d6f743419c727f89a99f868e30661f9e444292875ec142296f2d2"
+    },
+    {
+      "path": "components/wellness-snapshot/content.js",
+      "bytes": 3896,
+      "sha256": "1863989dcafe33d9c27e338770932e9e5f394d3615adaa3976087672da01b6bb"
+    },
+    {
+      "path": "components/wellness-snapshot/delivery.js",
+      "bytes": 2596,
+      "sha256": "98f7c2b5a31e5d80888e00182f7e54837ab9907045eefdefdc12de93cbdb9186"
+    },
+    {
+      "path": "components/wellness-snapshot/model.js",
+      "bytes": 4218,
+      "sha256": "b686658f1ceb7a4088de0f91f58e2a33daa51a26546e838bbdd0db130c84ad02"
+    },
+    {
+      "path": "components/wellness-snapshot/snapshot.css",
+      "bytes": 5009,
+      "sha256": "fa1e4b1811a5ea2e2a423d138b981a7c60f6e88c0cfee00217ce68fff38faf54"
+    },
+    {
+      "path": "docs/.nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/CNAME",
+      "bytes": 17,
+      "sha256": "49f628eb19ede83f63ed7aa0aa0261bf6d4f4dff66e3822ba7b74114cf47a9e4"
+    },
+    {
+      "path": "docs/assets/a143c2a9960446d649523f272677f609.jpg",
+      "bytes": 83341,
+      "sha256": "b07e604c8033cca684ee7d781beb98d42c877e4f3ee298f9db2b5e4c2b613958"
+    },
+    {
+      "path": "docs/assets/fonts/DM-Serif-Display-OFL.txt",
+      "bytes": 4605,
+      "sha256": "a3e5cdd67d4571dd0a24fcc968de0efde7ae97ef752daf0906e4767619dd7231"
+    },
+    {
+      "path": "docs/assets/fonts/Karla-OFL.txt",
+      "bytes": 4384,
+      "sha256": "edf2c840acb9570fe02f40721126aa0da4e4011a0030cc6dce30780569f609b6"
+    },
+    {
+      "path": "docs/assets/fonts/dm-serif-display-italic.ttf",
+      "bytes": 68312,
+      "sha256": "0ab2fcacedaafc0a7536453d4a763f131ba83a636706d3ec2d685cf04478a920"
+    },
+    {
+      "path": "docs/assets/fonts/dm-serif-display-regular.ttf",
+      "bytes": 70348,
+      "sha256": "c03775f8cc3db88cfea259b231abe13f94e6a3d3cb01c09477a2e42a1f5919e1"
+    },
+    {
+      "path": "docs/assets/fonts/fonts.css",
+      "bytes": 929,
+      "sha256": "71780fea0b7779e4ebb8b1218e6419c31870f5cd59eb95285eb88fa33e33a307"
+    },
+    {
+      "path": "docs/assets/fonts/karla-bold.ttf",
+      "bytes": 41572,
+      "sha256": "0513554cac9d5c8c9fa1f789dae0e3db1a3c7278fc532143ccf932502f2ddb46"
+    },
+    {
+      "path": "docs/assets/fonts/karla-medium.ttf",
+      "bytes": 41556,
+      "sha256": "315cfca1a67430ba66e88100432f2221defec13718a3ffaee021d3b36837659b"
+    },
+    {
+      "path": "docs/assets/fonts/karla-regular.ttf",
+      "bytes": 41512,
+      "sha256": "312f8ebaede0db3bb202ee6b116cbe0d467e109b69b93b1e8ff869fc76a210d1"
+    },
+    {
+      "path": "docs/components/educational-age/age.css",
+      "bytes": 1367,
+      "sha256": "5418a06a20fc87b604dec60053e9a5736f5f21284bacd1da7741f953b3ab4ed1"
+    },
+    {
+      "path": "docs/components/educational-age/component.js",
+      "bytes": 13025,
+      "sha256": "20f33f5ed6def190f3e0b4d37d9a07b285735d63ab82877309499800f2dff102"
+    },
+    {
+      "path": "docs/components/educational-age/content.js",
+      "bytes": 16674,
+      "sha256": "9fa1ad53c83206383676a27096d46912cb224b48da780dda28f404d1e20f0977"
+    },
+    {
+      "path": "docs/components/educational-age/results.js",
+      "bytes": 5302,
+      "sha256": "d619d050c29474d90fa6cadb260ce129a6431d2e945e5b40541f9a6afd7ffd0b"
+    },
+    {
+      "path": "docs/components/educational-age/scoring.js",
+      "bytes": 4582,
+      "sha256": "bd7c82029db9d837912e6faa259cd6ec1f0aab96facd36b36acb36e507f246c7"
+    },
+    {
+      "path": "docs/components/support-preferences.js",
+      "bytes": 7318,
+      "sha256": "0e5a4e4d7a0c3f167daad215ef5085c0fa72b7ef0fecbb799f9bff93a365e741"
+    },
+    {
+      "path": "docs/components/wellness-snapshot/component.js",
+      "bytes": 12179,
+      "sha256": "9ff434492a0d6f743419c727f89a99f868e30661f9e444292875ec142296f2d2"
+    },
+    {
+      "path": "docs/components/wellness-snapshot/content.js",
+      "bytes": 3896,
+      "sha256": "1863989dcafe33d9c27e338770932e9e5f394d3615adaa3976087672da01b6bb"
+    },
+    {
+      "path": "docs/components/wellness-snapshot/delivery.js",
+      "bytes": 2596,
+      "sha256": "98f7c2b5a31e5d80888e00182f7e54837ab9907045eefdefdc12de93cbdb9186"
+    },
+    {
+      "path": "docs/components/wellness-snapshot/model.js",
+      "bytes": 4218,
+      "sha256": "b686658f1ceb7a4088de0f91f58e2a33daa51a26546e838bbdd0db130c84ad02"
+    },
+    {
+      "path": "docs/components/wellness-snapshot/snapshot.css",
+      "bytes": 5009,
+      "sha256": "fa1e4b1811a5ea2e2a423d138b981a7c60f6e88c0cfee00217ce68fff38faf54"
+    },
+    {
+      "path": "docs/health-age-assessment.html",
+      "bytes": 474,
+      "sha256": "e863855fed17d87bdf8abc2fcf3963b9bc3208850438d43964a24bf315758344"
+    },
+    {
+      "path": "docs/health-age-assessment/index.html",
+      "bytes": 2190,
+      "sha256": "46feba0a5df57ce905cdc94f95a271062d39ec6ae90853362492fb37fa9b5dbe"
+    },
+    {
+      "path": "docs/health-age-assessment/page.js",
+      "bytes": 1877,
+      "sha256": "082fb0d88eb0a765c0cee6d6d69f5bd7b2ac85237ae816bee2e0144960c8b929"
+    },
+    {
+      "path": "docs/health-age.html",
+      "bytes": 474,
+      "sha256": "e863855fed17d87bdf8abc2fcf3963b9bc3208850438d43964a24bf315758344"
+    },
+    {
+      "path": "docs/index.html",
+      "bytes": 14448,
+      "sha256": "76d02c85bf53486b9c7565e5374cd9157807d00ec756c9b845df818d315f6640"
+    },
+    {
+      "path": "docs/wellness-snapshot/index.html",
+      "bytes": 1948,
+      "sha256": "0a6c259db2633adb8ae7e453facbc9d6d23616bb49158524e2cedae61ccc200c"
+    },
+    {
+      "path": "docs/wellness-snapshot/page.js",
+      "bytes": 560,
+      "sha256": "6d526bd10e3a78f3495d934d4cd2f20c8e25360c79e2c44746c34b82baaf44f8"
+    },
+    {
+      "path": "health-age-assessment.html",
+      "bytes": 474,
+      "sha256": "e863855fed17d87bdf8abc2fcf3963b9bc3208850438d43964a24bf315758344"
+    },
+    {
+      "path": "health-age-assessment/index.html",
+      "bytes": 2190,
+      "sha256": "46feba0a5df57ce905cdc94f95a271062d39ec6ae90853362492fb37fa9b5dbe"
+    },
+    {
+      "path": "health-age-assessment/page.js",
+      "bytes": 1877,
+      "sha256": "082fb0d88eb0a765c0cee6d6d69f5bd7b2ac85237ae816bee2e0144960c8b929"
+    },
+    {
+      "path": "health-age.html",
+      "bytes": 474,
+      "sha256": "e863855fed17d87bdf8abc2fcf3963b9bc3208850438d43964a24bf315758344"
+    },
+    {
+      "path": "index.html",
+      "bytes": 14448,
+      "sha256": "76d02c85bf53486b9c7565e5374cd9157807d00ec756c9b845df818d315f6640"
+    },
+    {
+      "path": "package.json",
+      "bytes": 446,
+      "sha256": "248afd66f6b48ae2a47468336b89ced1bc727750f7a58ebca03febc75aa89091"
+    },
+    {
+      "path": "scripts/build-home.mjs",
+      "bytes": 2787,
+      "sha256": "9962e7e0b18fa8fc1e40c1c4e70bf8e5ba4e81ead9acc724354d711369904f14"
+    },
+    {
+      "path": "scripts/build-illustrative-home.mjs",
+      "bytes": 2889,
+      "sha256": "170b387172cca5edd0edc2c3808d025970da3f8b8ca55a6d1cbb615972e38a5f"
+    },
+    {
+      "path": "scripts/build-site.mjs",
+      "bytes": 2325,
+      "sha256": "955046976325225f6b8bfdc8bf014be84b79285da5be6ff8aa0d834e04ced9b3"
+    },
+    {
+      "path": "scripts/capture-scoring-reference.py",
+      "bytes": 2078,
+      "sha256": "e2161039e5e0b84372315fbc9590c2106f3ebfb08b1598262ebe259a00d280f5"
+    },
+    {
+      "path": "scripts/checksum.mjs",
+      "bytes": 2934,
+      "sha256": "1ce36dffa1de63b5cf00ad2be24f24f5cca7ee33b7b8ab7b3fbbd64911c36671"
+    },
+    {
+      "path": "scripts/inspect-original-questions.py",
+      "bytes": 3350,
+      "sha256": "df03d3f5e809b42b7e6680e008e48e7b086866d022503b33e2171f21ab2ba9d8"
+    },
+    {
+      "path": "scripts/serve.mjs",
+      "bytes": 1866,
+      "sha256": "e26155e53136d5bd81c2025e6891c7e545c4a7eaa8b0faff31aa77236ab8e131"
+    },
+    {
+      "path": "scripts/verify-preservation.mjs",
+      "bytes": 1062,
+      "sha256": "311b02ff795ae7c410132897ef86399ff3bdfec580a75f51837113ca76a0bc3c"
+    },
+    {
+      "path": "support.js",
+      "bytes": 45305,
+      "sha256": "654b7f6201e7e08c0aa3d9c670125d53b47f1438141ecd0d7df05589a877b324"
+    },
+    {
+      "path": "tests/component.test.mjs",
+      "bytes": 5882,
+      "sha256": "60ff827de5d4d8a9209c43eed284ceeb797e57d97a9d403b28b63ffea9a503ef"
+    },
+    {
+      "path": "tests/dom-harness.mjs",
+      "bytes": 2957,
+      "sha256": "7498371e006360e50466a2e68d61a06f2c92378a3f7708cf70efd6a159e38f14"
+    },
+    {
+      "path": "tests/educational-age.test.mjs",
+      "bytes": 7461,
+      "sha256": "6079d78f6c53af6cc8706cc3625f48ec301938aa0258ce315ee3c8996d1cfa47"
+    },
+    {
+      "path": "tests/educational-component.test.mjs",
+      "bytes": 7916,
+      "sha256": "e1d547c504ad8a7372ed11e9c7506176437c5c43f9f18e177b2a62b81f600826"
+    },
+    {
+      "path": "tests/preferences.test.mjs",
+      "bytes": 9590,
+      "sha256": "4c9967d84101dbe7d6961f4f6f3e4490a9e2ab5e2f832ef4fcc09d61ca50d706"
+    },
+    {
+      "path": "tests/public-build.test.mjs",
+      "bytes": 1991,
+      "sha256": "c626d0317b183e5a0fbd3ba56781574a09d0add38463720ce7b3e40204f4d434"
+    },
+    {
+      "path": "tests/server.test.mjs",
+      "bytes": 2522,
+      "sha256": "95995fd0bb1ae2ed906c69a4a023b58a2d72eb9a7e26f68e36f614ffee955ecc"
+    },
+    {
+      "path": "tests/snapshot.test.mjs",
+      "bytes": 7459,
+      "sha256": "8840bd6bba9a9eda3a665bd4569c4b42b56ef74a5da966d1f6865291417d1062"
+    },
+    {
+      "path": "vendor/react-dom.js",
+      "bytes": 131835,
+      "sha256": "35f4f974f4b2bcd44da73963347f8952e341f83909e4498227d4e26b98f66f0d"
+    },
+    {
+      "path": "vendor/react.js",
+      "bytes": 10751,
+      "sha256": "d949f1c3687aedadcedac85261865f29b17cd273997e7f6b2bfc53b2f9d4c4dd"
+    },
+    {
+      "path": "wellness-snapshot-home.html",
+      "bytes": 13821,
+      "sha256": "6383f9574c6476aba7a59d34dfe57c185dc1812fba9d71b124506e3985858586"
+    },
+    {
+      "path": "wellness-snapshot/index.html",
+      "bytes": 1948,
+      "sha256": "0a6c259db2633adb8ae7e453facbc9d6d23616bb49158524e2cedae61ccc200c"
+    },
+    {
+      "path": "wellness-snapshot/page.js",
+      "bytes": 560,
+      "sha256": "6d526bd10e3a78f3495d934d4cd2f20c8e25360c79e2c44746c34b82baaf44f8"
+    }
+  ]
+}

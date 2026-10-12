@@ -1,0 +1,539 @@
+{
+  "source_url": "https://yourpurepath.com/health-age-assessment.html",
+  "retrieved_at_utc": "2026-10-12T19:43:54.361414+00:00",
+  "source_html_sha256": "960b0d44f793c5f52674eab42771a32c9e57ad963f05e1dfc5cec650dd3af148",
+  "purpose": "Question inventory and mapping only; original defaults are source metadata, never real responses or proposed defaults.",
+  "question_count": 22,
+  "sections": [
+    {
+      "title": "Foundational Details",
+      "questions": [
+        {
+          "id": "age",
+          "label": "Age",
+          "kind": "number",
+          "source_min": "18",
+          "source_max": "100",
+          "source_default": "42",
+          "source_required": true
+        },
+        {
+          "id": "sex",
+          "label": "Sex",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "female",
+              "label": "Female",
+              "source_selected": true
+            },
+            {
+              "value": "male",
+              "label": "Male",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "height",
+          "label": "Height (inches)",
+          "kind": "number",
+          "source_min": "48",
+          "source_max": "84",
+          "source_default": "66",
+          "source_required": true
+        },
+        {
+          "id": "weight",
+          "label": "Weight (lbs)",
+          "kind": "number",
+          "source_min": "80",
+          "source_max": "500",
+          "source_default": "165",
+          "source_required": true
+        }
+      ]
+    },
+    {
+      "title": "Movement and Recovery",
+      "questions": [
+        {
+          "id": "exercise",
+          "label": "Exercise habits",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "rarely",
+              "label": "Rarely or never",
+              "source_selected": false
+            },
+            {
+              "value": "1-2",
+              "label": "1 to 2 days weekly",
+              "source_selected": true
+            },
+            {
+              "value": "3-4",
+              "label": "3 to 4 days weekly",
+              "source_selected": false
+            },
+            {
+              "value": "5+",
+              "label": "5 or more days weekly",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "strength",
+          "label": "Strength training",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "none",
+              "label": "None",
+              "source_selected": false
+            },
+            {
+              "value": "1",
+              "label": "About 1 day weekly",
+              "source_selected": true
+            },
+            {
+              "value": "2-3",
+              "label": "2 to 3 days weekly",
+              "source_selected": false
+            },
+            {
+              "value": "4+",
+              "label": "4 or more days weekly",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "sedentary",
+          "label": "Sedentary time each day",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "10+",
+              "label": "10+ hours",
+              "source_selected": false
+            },
+            {
+              "value": "7-9",
+              "label": "7 to 9 hours",
+              "source_selected": true
+            },
+            {
+              "value": "4-6",
+              "label": "4 to 6 hours",
+              "source_selected": false
+            },
+            {
+              "value": "0-3",
+              "label": "0 to 3 hours",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "sleepDuration",
+          "label": "Sleep duration",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "lt5",
+              "label": "Less than 5 hours",
+              "source_selected": false
+            },
+            {
+              "value": "5-6",
+              "label": "5 to 6 hours",
+              "source_selected": false
+            },
+            {
+              "value": "7-8",
+              "label": "7 to 8 hours",
+              "source_selected": true
+            },
+            {
+              "value": "9+",
+              "label": "9 or more hours",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "sleepQuality",
+          "label": "Sleep quality",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "poor",
+              "label": "Poor",
+              "source_selected": false
+            },
+            {
+              "value": "fair",
+              "label": "Fair",
+              "source_selected": true
+            },
+            {
+              "value": "good",
+              "label": "Good",
+              "source_selected": false
+            },
+            {
+              "value": "excellent",
+              "label": "Excellent",
+              "source_selected": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Nutrition and Hydration",
+      "questions": [
+        {
+          "id": "dietQuality",
+          "label": "Diet quality",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "poor",
+              "label": "Mostly ultra-processed",
+              "source_selected": false
+            },
+            {
+              "value": "fair",
+              "label": "Mixed quality",
+              "source_selected": true
+            },
+            {
+              "value": "good",
+              "label": "Mostly balanced",
+              "source_selected": false
+            },
+            {
+              "value": "excellent",
+              "label": "Very nutrient-dense",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "sugaryDrinks",
+          "label": "Sugary drinks",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "2+",
+              "label": "2 or more daily",
+              "source_selected": false
+            },
+            {
+              "value": "1",
+              "label": "About 1 daily",
+              "source_selected": true
+            },
+            {
+              "value": "few",
+              "label": "A few weekly",
+              "source_selected": false
+            },
+            {
+              "value": "none",
+              "label": "Rarely or never",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "vegetables",
+          "label": "Vegetable intake",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "0-1",
+              "label": "0 to 1 servings daily",
+              "source_selected": false
+            },
+            {
+              "value": "2-3",
+              "label": "2 to 3 servings daily",
+              "source_selected": true
+            },
+            {
+              "value": "4-5",
+              "label": "4 to 5 servings daily",
+              "source_selected": false
+            },
+            {
+              "value": "6+",
+              "label": "6 or more servings daily",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "water",
+          "label": "Water intake",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "lt4",
+              "label": "Under 4 cups",
+              "source_selected": false
+            },
+            {
+              "value": "4-6",
+              "label": "4 to 6 cups",
+              "source_selected": true
+            },
+            {
+              "value": "7-9",
+              "label": "7 to 9 cups",
+              "source_selected": false
+            },
+            {
+              "value": "10+",
+              "label": "10+ cups",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "alcohol",
+          "label": "Alcohol use",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "heavy",
+              "label": "Heavy / frequent",
+              "source_selected": false
+            },
+            {
+              "value": "moderate",
+              "label": "Moderate",
+              "source_selected": true
+            },
+            {
+              "value": "light",
+              "label": "Light",
+              "source_selected": false
+            },
+            {
+              "value": "none",
+              "label": "None",
+              "source_selected": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Lifestyle Resilience and Health History",
+      "questions": [
+        {
+          "id": "nicotine",
+          "label": "Nicotine use",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "current",
+              "label": "Current user",
+              "source_selected": false
+            },
+            {
+              "value": "former",
+              "label": "Former user",
+              "source_selected": false
+            },
+            {
+              "value": "never",
+              "label": "Never",
+              "source_selected": true
+            }
+          ]
+        },
+        {
+          "id": "stress",
+          "label": "Stress level",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "high",
+              "label": "High",
+              "source_selected": false
+            },
+            {
+              "value": "moderate",
+              "label": "Moderate",
+              "source_selected": true
+            },
+            {
+              "value": "manageable",
+              "label": "Manageable",
+              "source_selected": false
+            },
+            {
+              "value": "low",
+              "label": "Low",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "socialSupport",
+          "label": "Social support",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "low",
+              "label": "Limited",
+              "source_selected": false
+            },
+            {
+              "value": "some",
+              "label": "Some support",
+              "source_selected": true
+            },
+            {
+              "value": "good",
+              "label": "Strong support",
+              "source_selected": false
+            },
+            {
+              "value": "excellent",
+              "label": "Very strong support",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "bloodPressure",
+          "label": "Blood pressure history",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "diagnosed",
+              "label": "Diagnosed / elevated often",
+              "source_selected": false
+            },
+            {
+              "value": "borderline",
+              "label": "Borderline or unsure",
+              "source_selected": false
+            },
+            {
+              "value": "normal",
+              "label": "Usually normal",
+              "source_selected": true
+            }
+          ]
+        },
+        {
+          "id": "bloodSugar",
+          "label": "Blood sugar history",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "diagnosed",
+              "label": "Diabetes / prediabetes",
+              "source_selected": false
+            },
+            {
+              "value": "borderline",
+              "label": "Borderline or unsure",
+              "source_selected": false
+            },
+            {
+              "value": "normal",
+              "label": "Usually normal",
+              "source_selected": true
+            }
+          ]
+        },
+        {
+          "id": "cholesterol",
+          "label": "Cholesterol history",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "high",
+              "label": "High / treated",
+              "source_selected": false
+            },
+            {
+              "value": "borderline",
+              "label": "Borderline or unsure",
+              "source_selected": false
+            },
+            {
+              "value": "normal",
+              "label": "Usually normal",
+              "source_selected": true
+            }
+          ]
+        },
+        {
+          "id": "energy",
+          "label": "Daily energy",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "low",
+              "label": "Low most days",
+              "source_selected": false
+            },
+            {
+              "value": "mixed",
+              "label": "Up and down",
+              "source_selected": true
+            },
+            {
+              "value": "good",
+              "label": "Good",
+              "source_selected": false
+            },
+            {
+              "value": "high",
+              "label": "Consistently strong",
+              "source_selected": false
+            }
+          ]
+        },
+        {
+          "id": "functionalFitness",
+          "label": "Functional fitness",
+          "kind": "radio",
+          "choices": [
+            {
+              "value": "limited",
+              "label": "Often limited",
+              "source_selected": false
+            },
+            {
+              "value": "average",
+              "label": "Adequate for daily life",
+              "source_selected": true
+            },
+            {
+              "value": "good",
+              "label": "Good mobility and stamina",
+              "source_selected": false
+            },
+            {
+              "value": "excellent",
+              "label": "Excellent strength and mobility",
+              "source_selected": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

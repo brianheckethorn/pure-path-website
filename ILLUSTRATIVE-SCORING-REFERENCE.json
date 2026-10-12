@@ -1,0 +1,136 @@
+{
+  "source_url": "https://yourpurepath.com/script.js",
+  "retrieved_at_utc": "2026-10-12T20:04:34.335423+00:00",
+  "source_js_sha256": "acd7d37317f5d5a869a2eb1d19b5a65bae4e6842887993c00c3e7dd2ddfa8f4c",
+  "weights": {
+    "bmi": 5,
+    "nicotine": 10,
+    "exercise": 8,
+    "strength": 5,
+    "sedentary": 5,
+    "sleepDuration": 5,
+    "sleepQuality": 4,
+    "dietQuality": 8,
+    "sugaryDrinks": 3,
+    "vegetables": 4,
+    "water": 3,
+    "alcohol": 3,
+    "stress": 5,
+    "socialSupport": 4,
+    "bloodPressure": 6,
+    "bloodSugar": 6,
+    "cholesterol": 4,
+    "energy": 4,
+    "functionalFitness": 6
+  },
+  "scoringMaps": {
+    "nicotine": {
+      "current": 0.05,
+      "former": 0.62,
+      "never": 1.0
+    },
+    "exercise": {
+      "rarely": 0.18,
+      "1-2": 0.5,
+      "3-4": 0.82,
+      "5+": 1.0
+    },
+    "strength": {
+      "none": 0.15,
+      "1": 0.45,
+      "2-3": 0.82,
+      "4+": 1.0
+    },
+    "sedentary": {
+      "10+": 0.15,
+      "7-9": 0.45,
+      "4-6": 0.78,
+      "0-3": 1.0
+    },
+    "sleepDuration": {
+      "lt5": 0.1,
+      "5-6": 0.48,
+      "7-8": 1.0,
+      "9+": 0.72
+    },
+    "sleepQuality": {
+      "poor": 0.15,
+      "fair": 0.48,
+      "good": 0.8,
+      "excellent": 1.0
+    },
+    "dietQuality": {
+      "poor": 0.12,
+      "fair": 0.5,
+      "good": 0.8,
+      "excellent": 1.0
+    },
+    "sugaryDrinks": {
+      "2+": 0.12,
+      "1": 0.45,
+      "few": 0.78,
+      "none": 1.0
+    },
+    "vegetables": {
+      "0-1": 0.18,
+      "2-3": 0.55,
+      "4-5": 0.86,
+      "6+": 1.0
+    },
+    "water": {
+      "lt4": 0.2,
+      "4-6": 0.58,
+      "7-9": 0.88,
+      "10+": 1.0
+    },
+    "alcohol": {
+      "heavy": 0.18,
+      "moderate": 0.5,
+      "light": 0.82,
+      "none": 1.0
+    },
+    "stress": {
+      "high": 0.18,
+      "moderate": 0.52,
+      "manageable": 0.82,
+      "low": 1.0
+    },
+    "socialSupport": {
+      "low": 0.2,
+      "some": 0.52,
+      "good": 0.82,
+      "excellent": 1.0
+    },
+    "bloodPressure": {
+      "diagnosed": 0.18,
+      "borderline": 0.56,
+      "normal": 1.0
+    },
+    "bloodSugar": {
+      "diagnosed": 0.12,
+      "borderline": 0.54,
+      "normal": 1.0
+    },
+    "cholesterol": {
+      "high": 0.28,
+      "borderline": 0.6,
+      "normal": 1.0
+    },
+    "energy": {
+      "low": 0.18,
+      "mixed": 0.54,
+      "good": 0.82,
+      "high": 1.0
+    },
+    "functionalFitness": {
+      "limited": 0.18,
+      "average": 0.55,
+      "good": 0.82,
+      "excellent": 1.0
+    }
+  },
+  "original_conversion": "score = round(weightedTotal / totalWeight * 100); adjustment = clamp(((70 - score) / 30) * 10, -12, 15); age = round(clamp(actualAge + adjustment, 18, 95));",
+  "local_conversion_change": "Same score, adjustment coefficients and rounding; remove final 18/95 output-age caps.",
+  "original_bmi_factors": "18.5..24.9 => 1; 25..29.9 or 17..<18.5 => 0.68; 30..34.9 or 16..<17 => 0.34; otherwise 0.12.",
+  "local_bmi_change": "Continuous half-open bands at 25, 30 and 35, with unchanged factor values."
+}
