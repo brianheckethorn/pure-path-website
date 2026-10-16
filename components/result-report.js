@@ -7,6 +7,7 @@ export const reportStyles = `
 @media(max-width:480px){.report-cover{padding:24px 20px}.report-cover h2{font-size:30px}.report-body{padding:24px 0}.pure-report .age-comparison>div{padding:16px 12px}.pure-report .age-number{font-size:45px}.pure-report .age-pending{font-size:22px}.report-answer-row{grid-template-columns:1fr;gap:8px}.report-portrait{align-items:flex-start;padding:18px;gap:14px}.report-portrait img{width:68px;height:68px}}
 @page{size:letter;margin:14mm}
 @media print{html,body{margin:0;background:white}.pure-report{font-size:10pt;line-height:1.45;print-color-adjust:exact;-webkit-print-color-adjust:exact}.report-cover{border-radius:0;padding:22pt 26pt}.report-cover h2{font-size:29pt}.report-body{padding:20pt 0}.pure-report .age-comparison>div{padding:16pt}.pure-report .age-number{font-size:42pt}.pure-report .age-pending{font-size:22pt}.report-body h3{font-size:20pt;break-after:avoid-page}.report-answer-group h3{font-size:10pt}.report-answer-row{font-size:10pt;padding:10pt 0;break-inside:avoid-page}.report-notice,.heuristic-disclosure,.report-portrait,.age-comparison,.health-next-steps li{break-inside:avoid-page}.report-reading p{orphans:3;widows:3}.report-footer{border-radius:0}.report-summary>summary{display:none}.report-answer-group{break-inside:auto}}
+@media print{.report-body{padding-bottom:0}.report-summary dl{margin-bottom:0}.report-footer{display:none}}
 `;
 
 export function appendResultReport(parent, { document, model, language = 'en', collapsibleAnswers = true }) {
