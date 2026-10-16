@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { componentHarness } from './dom-harness.mjs';
-import { answerAssessmentWithoutDisclosure, finishAssessmentWithExplicitResponses } from './assessment-harness.mjs';
+import { answerAssessmentWithoutDisclosure, finishAssessmentWithExplicitResponses, finishAssessmentWithAnswers } from './assessment-harness.mjs';
+import { candidateFixtures } from './candidate-fixtures.mjs';
 import { questions, text, disclosure } from '../components/educational-age/content.js';
 import { mountEducationalAge } from '../components/educational-age/component.js';
 import { createMockDeliveryAdapter } from '../components/wellness-snapshot/delivery.js';
+import { calculateAssessmentPreview } from '../components/educational-age/results.js';
 
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const question = id => questions.find(q => q.id === id);
@@ -54,18 +56,20 @@ test('blank name and age 17 cannot advance; declined and unknown answers can', (
   ui.click(text.unknown.en); ui.click(text.next.en); assert.equal(title(ui), question('sex').prompt.en);
   ui.click(text.next.en); blocked(ui, 'sex'); ui.select(text.unknown.en); ui.click(text.next.en);
   finishAssessmentWithExplicitResponses(ui, 'en', questionIndex('height'));
-  assert.ok(ui.root.textContent.includes(text.researchPending.en)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
+  assert.ok(ui.root.textContent.includes(text.withheld.en)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
 });
 
-test('actual age is distinct from pending estimate; language, edit, back and reset preserve intended state', () => {
+test('actual age is distinct from incomplete estimate; language, edit, back and reset preserve intended state', () => {
   const ui = setup(); finishKnown(ui);
-  assert.ok(ui.root.textContent.includes(disclosure.en)); assert.ok(ui.root.textContent.includes(text.researchPending.en));
+  assert.ok(ui.root.textContent.includes(disclosure.en)); assert.ok(ui.root.textContent.includes(text.withheld.en));
   const comparison = ui.find(n => n.className === 'age-comparison')[0];
   assert.deepEqual(comparison.children.map(card => card.children[0].textContent), [text.actual.en, text.estimate.en]);
-  assert.deepEqual(comparison.children.map(card => card.children[1].children[0].textContent), ['42', text.pendingLabel.en]);
+  assert.equal(comparison.children[0].children[1].children[0].textContent, '42');
+  assert.equal(comparison.children[1].children[1].children[0].className, 'age-pending');
+  assert.doesNotMatch(comparison.children[1].children[1].children[0].textContent, /\d/);
   assert.equal(comparison.children[0].children[1].children[1].textContent, text.years.en);
   assert.equal(ui.find(n => n.className === 'age-number').length, 1);
-  assert.ok(ui.find(n => n.className === 'comparison-details')[0].textContent.includes(text.researchWhy.en));
+  assert.ok(ui.find(n => n.className === 'comparison-details')[0].textContent.includes(text.withheldWhy.en));
   const disclosureNode = ui.find(n => n.className === 'heuristic-disclosure')[0];
   const siblings = comparison.parentNode.children; const disclosureIndex = siblings.indexOf(disclosureNode);
   assert.equal(siblings.indexOf(comparison) + 1, disclosureIndex);
@@ -74,13 +78,15 @@ test('actual age is distinct from pending estimate; language, edit, back and res
   assert.deepEqual(ui.document.lastScroll.options, { block: 'start', behavior: 'auto' });
   assert.equal(ui.find(n => n.className === 'health-next-steps')[0].children.length, 3);
   const preview = ui.find(n => n.tagName === 'PRE' && n.textContent.startsWith(text.resultTitle.en))[0].textContent;
-  assert.ok(preview.includes(text.researchPending.en)); assert.equal(preview.split('\n').some(line => line.startsWith(`${text.estimate.en}:`)), false);
+  assert.ok(preview.includes(text.withheld.en)); assert.equal(preview.split('\n').some(line => line.startsWith(`${text.estimate.en}:`)), false);
   ui.click('Español');
   const cards = ui.find(n => n.className === 'age-comparison')[0].children;
   assert.deepEqual(cards.map(card => card.children[0].textContent), [text.actual.es, text.estimate.es]);
-  assert.deepEqual(cards.map(card => card.children[1].children[0].textContent), ['42', text.pendingLabel.es]);
+  assert.equal(cards[0].children[1].children[0].textContent, '42');
+  assert.equal(cards[1].children[1].children[0].className, 'age-pending');
+  assert.doesNotMatch(cards[1].children[1].children[0].textContent, /\d/);
   assert.equal(cards[0].children[1].children[1].textContent, text.years.es);
-  assert.ok(ui.root.textContent.includes(disclosure.es)); assert.ok(ui.root.textContent.includes(text.researchPending.es));
+  assert.ok(ui.root.textContent.includes(disclosure.es)); assert.ok(ui.root.textContent.includes(text.withheld.es));
   assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]);
   ui.click(text.edit.es); assert.equal(title(ui), question('fullName').prompt.es); assert.equal(ui.find(n => n.tagName === 'DL').length, 0);
   ui.click(text.next.es); assert.equal(field(ui, 'age').value, '42');
@@ -88,7 +94,7 @@ test('actual age is distinct from pending estimate; language, edit, back and res
   ui.click(text.back.es); assert.equal(field(ui, 'age').value, '42');
   ui.click(text.reset.es); assert.equal(title(ui), question('fullName').prompt.es); assert.equal(field(ui, 'fullName').value, ''); assert.equal(ui.languages.at(-1), 'es');
   finishAssessmentWithExplicitResponses(ui, 'es');
-  assert.ok(ui.root.textContent.includes(text.researchPending.es)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
+  assert.ok(ui.root.textContent.includes(text.withheld.es)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
   assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]);
 });
 
@@ -116,7 +122,7 @@ test('not-measured readings require explicit history and remove stale numeric en
   enter(ui, 'readingStatus', 'measured'); assert.equal(field(ui, 'value').value, ''); assert.equal(field(ui, 'unit').value, '');
   ui.click(text.next.en); blocked(ui, 'bloodGlucoseReading');
   ui.click(text.unknown.en); ui.click(text.next.en); finishAssessmentWithExplicitResponses(ui, 'en', questionIndex('cholesterol'));
-  assert.ok(ui.root.textContent.includes(text.researchPending.en)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
+  assert.ok(ui.root.textContent.includes(text.withheld.en)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
 });
 
 test('delivery consents are independent; newsletter has only email, consent and explicit topics', async () => {
@@ -142,7 +148,7 @@ test('delivery consents are independent; newsletter has only email, consent and 
     const report = calls.find(call => call[0] === 'result');
     if (report) {
       assert.deepEqual(Object.keys(report[1]).sort(), ['consent', 'email', 'snapshot', 'verified']);
-      assert.ok(report[1].snapshot.includes(text.researchPending.en)); assert.doesNotMatch(report[1].snapshot, /faith|Christ|God|spiritual/i);
+      assert.ok(report[1].snapshot.includes(text.withheld.en)); assert.doesNotMatch(report[1].snapshot, /faith|Christ|God|spiritual/i);
     }
     assert.ok(ui.root.textContent.includes(text.mockDone.en));
   }
@@ -179,5 +185,28 @@ for (const change of ['address', 'consent', 'topics', 'edit', 'reset']) {
       assert.equal(ui.find(n => n.type === 'email')[0].value, ''); assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]);
     }
     ui.controller.dispose(); assert.equal(ui.root.textContent, '');
+  });
+}
+
+for (const fixture of candidateFixtures) {
+  test(`${fixture.id}: known responses render the gated candidate age and preserve localized reports without delivery`, () => {
+    const calls = []; const delivery = { ...createMockDeliveryAdapter(),
+      async requestAddressVerification(payload) { calls.push(payload); return {}; },
+      async requestResultEmail(payload) { calls.push(payload); return {}; },
+      async requestMailingList(payload) { calls.push(payload); return {}; }
+    };
+    const expected = calculateAssessmentPreview(fixture.answers); assert.equal(expected.status, 'complete');
+    assert.ok(expected.coverage.percent >= 60); assert.ok(Object.values(expected.habitAreas).filter(Boolean).length >= 4);
+    const ui = setup(delivery); if (fixture.language === 'es') ui.click('Español');
+    finishAssessmentWithAnswers(ui, fixture.answers, fixture.language);
+    const cards = ui.find(n => n.className === 'age-comparison')[0].children;
+    assert.deepEqual(cards.map(card => card.children[0].textContent), [text.actual[fixture.language], text.estimate[fixture.language]]);
+    assert.deepEqual(cards.map(card => card.children[1].children[0].textContent), [String(expected.actualAge), String(expected.quizAge)]);
+    assert.equal(ui.find(n => n.className === 'age-number').length, 2);
+    assert.ok(ui.root.textContent.includes(disclosure[fixture.language]));
+    const report = ui.find(n => n.tagName === 'PRE' && n.textContent.startsWith(text.resultTitle[fixture.language]))[0].textContent;
+    assert.ok(report.includes(`${text.estimate[fixture.language]}: ${expected.quizAge} ${text.years[fixture.language]}`));
+    assert.doesNotMatch(report, /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
+    assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]); assert.deepEqual(calls, []);
   });
 }

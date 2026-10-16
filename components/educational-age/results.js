@@ -1,12 +1,12 @@
 import { questions, sections, disclosure, text } from './content.js';
 import { measurementDisplay } from './measurements.js';
 import { hasReadingContext, readingEntryIssues } from './reading-context.js';
+import { calculateCandidateAssessment } from './candidate-scoring.js';
 import { numericValue } from './scoring.js';
 import { reportPortrait } from '../report-portrait.js';
 
 export function calculateAssessmentPreview(answers) {
-  const age = numericValue(answers.age);
-  return { status: 'research-pending', actualAge: age !== null && Number.isInteger(age) && age >= 18 && age <= 100 ? age : null, errors: [] };
+  return calculateCandidateAssessment(answers);
 }
 
 export const readingSources = Object.freeze([
@@ -72,22 +72,38 @@ export function reportAnswer(question, answers, language) {
   return answerText(question, answers[question.id], language);
 }
 
+export function scoringContextText(result, language) {
+  if (!result.coverage) return [];
+  const es = language === 'es';
+  const { knownWeight, totalWeight, percent } = result.coverage;
+  const areaCount = result.habitAreaCount ?? Object.values(result.habitAreas || {}).filter(Boolean).length;
+  const copy = [es ? `Peso de puntuación evaluado: ${percent}% (${knownWeight} de ${totalWeight} puntos). Áreas de hábitos representadas: ${areaCount} de 5.` : `Scoring weight assessed: ${percent}% (${knownWeight} of ${totalWeight} points). Habit areas represented: ${areaCount} of 5.`];
+  copy.push(es ? 'Para mostrar un número, esta versión necesita al menos el 60% del peso de puntuación y 4 de 5 áreas: alimentación, actividad, horas de sueño, tabaco y alcohol. Alimentación cuenta con 3 de sus 4 componentes conocidos. Esta regla es una decisión del producto, no una norma clínica; no necesitas conocer los análisis.' : 'To show a number, this version needs at least 60% of scoring weight and 4 of 5 areas: diet, activity, sleep duration, tobacco, and alcohol. Diet counts when 3 of its 4 components are known. This gate is a product choice, not a clinical standard; lab results are not required.');
+  if (result.unassessed?.length) {
+    copy.push(es ? 'Áreas de puntuación sin evaluar:' : 'Unassessed scoring areas:');
+    for (const domain of result.unassessed) copy.push(`${domain.label[language]} — ${domain.reasonLabel?.[language] || (es ? 'Sin información utilizable para puntuar.' : 'No usable scoring information.')}`);
+  } else copy.push(es ? 'Todas las áreas tienen respuestas utilizables. Esto no demuestra buena salud.' : 'All scoring areas have usable answers. This does not establish good health.');
+  if (result.status === 'complete' && result.range) copy.push(es ? `Posible efecto de los datos sin evaluar: edad estimada de ${result.range.minAge} a ${result.range.maxAge} años. Este intervalo muestra posibilidades matemáticas para las respuestas sin evaluar; no es un intervalo de confianza clínica ni una predicción.` : `Possible effect of unassessed items: estimated age ${result.range.minAge}–${result.range.maxAge} years. This range shows mathematical possibilities for unassessed answers; it is not a clinical confidence interval or a prediction.`);
+  return copy;
+}
+
 export function resultPDFModel(result, answers, language) {
   const complete = result.status === 'complete';
-  const actualAge = complete ? result.actualAge : Number(answers.age);
+  const actualAge = numericValue(Object.hasOwn(result, 'actualAge') ? result.actualAge : answers.age);
   const actual = Number.isInteger(actualAge) && actualAge >= 18 && actualAge <= 100 ? { label: text.actual[language], value: actualAge, unit: text.years[language] } : undefined;
+  const scoring = scoringContextText(result, language);
   return {
     title: text.resultTitle[language], actual,
     portrait: reportPortrait,
-    portraitCopy: language === 'es' ? 'Elige un paso que tenga sentido para ti. Si quieres apoyo, puedes conversar con Mario sobre tus metas y preguntas.' : 'Choose one step that makes sense for you. If you would like support, you can talk with Mario about your goals and questions.',
+    portraitCopy: language === 'es' ? 'Opcional: puedes contactar a Mario por separado para conversar sobre asesoramiento personal en su consultorio. Tus respuestas no se comparten automáticamente. La inscripción para eventos es una elección aparte.' : 'Optional: contact Mario separately to discuss personal counseling at his office. Your answers are not shared automatically. Signing up for events is a separate choice.',
     estimate: complete ? { label: text.estimate[language], value: result.quizAge, unit: text.years[language] } : undefined,
     estimatePending: result.status === 'research-pending',
     disclosure: disclosure[language],
-    notice: complete ? text.scoringReview[language] : result.status === 'research-pending' ? `${text.researchPending[language]}. ${text.researchWhy[language]} ${text.scoringReview[language]}` : `${text.withheld[language]}. ${text.withheldWhy[language]} ${text.scoringReview[language]}`,
+    notice: `${scoring[0] ? `${scoring[0]} ` : ''}${complete ? text.scoringReview[language] : result.status === 'research-pending' ? `${text.researchPending[language]}. ${text.researchWhy[language]} ${text.scoringReview[language]}` : `${text.withheld[language]}. ${text.withheldWhy[language]} ${text.scoringReview[language]}`}`,
     recommendations: { title: text.suggestions[language], intro: text.care[language], items: discussionIdeas(answers).map(idea => idea[language]) },
     readingContext: readingContextText(answers, language),
     readingLinks: readingSources.filter(source => hasReadingContext({ [source.id]: answers[source.id] })).map(source => ({ url: source.url, label: source[language] })),
-    interpretation: { title: text.calculationDetails[language], paragraphs: complete ? [`${text.difference[language]}: ${result.difference > 0 ? '+' : ''}${result.difference} ${text.years[language]}`, text.comparisonNote[language], `${text.bmi[language]}: ${result.bmi.toFixed(1)}`, text.bmiNote[language]] : [result.status === 'research-pending' ? text.researchWhy[language] : text.withheldWhy[language]] },
+    interpretation: { title: text.calculationDetails[language], paragraphs: [...scoring, ...(complete ? [`${text.difference[language]}: ${result.difference > 0 ? '+' : ''}${result.difference} ${text.years[language]}`, text.comparisonNote[language], ...(Number.isFinite(result.bmi) ? [`${text.bmi[language]}: ${result.bmi.toFixed(1)}`, text.bmiNote[language]] : [])] : [result.status === 'research-pending' ? text.researchWhy[language] : text.withheldWhy[language]])] },
     answerGroups: sections.map((section, index) => ({ title: section[language], answers: questions.filter(question => question.section === index && !question.privatePreference).map(question => ({ question: question.prompt[language], answer: reportAnswer(question, answers, language) })) })).filter(group => group.answers.length)
   };
 }
@@ -100,9 +116,9 @@ export function resultEmailText(result, answers, language) {
   const details = result.status === 'complete' ? [
     text.calculationDetails[language],
     `${text.difference[language]}: ${result.difference > 0 ? '+' : ''}${result.difference} ${text.years[language]}`,
-    text.comparisonNote[language], `${text.bmi[language]}: ${result.bmi.toFixed(1)}`, text.bmiNote[language]
+    text.comparisonNote[language], ...(Number.isFinite(result.bmi) ? [`${text.bmi[language]}: ${result.bmi.toFixed(1)}`, text.bmiNote[language]] : [])
   ] : [];
-  return [text.resultTitle[language], ...ageLines, disclosure[language], text.scoringReview[language], ...readingContextText(answers, language), text.suggestions[language], text.care[language],
+  return [text.resultTitle[language], ...ageLines, disclosure[language], text.scoringReview[language], ...scoringContextText(result, language), ...readingContextText(answers, language), text.suggestions[language], text.care[language],
     ...discussionIdeas(answers).map((idea, index) => `${index + 1}. ${idea[language]}`), ...details,
     text.review[language], ...questions.filter(question => !question.privatePreference).map(question => `${question.prompt[language]}\n${reportAnswer(question, answers, language)}`)
   ].join('\n\n');

@@ -1,4 +1,4 @@
-import { text } from '../components/educational-age/content.js';
+import { text, disclosure } from '../components/educational-age/content.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -22,9 +22,10 @@ for(const kind of ['age','snapshot']) {
     ui.click('Download my results (.txt)');ui.select('Growing closer to Christ');ui.click('Download my results (.txt)');
     assert.equal(downloads.length,2);assert.equal(downloads[0].copy,downloads[1].copy);assert.equal(downloads[0].name,'your-pure-path-results.txt');
     assert.doesNotMatch(downloads[0].copy,/Christ|God|spiritual|faith/i);
-    assert.match(downloads[0].copy,kind==='age'?/custom lifestyle quiz/:/Your Wellness Snapshot/);
+    if(kind==='age') assert.ok(downloads[0].copy.includes(disclosure.en));
+    else assert.match(downloads[0].copy,/Your Wellness Snapshot/);
     if(kind==='age') {
-      assert.ok(downloads[0].copy.includes(text.researchPending.en));
+      assert.ok(downloads[0].copy.includes(text.withheld.en));
       assert.equal(downloads[0].copy.split('\n').some(line=>line.startsWith(`${text.estimate.en}:`)),false);
     }
     const link=ui.nodes().find(n=>n.tagName==='A'&&n.href===connectionFormURL);

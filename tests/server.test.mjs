@@ -12,7 +12,7 @@ test('local server serves homepage, direct route, modules, fonts and trailing-sl
     for (const [route, contentType, sample] of [
       ['/', 'text/html', 'Wellness Snapshot'],
       ['/wellness-snapshot/', 'text/html', 'No email needed'],
-      ['/health-age-assessment/', 'text/html', 'revised health-age scoring model is under review'],
+      ['/health-age-assessment/', 'text/html', 'scoring model uses custom educational choices'],
       ['/health-age-assessment/page.js', 'text/javascript', 'mountEducationalAge'],
       ['/components/educational-age/scoring.js', 'text/javascript', 'calculateIllustrativeAge'],
       ['/wellness-snapshot/page.js', 'text/javascript', 'mountWellnessSnapshot'],

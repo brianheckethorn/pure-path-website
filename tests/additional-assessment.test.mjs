@@ -8,6 +8,7 @@ import { mountEducationalAge } from '../components/educational-age/component.js'
 import { createMockDeliveryAdapter } from '../components/wellness-snapshot/delivery.js';
 import { componentHarness } from './dom-harness.mjs';
 import { answerAssessmentWithoutDisclosure } from './assessment-harness.mjs';
+import { candidateFixtures } from './candidate-fixtures.mjs';
 
 const core = () => ({ age: '50', height: '67', weight: '160', ...Object.fromEntries(Object.entries(scoringMaps).map(([id, choices]) => [id, Object.keys(choices)[0]])) });
 
@@ -28,29 +29,28 @@ test('31 active questions use unique bilingual inputs; expanded answers cannot a
   }
 });
 
-test('active preview remains research-pending without fabricated score, removed answers or health age', () => {
-  for (const answers of [{}, core(), { ...core(), spiritualityPreference: 'deep', tobaccoHistory: 'never', fruitVegetableServings: '5+' }]) {
+test('missing active candidate inputs withhold health age instead of inventing removed answers', () => {
+  for (const answers of [{}, { age: '50' }, core(), { ...core(), spiritualityPreference: 'deep', tobaccoHistory: 'never', fruitVegetableServings: '5+' }]) {
     const result = calculateAssessmentPreview(answers);
-    assert.equal(result.status, 'research-pending'); assert.equal(result.quizAge, undefined); assert.equal(result.score, undefined);
-    assert.deepEqual(result.errors, []);
+    assert.equal(result.status, 'incomplete'); assert.equal(Number.isFinite(result.quizAge), false);
     assert.equal(result.actualAge, answers.age ? Number(answers.age) : null);
     for (const language of ['en', 'es']) {
       const report = resultEmailText(result, answers, language);
-      assert.ok(report.includes(text.researchPending[language])); assert.ok(report.includes(text.scoringReview[language]));
+      assert.ok(report.includes(text.withheld[language])); assert.ok(report.includes(text.scoringReview[language]));
       assert.equal(report.split('\n').some(line => line.startsWith(`${text.estimate[language]}:`)), false);
       const model = resultPDFModel(result, answers, language);
-      assert.equal(model.estimatePending, true); assert.equal(model.estimate, undefined);
+      assert.notEqual(model.estimatePending, true); assert.equal(model.estimate, undefined);
     }
   }
 });
 
-test('private faith/contact choices stay out of pending saved reports and entered units stay explicit', () => {
+test('private faith/contact choices stay out of incomplete saved reports and entered units stay explicit', () => {
   const answers = { ...core(), fullName: 'Synthetic Angela', spiritualityPreference: 'deep', reportContact: { email: 'synthetic@example.test', address: 'PRIVATE_CONTACT_SENTINEL' }, bloodGlucoseReading: { readingStatus: 'measured', history: 'normal', value: '5.4', unit: 'mmolL', timing: 'fasting' } };
   for (const language of ['en', 'es']) {
     const result = calculateAssessmentPreview(answers); const report = resultEmailText(result, answers, language);
     assert.match(report, /Synthetic Angela/); assert.match(report, /mmol\/L/);
     assert.doesNotMatch(report, /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
-    assert.ok(report.includes(text.actual[language])); assert.ok(report.includes(text.researchPending[language]));
+    assert.ok(report.includes(text.actual[language])); assert.ok(report.includes(text.withheld[language]));
     assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.glucoseSafety[language]));
     const model = resultPDFModel(result, answers, language);
     assert.equal(model.actual.value, 50); assert.equal(model.estimate, undefined);
@@ -118,13 +118,49 @@ test('multi-select clearing needs a new explicit response; None and declined con
   const email = ui.find(n => n.type === 'email')[0]; email.value = 'invalid'; email.emit('input');
   ui.click(text.finish.es); assert.equal(currentTitle(), contact.prompt.es);
   ui.click(text.preferNot.es); ui.click(text.finish.es);
-  assert.ok(ui.root.textContent.includes(text.researchPending.es));
+  assert.ok(ui.root.textContent.includes(text.withheld.es));
   const comparison = ui.find(n => n.className === 'age-comparison')[0];
-  assert.deepEqual(comparison.children.map(card => card.children[1].children[0].textContent), ['50', text.pendingLabel.es]);
+  assert.equal(comparison.children[0].children[1].children[0].textContent, '50');
+  assert.equal(comparison.children[1].children[1].children[0].className, 'age-pending');
+  assert.doesNotMatch(comparison.children[1].children[1].children[0].textContent, /\d/);
   assert.equal(comparison.children[0].children[1].children[1].textContent, text.years.es);
   assert.equal(ui.find(n => n.type === 'email').length, 0);
   ui.click('Descargar mis resultados (.txt)');
   assert.equal(downloads.length, 1); assert.ok(downloads[0].includes(text.noneSelected.es));
   assert.equal(downloads[0].includes(cooking.label.es), false); assert.equal(downloads[0].includes(memory.label.es), false);
   assert.equal(downloads[0].includes('invalid'), false);
+});
+
+test('known imperial and metric fixtures satisfy candidate coverage; missing areas and low coverage withhold an age', async () => {
+  const { calculateCandidateAssessment } = await import('../components/educational-age/candidate-scoring.js');
+  const results = [];
+  for (const fixture of candidateFixtures) {
+    const untouched = structuredClone(fixture.answers);
+    const result = calculateCandidateAssessment(fixture.answers); results.push(result);
+    assert.deepEqual(fixture.answers, untouched);
+    assert.equal(result.status, 'complete'); assert.equal(result.actualAge, Number(fixture.answers.age));
+    assert.equal(result.score, fixture.expected.score); assert.equal(result.quizAge, fixture.expected.quizAge);
+    assert.deepEqual(result.coverage, fixture.expected.coverage); assert.deepEqual(result.range, fixture.expected.range);
+    assert.deepEqual(result.unassessed.map(item => item.id), ['water']);
+    assert.deepEqual(calculateCandidateAssessment({ ...fixture.answers, fullName: 'Synthetic private name', spiritualityPreference: 'deep', spiritualSupport: 'christ', interests: ['spiritualHealth'], newsletterTopics: ['closer-to-god'], reportContact: { email: 'synthetic@example.test' } }), result);
+    assert.ok(Number.isFinite(result.quizAge)); assert.ok(Number.isFinite(result.score));
+    assert.ok(result.score >= 0 && result.score <= 100);
+    assert.equal(result.coverage.totalWeight, 98); assert.ok(result.coverage.percent >= 60);
+    assert.ok(result.coverage.knownWeight <= result.coverage.totalWeight);
+    assert.ok(Object.values(result.habitAreas).filter(Boolean).length >= 4);
+    assert.ok(result.quizAge >= result.range.minAge && result.quizAge <= result.range.maxAge);
+    assert.deepEqual(calculateAssessmentPreview(fixture.answers), result);
+  }
+  assert.notEqual(results[0].score, results[1].score);
+  const base = candidateFixtures[0].answers;
+  const noDiet = { ...base, fruitVegetableServings: 'unknown', wholeGrainServings: 'unknown', nutSeedServings: 'unknown', redMeatFrequency: 'unknown' };
+  const fourAreas = calculateCandidateAssessment(noDiet);
+  assert.equal(fourAreas.habitAreas.diet, false); assert.equal(fourAreas.status, 'complete');
+  const threeAreas = calculateCandidateAssessment({ ...noDiet, exercise: 'unknown' });
+  assert.ok(threeAreas.coverage.percent >= 60); assert.equal(threeAreas.status, 'incomplete');
+  assert.equal(Number.isFinite(threeAreas.quizAge), false);
+  const lowCoverage = calculateCandidateAssessment({ age: '50', fruitVegetableServings: '5+', wholeGrainServings: '3+', nutSeedServings: '5+', redMeatFrequency: 'never', exercise: '5+', sleepDuration: '7-9', tobaccoHistory: 'never', alcoholServings: 'none' });
+  assert.equal(Object.values(lowCoverage.habitAreas).filter(Boolean).length, 5);
+  assert.ok(lowCoverage.coverage.percent < 60); assert.equal(lowCoverage.status, 'incomplete');
+  assert.equal(Number.isFinite(lowCoverage.quizAge), false);
 });

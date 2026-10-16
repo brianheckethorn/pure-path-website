@@ -64,7 +64,7 @@ for(const kind of ['age','snapshot']) {
     assert.equal(ui.nodes().filter(n=>n.type==='checkbox').some(n=>n.checked),false);
     const resultPre=ui.nodes().find(n=>n.tagName==='PRE'&&n.textContent.startsWith(kind==='age'?text.resultTitle.en:'Your Wellness Snapshot'));
     assert.doesNotMatch(resultPre.textContent,/Growing closer|Christ|prayer|spiritual/);
-    if(kind==='age') assert.ok(resultPre.textContent.includes(text.researchPending.en));
+    if(kind==='age') assert.ok(resultPre.textContent.includes(text.withheld.en));
     ui.select('Growing closer to God'); ui.fillEmail('synthetic@example.test');
     assert.equal(ui.inputByLabel(newsletterConsentText(['closer-to-god'])).checked,false);
     ui.click('Preview my email choices'); await tick(); assert.deepEqual(calls,[]);
@@ -98,7 +98,7 @@ test('Spanish support choices and newsletter consent preserve explicit choices w
   const ui=setup('age'); ui.select('Growing closer to Christ'); ui.select('Growing closer to God'); ui.select(newsletterConsentText(['closer-to-god']));
   ui.click('Español'); assert.equal(ui.inputByLabel('Acercarme más a Cristo').checked,true); assert.equal(ui.inputByLabel('Acercarme más a Dios').checked,true);
   assert.equal(ui.inputByLabel(newsletterConsentText(['closer-to-god'],'es')).checked,true); assert.match(ui.root.textContent,/Temas elegidos: Acercarme más a Dios/);
-  assert.ok(ui.root.textContent.includes(text.researchPending.es));
+  assert.ok(ui.root.textContent.includes(text.withheld.es));
   ui.click('Borrar mis temas del boletín'); assert.equal(ui.inputByLabel(newsletterConsentText([],'es')).checked,false);
 });
 test('published homepage generation has working routes/contact and no unfinished design placeholders',()=>{
