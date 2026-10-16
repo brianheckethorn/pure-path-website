@@ -1,3 +1,4 @@
+import { normalizeBaseMeasurements } from './measurements.js';
 // Copied coefficients from the owner's public script.js, 2026-10-12.
 // This is a custom illustrative heuristic, not a validated medical instrument.
 export const weights = Object.freeze({ bmi: 5, nicotine: 10, exercise: 8, strength: 5, sedentary: 5, sleepDuration: 5, sleepQuality: 4, dietQuality: 8, sugaryDrinks: 3, vegetables: 4, water: 3, alcohol: 3, stress: 5, socialSupport: 4, bloodPressure: 6, bloodSugar: 6, cholesterol: 4, energy: 4, functionalFitness: 6 });
@@ -32,6 +33,7 @@ export function numericValue(value) {
 }
 
 export function validateAnswers(answers) {
+  answers = normalizeBaseMeasurements(answers);
   const errors = [];
   for (const [id, bounds] of Object.entries(inputBounds)) {
     const value = numericValue(answers[id]);
@@ -49,6 +51,12 @@ export function validateAnswers(answers) {
 
 export function bmiFactor(bmi) {
   if (!Number.isFinite(bmi) || bmi <= 0) throw new Error('Invalid BMI input.');
+  // Unit conversion can put the same measurement one floating-point step on
+  // either side of an existing boundary. Snap machine noise only, preserving
+  // the original bands and coefficients for meaningfully different values.
+  for (const boundary of [16, 17, 18.5, 25, 30, 35]) {
+    if (Math.abs(bmi - boundary) <= 8 * Number.EPSILON * boundary) { bmi = boundary; break; }
+  }
   // Same source factors, with continuous boundaries at 25, 30, and 35.
   if (bmi >= 18.5 && bmi < 25) return 1;
   if ((bmi >= 17 && bmi < 18.5) || (bmi >= 25 && bmi < 30)) return .68;
@@ -57,6 +65,7 @@ export function bmiFactor(bmi) {
 }
 
 export function calculateIllustrativeAge(answers) {
+  answers = normalizeBaseMeasurements(answers);
   const errors = validateAnswers(answers);
   if (errors.length) return { status: 'incomplete', errors };
   const actualAge = numericValue(answers.age);

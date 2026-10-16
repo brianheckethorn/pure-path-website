@@ -1,3 +1,4 @@
+import { questions } from '../components/educational-age/content.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -13,7 +14,7 @@ for(const kind of ['age','snapshot']) {
     const downloads=[]; const ui=componentHarness();
     const delivery={...createMockDeliveryAdapter(),requestAddressVerification(){throw new Error('No public delivery call permitted');},requestResultEmail(){throw new Error('No public delivery call permitted');},requestMailingList(){throw new Error('No public delivery call permitted');}};
     const onDownload=(copy,name)=>downloads.push({copy,name});
-    if(kind==='age') {mountEducationalAge(ui.root,{delivery,onDownload});for(let i=0;i<21;i++)ui.click('Next');ui.click('See my comparison');}
+    if(kind==='age') {mountEducationalAge(ui.root,{delivery,onDownload});for(let i=0;i<questions.length-1;i++)ui.click('Next');ui.click('See my comparison');}
     else {mountWellnessSnapshot(ui.root,{content:snapshotContent,delivery,onDownload});ui.select('Yes');ui.click('Start my snapshot');for(let i=0;i<7;i++)ui.click('Next');ui.click('See my snapshot');}
     assert.equal(ui.nodes().filter(n=>n.type==='email'||n.type==='checkbox').length,0);
     assert.doesNotMatch(ui.root.textContent,/Email \(optional\)|Newsletter topics|Preview my email choices|Want a copy by email/);

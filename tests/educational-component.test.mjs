@@ -21,10 +21,10 @@ function fillAll(ui, overrides = {}) {
       if (question.type === 'number') fillNumber(ui, value);
       else ui.select(value === 'unknown' ? text.unknown.en : value === 'skip' ? text.skip.en : question.options.find(option => option.id === value).label.en);
     }
-    ui.click(index === 21 ? text.finish.en : text.next.en);
+    ui.click(index === questions.length - 1 ? text.finish.en : text.next.en);
   }
 }
-function allBlank(ui, language = 'en') { for (let index = 0; index < 21; index++) ui.click(text.next[language]); ui.click(text.finish[language]); }
+function allBlank(ui, language = 'en') { for (let index = 0; index < questions.length - 1; index++) ui.click(text.next[language]); ui.click(text.finish[language]); }
 const emailChecks = ui => ui.find(node => node.tagName === 'INPUT' && node.type === 'checkbox' && node.className === 'delivery-consent');
 
 test('new component starts blank, withholds missing number, and translates missing validation without calculation', () => {
@@ -34,7 +34,7 @@ test('new component starts blank, withholds missing number, and translates missi
   ui.click('Español'); assert.match(ui.root.textContent, /Escribe un número/); assert.equal(ui.find(node => node.tagName === 'DL').length, 0);
   assert.equal(ui.find(node => node.type === 'number')[0].value, '');
   ui.click('English'); fillNumber(ui, '17');
-  for (let index = 0; index < 21; index++) ui.click(text.next.en); ui.click(text.finish.en);
+  for (let index = 0; index < questions.length - 1; index++) ui.click(text.next.en); ui.click(text.finish.en);
   ui.click(questions[0].prompt.en); assert.match(ui.root.textContent, /Use the original input range/);
   ui.click('Español'); assert.match(ui.root.textContent, /Usa el rango original/);
 });

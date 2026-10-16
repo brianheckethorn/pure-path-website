@@ -1,0 +1,42 @@
+YOUR PURE PATH - OCTOBER 16 REVIEW CANDIDATE
+
+Status: local implementation complete; not pushed, merged, or published.
+Baseline: accepted main 8b9c9d5ed5b52f68af4281813cf462f9e674faf4.
+Branch: review/health-age-oct16 in isolated task/your-pure-path-review clone.
+Hosting remains existing GitHub Pages main:/docs. A push/merge to main could publish automatically and must await Brian's confirmation of the exact changes and effects.
+
+SOURCE FRESHNESS AND PRESERVATION
+TRON D:/Projects/YourPurePath has no Git metadata and is an October 12 snapshot. All 30 deployed assets matched accepted GitHub main by Git-blob hash. 21 of 50 non-PPTX TRON files differ. Implementation uses the fresh isolated clone, not the TRON snapshot. Source PPTX and all D: files remain untouched. No TrailMark paths/services/data were accessed or modified. Historical prototypes, inventory/scoring-reference files, vendor files, and prior review documents retain their original bytes.
+
+DECK INVENTORY
+All 8 slides and 29 screenshots were visually inspected. Complete question inventory and ambiguities are in task/review/slides/slide-question-inventory.txt. The deck contains no scoring formula or validation for its example health age, potential age, or longevity claims.
+
+EXACT USER-FACING EFFECTS
+- Retain original 22 core questions, coefficients, input ranges, and bilingual flow.
+- Add 18 optional questions/groups: report name; waist; numeric blood pressure; glucose with unit/timing; breakfast; snacking; fruit/vegetable servings; whole grains; nuts/seeds; red meat; 20-30 minute exercise; weight self-description; 7-8 hour sleep frequency; detailed tobacco history; weekly alcohol; spirituality preference; 12 education/support interests; optional local contact notes.
+- Add feet/inches, centimeters, pounds and kilograms for original measurements. Changing a unit clears that measurement entry explicitly. Unit conversion does not add a health factor. A machine-epsilon snap at the existing BMI boundaries prevents conversion noise from changing a result.
+- All additions remain outside age arithmetic. Faith/support choices always change age by zero years. Raw measures have no automatic diagnostic category. Unknown/missing core scoring answers withhold the estimate, while a valid actual age can still be shown.
+- Distinguish actual age and approximate health-age estimate. Explain the rough, unvalidated educational estimate immediately by the ages. No biological-age, diagnosis, lifespan, potential-age or years-gained promise.
+- Match up to three suggestions to explicit answers. Avoid blanket snacking claims, smoking advice to never-users, weight-loss pressure, and medication changes.
+- Local report-only Print, actual Save PDF, text download, capability-detected Share PDF through device apps, or PDF download/manual-attachment instructions. No mailto attachment claim. Device sharing is deliberate and cannot confirm email delivery.
+- EN/ES PDF accents preserved. Unsupported symbols are disclosed with Print as the original-text alternative. Spirituality/support choices and local contact notes are excluded from saved/shared report contents. A chosen report name and explicitly selected interests may appear.
+- Prominent future-event signup button immediately after report tools, plus assessment intro link. Exact destination https://forms.gle/Zcc9QZbo9N7NTQcj6. It remains available before/after/cancelled print, save or sharing; no completion detection, prefill or automatic form submission.
+- Shared report tools also add Print/PDF/Share and the prominent follow-up link to the existing 8-question Wellness Snapshot. Its questions/scoring model remain unchanged.
+
+EMAIL / PRIVACY
+Automatic branded email from healthageresults@yourpurepath.com remains disabled and visibly unavailable. Public entry points keep showDeliveryPreview:false; mock delivery rejects live adapters. Local contact notes do not authorize results delivery or signup. Existing mock result and mailing-list consent paths remain separate and tested. No answers/contact data in URLs, persistent browser storage, analytics, provider calls, or logs were introduced.
+Coordinated research found Brevo Terms 10.4 prohibits sensitive health data. Consent does not override this. Do not send identifiable reports through Brevo. A compatible email product, verified sender/domain, protected backend, approved payload/retention/privacy terms, server-side recipient verification and report binding, abuse controls, and specifically authorized delivery test remain necessary. Network Solutions product/mailbox identity was not verified in this task because authenticated browser access was unavailable. No account, credentials/grants, DNS/security, cost, recipient send, or service changes were made.
+Secure provider-neutral design: task/review/source-email/SOURCE-AND-EMAIL-DESIGN.md. It is a design, not a live backend.
+
+VALIDATION
+npm run build: 33 allowlisted public runtime files in docs/; source/build parity tested.
+npm test: 67/67 passed, including local HTTP routes under approved loopback access.
+npm run verify: preserved design/vendor hashes passed.
+git diff --check: passed.
+Distinct independent code review: 50 targeted tests passed, no remaining blocking finding after precision fix.
+Browser QA: Edge desktop 1440px and mobile 390px, English/Spanish, blank/complete, metric/mixed units, language retention, print payload, PDF, sharing success/cancel stubs, signup availability, reset and private-field exclusion. Zero JS errors, response failures, horizontal overflow, or unintended non-GET requests observed. Final browser record lives in task/review/browser-tools/built-qa/report.json.
+Both final synthetic English/Spanish sample PDFs: three pages each; all six pages rendered and visually reviewed, text comparison passed.
+Native iPhone/iPad print/share UI and actual Mail delivery still require device verification; desktop capability stubs do not prove those device actions or inbox arrival.
+
+DEPLOYMENT REVIEW
+Review the staged/local changes and supplied patch/public zip. Confirm exact effects above with Brian before pushing/merging or publishing. Do not deploy email. After approval, recheck origin/main freshness, rerun the current build/tests if upstream changed, publish only the reviewed candidate to existing main:/docs, and verify the deployed assets and assessment. The previously accepted 8b9c9d5e is the rollback baseline. No deployment was performed here.

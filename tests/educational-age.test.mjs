@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { questions, disclosure, text } from '../components/educational-age/content.js';
+import { questions, originalQuestions, disclosure, text } from '../components/educational-age/content.js';
 import { weights, scoringMaps, bmiFactor, calculateIllustrativeAge, inputBounds } from '../components/educational-age/scoring.js';
 import { discussionIdeas, resultEmailText } from '../components/educational-age/results.js';
 import { illustrativeHome } from '../scripts/build-illustrative-home.mjs';
@@ -11,11 +11,11 @@ export function syntheticAnswers(kind = 'best') {
 }
 test('all original 22 field IDs and option coefficients are retained without source defaults', () => {
   const inventory = JSON.parse(readFileSync(new URL('../ORIGINAL-ASSESSMENT-INVENTORY.json', import.meta.url), 'utf8'));
-  assert.deepEqual(questions.map(question => question.id), inventory.sections.flatMap(section => section.questions.map(question => question.id)));
+  assert.deepEqual(originalQuestions.map(question => question.id), inventory.sections.flatMap(section => section.questions.map(question => question.id)));
   const reference = JSON.parse(readFileSync(new URL('../ILLUSTRATIVE-SCORING-REFERENCE.json', import.meta.url), 'utf8'));
   assert.deepEqual(weights, reference.weights); assert.deepEqual(scoringMaps, reference.scoringMaps);
   assert.equal(Object.values(weights).reduce((sum, number) => sum + number, 0), 98);
-  for (const question of questions) {
+  for (const question of originalQuestions) {
     assert.equal('default' in question, false);
     if (question.type === 'radio') assert.deepEqual(question.options.map(option => option.id), inventory.sections.flatMap(section => section.questions).find(field => field.id === question.id).choices.map(choice => choice.value));
   }
@@ -73,7 +73,7 @@ test('recommendations cannot pressure never/former users to quit or propose weig
   assert.doesNotMatch(JSON.stringify(discussionIdeas({ weight: '80', height: '84', functionalFitness: 'limited' })), /weight loss|lose weight|younger|stop medicine/i);
 });
 test('disclosure is exact, adjacent in component, and included in both-language email previews', () => {
-  assert.equal(disclosure.en, 'Educational estimate from a custom lifestyle quiz. Not scientifically validated. It does not measure biological age or diagnose health conditions.');
+  assert.equal(disclosure.en, 'Rough educational estimate from a custom lifestyle quiz. Not scientifically validated. It does not measure biological age or diagnose health conditions.');
   for (const language of ['en', 'es']) {
     for (const answers of [syntheticAnswers(), {}]) assert.ok(resultEmailText(calculateIllustrativeAge(answers), answers, language).includes(disclosure[language]));
   }

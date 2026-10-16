@@ -33,6 +33,11 @@
 .snapshot-card button:disabled { cursor: wait; opacity: .65; }
 .snapshot-card .secondary-button { background: white; border-color: var(--forest); }
 .snapshot-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.result-tools { margin-top: 32px; padding-top: 24px; border-top: 2px solid var(--forest); }
+.snapshot-card .result-followup-button { display: block; padding: 18px 22px; border-radius: 10px; background: var(--forest); color: var(--warm); font-weight: 700; text-align: center; text-decoration: none; overflow-wrap: anywhere; margin-top: 18px; }
+.snapshot-card .result-followup-button:hover { background: var(--brown); }
+.snapshot-card input[type=text], .snapshot-card input[type=tel], .snapshot-card select { display: block; width: 100%; font: inherit; border: 1.5px solid #69744C; padding: 14px; border-radius: 8px; margin: 10px 0 20px; background: white; color: var(--forest); }
+.snapshot-card .question-help { border-left: 3px solid var(--sage); padding-left: 12px; }
 .snapshot-error { color: #7B2C12; border-left: 3px solid #7B2C12; padding-left: 12px; }
 .result-item { padding: 24px 0; border-top: 1px solid #D7DFC1; }
 .result-answer { font-size: 16px; color: #3B4530; }

@@ -1,9 +1,10 @@
 import { questions, sections, text, disclosure } from './content.js';
-import { calculateIllustrativeAge, inputBounds } from './scoring.js';
-import { discussionIdeas, answerText, resultEmailText } from './results.js';
+import { calculateIllustrativeAge, inputBounds, numericValue } from './scoring.js';
+import { discussionIdeas, answerText, reportAnswer, resultEmailText } from './results.js';
 import { previewDelivery, isValidEmail } from '../wellness-snapshot/delivery.js';
 import { appendResultTools } from '../result-tools.js';
 import { appendSpiritualSupport, appendNewsletterTopics, newsletterConsentText, newsletterRequestText } from '../support-preferences.js';
+import { unitBounds } from './measurements.js';
 
 let nextInstance = 0;
 export function mountEducationalAge(root, { delivery, onLanguage = () => {}, showDeliveryPreview = false, onDownload }) {
@@ -38,25 +39,87 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     control.lang = state.language === 'en' ? 'es' : 'en'; row.append(control); root.append(row);
   }
   function clearDelivery() { state.email = ''; state.resultConsent = false; state.listConsent = false; state.newsletterTopics = []; state.spiritualSupport = ''; }
+  function optionalCopy(en, es) { return state.language === 'es' ? es : en; }
+  function setAnswer(id, value) { state.answers[id] = value; state.result = null; }
+  function inputField(field, value, changed) {
+    const label = node('label', field.label[state.language]);
+    const input = node(field.type === 'select' ? 'select' : 'input');
+    input.id = `${instance}-${field.id}`; label.htmlFor = input.id;
+    if (field.type === 'select') {
+      const blank = node('option', optionalCopy('Choose (optional)', 'Elegir (opcional)')); blank.value = ''; input.append(blank);
+      for (const option of field.options) { const choice = node('option', option.label[state.language]); choice.value = option.id; input.append(choice); }
+    } else {
+      input.type = field.type; input.autocomplete = 'off'; input.maxLength = field.maxLength || 120;
+      if (field.type === 'number') { input.step = field.step || 'any'; input.inputMode = 'decimal'; if (field.min !== undefined) input.min = String(field.min); if (field.max !== undefined) input.max = String(field.max); }
+    }
+    input.value = value ?? '';
+    input.addEventListener(field.type === 'select' ? 'change' : 'input', () => changed(input.value));
+    return [label, input];
+  }
+  function supplementalFields(question) {
+    if (question.type === 'group') {
+      const value = state.answers[question.id];
+      for (const field of question.fields) root.append(...inputField(field, value && typeof value === 'object' ? value[field.id] : '', next => {
+        const previous = state.answers[question.id]; setAnswer(question.id, { ...(previous && typeof previous === 'object' ? previous : {}), [field.id]: next });
+      }));
+    } else if (question.type === 'text') {
+      root.append(...inputField({ ...question, label: question.prompt }, state.answers[question.id], value => setAnswer(question.id, value)));
+    } else {
+      const group = node('fieldset'); group.append(node('legend', question.prompt[state.language]));
+      for (const option of question.options) {
+        const label = node('label', undefined, 'snapshot-option'); const input = node('input');
+        input.type = question.type === 'multi' ? 'checkbox' : 'radio'; input.name = `${instance}-${question.id}`; input.value = option.id;
+        input.checked = question.type === 'multi' ? Array.isArray(state.answers[question.id]) && state.answers[question.id].includes(option.id) : state.answers[question.id] === option.id;
+        input.addEventListener('change', () => {
+          if (question.type === 'multi') { const previous = Array.isArray(state.answers[question.id]) ? state.answers[question.id] : []; setAnswer(question.id, question.options.filter(choice => choice.id === option.id ? input.checked : previous.includes(choice.id)).map(choice => choice.id)); }
+          else setAnswer(question.id, option.id);
+        });
+        label.append(input, node('span', option.label[state.language])); group.append(label);
+      }
+      root.append(group);
+    }
+    root.append(actions(button(t('unknown'), () => { setAnswer(question.id, 'unknown'); showQuestion(true); }, true), button(t('skip'), () => { setAnswer(question.id, 'skip'); showQuestion(true); }, true)));
+    if (['unknown', 'skip'].includes(state.answers[question.id])) root.append(node('p', answerText(question, state.answers[question.id], state.language), 'snapshot-small'));
+  }
+  function measurementUnits(question) {
+    const height = question.id === 'height'; const key = height ? 'heightUnit' : 'weightUnit';
+    const unit = state.answers[key] || (height ? 'in' : 'lb');
+    const choices = height ? [['in', 'Inches', 'Pulgadas'], ['ft-in', 'Feet and inches', 'Pies y pulgadas'], ['cm', 'Centimeters', 'Centímetros']] : [['lb', 'Pounds', 'Libras'], ['kg', 'Kilograms', 'Kilogramos']];
+    const group = node('fieldset'); group.append(node('legend', optionalCopy('Measurement units', 'Unidades de medida')));
+    for (const [id, en, es] of choices) {
+      const label = node('label', undefined, 'snapshot-option'); const radio = node('input'); radio.type = 'radio'; radio.name = `${instance}-${key}`; radio.checked = unit === id;
+      radio.addEventListener('change', () => { setAnswer(key, id); delete state.answers[question.id]; if (height) { delete state.answers.heightFeet; delete state.answers.heightInches; } showQuestion(true); });
+      label.append(radio, node('span', optionalCopy(en, es))); group.append(label);
+    }
+    root.append(group);
+    return unit;
+  }
   function showQuestion(focus = false) {
     state.view = 'questions';
     begin(); languageToggle();
     const question = questions[state.step];
-    root.append(node('p', `${sections[question.section][state.language]} · ${state.step + 1}/22`, 'eyebrow'));
+    root.append(node('p', `${sections[question.section][state.language]} · ${state.step + 1}/${questions.length}`, 'eyebrow'));
     const title = heading(question.prompt[state.language]);
     const error = state.result?.errors?.find(entry => entry.id === question.id);
     if (question.help) root.append(node('p', question.help[state.language], 'question-help'));
-    root.append(node('p', t('adult'), 'snapshot-small'));
-    if (question.type === 'number') {
+    root.append(node('p', question.supplemental ? optionalCopy('Optional. These details do not add or subtract health-age years.', 'Opcional. Estos detalles no suman ni restan años de edad de salud.') : t('adult'), 'snapshot-small'));
+    if (question.supplemental) supplementalFields(question);
+    else if (question.type === 'number') {
+      const unit = ['height', 'weight'].includes(question.id) ? measurementUnits(question) : null;
+      if (unit === 'ft-in') {
+        for (const field of [{ id: 'heightFeet', type: 'number', min: 0, step: '1', label: { en: 'Feet', es: 'Pies' } }, { id: 'heightInches', type: 'number', min: 0, max: 11.99, label: { en: 'Additional inches (under 12)', es: 'Pulgadas adicionales (menos de 12)' } }]) root.append(...inputField(field, state.answers[field.id], value => { delete state.answers.height; setAnswer(field.id, value); }));
+      } else {
       const label = node('label', question.prompt[state.language]);
       const input = node('input'); input.id = `${instance}-${question.id}`; input.type = 'number'; input.autocomplete = 'off';
-      input.min = String(inputBounds[question.id].min); input.max = String(inputBounds[question.id].max); input.step = inputBounds[question.id].integer ? '1' : 'any'; input.inputMode = inputBounds[question.id].integer ? 'numeric' : 'decimal';
+      const bounds = unit ? unitBounds(question.id, unit) : inputBounds[question.id];
+      input.min = String(bounds.min); input.max = String(bounds.max); input.step = inputBounds[question.id].integer ? '1' : 'any'; input.inputMode = inputBounds[question.id].integer ? 'numeric' : 'decimal';
       input.value = ['unknown', 'skip'].includes(state.answers[question.id]) ? '' : state.answers[question.id] ?? '';
       label.htmlFor = input.id;
       input.setAttribute('aria-describedby', `${instance}-status`);
       if (error) input.setAttribute('aria-invalid', 'true');
       input.addEventListener('input', () => { state.answers[question.id] = input.value; state.result = null; });
       root.append(label, input);
+      }
       if (['unknown', 'skip'].includes(state.answers[question.id])) root.append(node('p', answerText(question, state.answers[question.id], state.language), 'snapshot-small'));
       root.append(actions(button(t('unknown'), () => { state.answers[question.id] = 'unknown'; showQuestion(true); }, true), button(t('skip'), () => { state.answers[question.id] = 'skip'; showQuestion(true); }, true)));
     } else {
@@ -72,10 +135,11 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       root.append(group);
     }
     const status = node('p', error ? t(error.code === 'bounds' ? 'boundsError' : question.type === 'number' ? 'numberNeeded' : 'choiceNeeded') : '', error ? 'snapshot-error' : 'snapshot-small'); status.id = `${instance}-status`; status.setAttribute('role', 'status'); root.append(status);
-    root.append(actions(button(state.step === 21 ? t('finish') : t('next'), () => {
-      if (state.step === 21) { clearDelivery(); state.result = calculateIllustrativeAge(state.answers); showResults(true); }
+    root.append(actions(button(state.step === questions.length - 1 ? t('finish') : t('next'), () => {
+      if (state.step === questions.length - 1) { clearDelivery(); state.result = calculateIllustrativeAge(state.answers); showResults(true); }
       else { state.step++; showQuestion(true); }
-    }), button(t('back'), () => { if (state.step > 0) state.step--; showQuestion(true); }, true), button(t('clear'), () => { delete state.answers[question.id]; state.result = null; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
+    }), button(t('back'), () => { if (state.step > 0) state.step--; showQuestion(true); }, true), button(t('clear'), () => { delete state.answers[question.id]; if (question.id === 'height') { delete state.answers.heightFeet; delete state.answers.heightInches; } state.result = null; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
+    if (question.supplemental && state.step !== questions.length - 1) root.append(actions(button(optionalCopy('Skip remaining optional details and see results', 'Omitir los detalles opcionales restantes y ver resultados'), () => { clearDelivery(); state.result = calculateIllustrativeAge(state.answers); showResults(true); }, true)));
     if (focus) title.focus();
   }
   function showResults(focus = false) {
@@ -92,6 +156,8 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       }
       root.append(comparison);
     } else {
+      const age = numericValue(state.answers.age);
+      if (age !== null && Number.isInteger(age) && age >= 18 && age <= 100) root.append(node('p', `${t('actual')}: ${age} ${t('years')}`, 'actual-age-known'));
       root.append(node('h3', t('withheld')), node('p', t('withheldWhy')));
       const errors = node('ul', undefined, 'missing-list');
       for (const error of result.errors) {
@@ -112,7 +178,7 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     }
     root.append(actions(button(t('edit'), () => { clearDelivery(); state.step = 0; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
     const summary = node('details'); summary.append(node('summary', t('review')));
-    for (const question of questions) { const paragraph = node('p', undefined, 'result-answer'); paragraph.append(node('span', question.prompt[state.language]), node('br'), node('strong', answerText(question, state.answers[question.id], state.language))); summary.append(paragraph); }
+    for (const question of questions) { const paragraph = node('p', undefined, 'result-answer'); paragraph.append(node('span', question.prompt[state.language]), node('br'), node('strong', reportAnswer(question, state.answers, state.language))); summary.append(paragraph); }
     root.append(summary);
     appendSpiritualSupport(root, { document, state, instance, language: state.language });
     appendResultTools(root, { document, text: resultEmailText(state.result, state.answers, state.language), language: state.language, onDownload });
