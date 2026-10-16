@@ -8,7 +8,7 @@ export function illustrativeHome(source) {
     .replace('href="#" lang="es"', 'href="./health-age-assessment/" lang="es"')
     .replace('Ver en español</a>', 'Quiz: English / Español</a>')
     .replace("Let's talk — it's free", "Let's talk")
-    .replace('[WARM PORTRAIT OF MARIO — in the office or outdoors]', '<img src="./assets/a143c2a9960446d649523f272677f609.jpg" alt="Your Pure Path tree logo" style="width: 100%; max-width: 360px; border-radius: 50%">')
+    .replace('[WARM PORTRAIT OF MARIO — in the office or outdoors]', '<img src="./assets/mario-portrait.jpg" alt="Mario" width="360" height="360" style="width: 100%; height: auto; max-width: 360px; border-radius: 50%">')
     .replace('<p style="margin: 0">[2–3 SENTENCES IN MARIO\'S OWN VOICE: why he started Your Pure Path and who he loves working with.]</p>', '')
     .replace('[CREDENTIALS · YEARS IN PRACTICE]', 'Certified Functional Nutritional Counselor')
     .replace('[HOURS]', 'Contact Mario for appointment availability.')
@@ -17,9 +17,9 @@ export function illustrativeHome(source) {
     .replace('<a href="#" style="text-decoration: none; border: 1.5px solid #F4F1E6; color: #F4F1E6; padding: 17px 30px; border-radius: 10px; font-weight: 700; font-size: 18px">Book online</a>', '<a href="mailto:mario@yourpurepath.com" style="text-decoration: none; border: 1.5px solid #F4F1E6; color: #F4F1E6; padding: 17px 30px; border-radius: 10px; font-weight: 700; font-size: 18px">Arrange a conversation</a>')
     .replace('<a href="./wellness-snapshot/" style="color: #F4F1E6; text-decoration: none">Wellness Snapshot</a>', '<a href="./health-age-assessment/" style="color: #F4F1E6; text-decoration: none">Health Age Assessment</a>')
     .replace('Your Wellness Snapshot</h2>', 'Your Health Age Assessment</h2>')
-    .replace('Answer 8 simple questions about your daily habits. See your snapshot right away. No email needed.', 'Answer 22 core questions, add optional details, and compare your actual age with a rough health-age estimate. Print or save your report locally. No email needed.')
+    .replace('Answer 8 simple questions about your daily habits. See your snapshot right away. No email needed.', 'Respond to 31 questions about your daily habits and health history. Review your answers and suggestions, then print or save your report locally. Not known and prefer not to answer are valid responses. No email needed.')
     .replace('href="./wellness-snapshot/" style="align-self: flex-start;', 'href="./health-age-assessment/" style="align-self: flex-start;')
-    .replace('Start my snapshot</a>', 'Start my Health Age Assessment</a>\n<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #E9E2CC">This educational estimate uses custom quiz weights. It is not scientifically validated and does not measure biological age or diagnose health conditions.</p>\n<a href="./wellness-snapshot/" style="align-self: flex-start; color: #F4F1E6; font-size: 16px">Optional: 8-question Wellness Snapshot (no age estimate)</a>')
+    .replace('Start my snapshot</a>', 'Start my Health Age Assessment</a>\n<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #E9E2CC">Local review preview: the revised health-age scoring model is under review. This educational quiz is not scientifically validated and does not measure biological age or diagnose health conditions.</p>\n<a href="./wellness-snapshot/" style="align-self: flex-start; color: #F4F1E6; font-size: 16px">Optional: 8-question Wellness Snapshot (no age estimate)</a>')
     .replace('A question from your snapshot', 'A question from the Health Age Assessment')
     .replace('How many days a week do you eat fruit?', 'How would you describe your sleep?')
     .replace('>No days</span>', '>Poor</span>').replace('>1–3 days</span>', '>Fair</span>').replace('>4–6 days</span>', '>Good</span>').replace('>Every day</span>', '>Excellent</span>');
@@ -27,5 +27,5 @@ export function illustrativeHome(source) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const source = readFileSync(new URL('../Neighbor.dc.html', import.meta.url), 'utf8');
   writeFileSync(new URL('../index.html', import.meta.url), illustrativeHome(source));
-  console.log('Built homepage with the 22-question Health Age Assessment as the primary questionnaire.');
+  console.log('Built homepage with the 31-question Health Age Assessment as the primary questionnaire.');
 }

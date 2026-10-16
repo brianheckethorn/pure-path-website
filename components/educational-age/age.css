@@ -15,5 +15,13 @@
 .educational-age .missing-list { padding-left: 20px; }
 .educational-age .missing-list button { font-size: 16px; padding: 8px; margin: 4px 0; text-align: left; }
 .educational-age .snapshot-card details { margin: 24px 0; }
+.educational-age .assessment-progress { height: 6px; border-radius: 9px; overflow: hidden; background: #E3E7D3; margin: 0 0 28px; }
+.educational-age .assessment-progress span { display: block; height: 100%; background: #69744C; border-radius: inherit; }
+.educational-age .response-choice-note { border-left: 4px solid #B9CF5C; background: #EEF3D6; padding: 12px 16px; font-weight: 700; }
+.educational-age .question-source { display: inline-block; font-size: 14px; margin: 0 0 18px; }
+.educational-age .snapshot-card[data-view=results] { padding: 24px; }
+.educational-age .pure-report .report-cover h2 { color: #F4F1E6; }
+.educational-age .optional-support { margin-top: 28px; padding-top: 12px; border-top: 1px solid #D9DEC6; }
 @media (max-width: 860px) { .educational-age .snapshot-layout { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .educational-age .snapshot-card[data-view=results] { padding: 20px 16px; } }
 @media print { .educational-age .language-row { display: none; } .educational-age .heuristic-disclosure { display: block; } }

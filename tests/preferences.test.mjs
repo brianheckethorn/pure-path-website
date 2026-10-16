@@ -1,9 +1,10 @@
-import { questions } from '../components/educational-age/content.js';
+import { text } from '../components/educational-age/content.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { componentHarness } from './dom-harness.mjs';
+import { finishAssessmentWithExplicitResponses } from './assessment-harness.mjs';
 import { mountEducationalAge } from '../components/educational-age/component.js';
 import { mountWellnessSnapshot } from '../components/wellness-snapshot/component.js';
 import { snapshotContent } from '../components/wellness-snapshot/content.js';
@@ -14,7 +15,7 @@ import { createMockDeliveryAdapter, previewDelivery } from '../components/wellne
 import { newsletterConsentText, validateNewsletterTopics, supportIdea, spiritualChoices } from '../components/support-preferences.js';
 const tick = () => new Promise(resolve => setImmediate(resolve));
 function finish(ui, kind) {
-  if (kind === 'age') { for(let i=0;i<questions.length-1;i++) ui.click('Next'); ui.click('See my comparison'); }
+  if (kind === 'age') { finishAssessmentWithExplicitResponses(ui); }
   else { ui.select('Yes'); ui.click('Start my snapshot'); for(let i=0;i<7;i++) ui.click('Next'); ui.click('See my snapshot'); }
 }
 function setup(kind, delivery = createMockDeliveryAdapter()) {
@@ -61,8 +62,9 @@ for(const kind of ['age','snapshot']) {
     assert.equal(ui.nodes().some(n=>n.checked),false);
     ui.select('Growing closer to Christ');
     assert.equal(ui.nodes().filter(n=>n.type==='checkbox').some(n=>n.checked),false);
-    const resultPre=ui.nodes().find(n=>n.tagName==='PRE'&&n.textContent.startsWith(kind==='age'?'Your Health Age Results':'Your Wellness Snapshot'));
+    const resultPre=ui.nodes().find(n=>n.tagName==='PRE'&&n.textContent.startsWith(kind==='age'?text.resultTitle.en:'Your Wellness Snapshot'));
     assert.doesNotMatch(resultPre.textContent,/Growing closer|Christ|prayer|spiritual/);
+    if(kind==='age') assert.ok(resultPre.textContent.includes(text.researchPending.en));
     ui.select('Growing closer to God'); ui.fillEmail('synthetic@example.test');
     assert.equal(ui.inputByLabel(newsletterConsentText(['closer-to-god'])).checked,false);
     ui.click('Preview my email choices'); await tick(); assert.deepEqual(calls,[]);
@@ -96,7 +98,7 @@ test('Spanish support choices and newsletter consent preserve explicit choices w
   const ui=setup('age'); ui.select('Growing closer to Christ'); ui.select('Growing closer to God'); ui.select(newsletterConsentText(['closer-to-god']));
   ui.click('Español'); assert.equal(ui.inputByLabel('Acercarme más a Cristo').checked,true); assert.equal(ui.inputByLabel('Acercarme más a Dios').checked,true);
   assert.equal(ui.inputByLabel(newsletterConsentText(['closer-to-god'],'es')).checked,true); assert.match(ui.root.textContent,/Temas elegidos: Acercarme más a Dios/);
-  assert.match(ui.root.textContent,/No se muestra una estimación numérica/);
+  assert.ok(ui.root.textContent.includes(text.researchPending.es));
   ui.click('Borrar mis temas del boletín'); assert.equal(ui.inputByLabel(newsletterConsentText([],'es')).checked,false);
 });
 test('published homepage generation has working routes/contact and no unfinished design placeholders',()=>{

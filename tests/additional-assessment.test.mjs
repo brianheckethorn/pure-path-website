@@ -1,47 +1,70 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { questions, text } from '../components/educational-age/content.js';
+import { questions, originalQuestions, text } from '../components/educational-age/content.js';
 import { additionalQuestions } from '../components/educational-age/additional-questions.js';
 import { calculateIllustrativeAge, scoringMaps, weights } from '../components/educational-age/scoring.js';
-import { resultEmailText, discussionIdeas, answerText } from '../components/educational-age/results.js';
+import { calculateAssessmentPreview, resultEmailText, resultPDFModel, discussionIdeas, answerText } from '../components/educational-age/results.js';
 import { mountEducationalAge } from '../components/educational-age/component.js';
 import { createMockDeliveryAdapter } from '../components/wellness-snapshot/delivery.js';
 import { componentHarness } from './dom-harness.mjs';
+import { answerAssessmentWithoutDisclosure } from './assessment-harness.mjs';
 
 const core = () => ({ age: '50', height: '67', weight: '160', ...Object.fromEntries(Object.entries(scoringMaps).map(([id, choices]) => [id, Object.keys(choices)[0]])) });
 
-test('all expanded inputs have bilingual copy and remain outside age arithmetic', () => {
-  assert.equal(questions.length, 40);
-  assert.equal(new Set(questions.map(q => q.id)).size, 40);
+test('31 active questions use unique bilingual inputs; expanded answers cannot alter frozen legacy arithmetic', () => {
+  assert.equal(questions.length, 31); assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
+  assert.equal(originalQuestions.length, 22);
+  for (const id of ['dietQuality', 'vegetables', 'nicotine', 'bloodPressure', 'bloodSugar', 'alcohol', 'exerciseTwentyThirty', 'sleepSevenEightFrequency']) {
+    assert.equal(questions.some(q => q.id === id), false, `No duplicate/removed active question: ${id}`);
+  }
   const base = core(); const expected = calculateIllustrativeAge(base);
   for (const question of additionalQuestions) {
     assert.equal(question.supplemental, true); assert.equal(question.score, 'none');
     assert.equal(question.id in scoringMaps, false); assert.equal(question.id in weights, false);
     for (const language of ['en', 'es']) { assert.ok(question.prompt[language]); assert.ok(question.help[language]); }
-    for (const value of [undefined, 'skip', 'unknown', ...(question.options || []).map(option => option.id), { value: '99999', unit: 'other' }]) {
+    for (const value of [undefined, 'skip', 'unknown', 'preferNot', ...(question.options || []).map(option => option.id), { value: '99999', unit: 'other' }]) {
       assert.deepEqual(calculateIllustrativeAge({ ...base, [question.id]: value }), expected, `${question.id}: ${String(value)}`);
     }
   }
 });
 
-test('private faith/contact choices stay out of saved reports and entered units stay explicit', () => {
-  const answers = { ...core(), fullName: 'Synthetic Ángela', spiritualityPreference: 'deep', reportContact: { email: 'synthetic@example.test', address: 'PRIVATE_CONTACT_SENTINEL' }, bloodGlucoseReading: { value: '5.4', unit: 'mmolL', timing: 'fasting' } };
-  for (const language of ['en', 'es']) {
-    const report = resultEmailText(calculateIllustrativeAge(answers), answers, language);
-    assert.match(report, /Synthetic Ángela/); assert.match(report, /mmol\/L/);
-    assert.doesNotMatch(report, /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
-    assert.ok(report.includes(text.actual[language])); assert.ok(report.includes(text.estimate[language]));
-    assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.glucoseSafety[language]));
+test('active preview remains research-pending without fabricated score, removed answers or health age', () => {
+  for (const answers of [{}, core(), { ...core(), spiritualityPreference: 'deep', tobaccoHistory: 'never', fruitVegetableServings: '5+' }]) {
+    const result = calculateAssessmentPreview(answers);
+    assert.equal(result.status, 'research-pending'); assert.equal(result.quizAge, undefined); assert.equal(result.score, undefined);
+    assert.deepEqual(result.errors, []);
+    assert.equal(result.actualAge, answers.age ? Number(answers.age) : null);
+    for (const language of ['en', 'es']) {
+      const report = resultEmailText(result, answers, language);
+      assert.ok(report.includes(text.researchPending[language])); assert.ok(report.includes(text.scoringReview[language]));
+      assert.equal(report.split('\n').some(line => line.startsWith(`${text.estimate[language]}:`)), false);
+      const model = resultPDFModel(result, answers, language);
+      assert.equal(model.estimatePending, true); assert.equal(model.estimate, undefined);
+    }
   }
-  const glucose = questions.find(q => q.id === 'bloodGlucoseReading');
-  assert.match(answerText(glucose, { value: '100' }, 'en'), /Unit: Not answered/);
 });
 
-test('unassessed readings and entry issues are always exported even with a favorable estimate', () => {
+test('private faith/contact choices stay out of pending saved reports and entered units stay explicit', () => {
+  const answers = { ...core(), fullName: 'Synthetic Angela', spiritualityPreference: 'deep', reportContact: { email: 'synthetic@example.test', address: 'PRIVATE_CONTACT_SENTINEL' }, bloodGlucoseReading: { readingStatus: 'measured', history: 'normal', value: '5.4', unit: 'mmolL', timing: 'fasting' } };
+  for (const language of ['en', 'es']) {
+    const result = calculateAssessmentPreview(answers); const report = resultEmailText(result, answers, language);
+    assert.match(report, /Synthetic Angela/); assert.match(report, /mmol\/L/);
+    assert.doesNotMatch(report, /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
+    assert.ok(report.includes(text.actual[language])); assert.ok(report.includes(text.researchPending[language]));
+    assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.glucoseSafety[language]));
+    const model = resultPDFModel(result, answers, language);
+    assert.equal(model.actual.value, 50); assert.equal(model.estimate, undefined);
+    assert.doesNotMatch(JSON.stringify(model), /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
+  }
+  const glucose = questions.find(q => q.id === 'bloodGlucoseReading');
+  assert.match(answerText(glucose, { readingStatus: 'measured', value: '100' }, 'en'), /Unit: Not answered/);
+});
+
+test('unassessed readings and entry issues are exported even for a favorable frozen legacy estimate', () => {
   const best = { age: '45', height: '67', weight: '150', ...Object.fromEntries(Object.entries(scoringMaps).map(([id, choices]) => [id, Object.entries(choices).sort((a,b) => b[1]-a[1])[0][0]])) };
   const answers = { ...best, waistMeasurement: { value: '-5' }, bloodPressureReading: { systolic: '200', diastolic: '130' }, bloodGlucoseReading: { value: '40' } };
-  const result = calculateIllustrativeAge(answers);
-  assert.equal(result.quizAge, 35);
+  // This direct utility check preserves the historical formula, not active UI scoring.
+  const result = calculateIllustrativeAge(answers); assert.equal(result.quizAge, 35);
   for (const language of ['en', 'es']) {
     const report = resultEmailText(result, answers, language);
     assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.readingIssues[language]));
@@ -66,18 +89,42 @@ test('unit conversion machine noise cannot cross an existing BMI factor boundary
     if (weight < 80 || weight > 500) continue;
     const imperial = calculateIllustrativeAge({ ...core(), height, weight });
     const metric = calculateIllustrativeAge({ ...core(), height: height * 2.54, heightUnit: 'cm', weight: weight * .45359237, weightUnit: 'kg' });
-    assert.equal(metric.quizAge, imperial.quizAge, `${height} inches / BMI ${bmi}`);
-    assert.equal(metric.score, imperial.score);
+    assert.equal(metric.quizAge, imperial.quizAge, `${height} inches / BMI ${bmi}`); assert.equal(metric.score, imperial.score);
   }
 });
 
-test('optional multi-select, clear, skip-to-results, and known actual age work without inferred data', () => {
-  const ui = componentHarness(); mountEducationalAge(ui.root, { delivery: createMockDeliveryAdapter() });
-  const input = ui.find(n => n.type === 'number')[0]; input.value = '50'; input.emit('input');
-  for (let i = 0; i < questions.findIndex(q => q.id === 'interests'); i++) ui.click(text.next.en);
-  ui.select('Healthy cooking'); ui.select('Memory and concentration');
-  ui.click('Español'); assert.ok(ui.inputByLabel('Cocina saludable').checked); assert.ok(ui.inputByLabel('Memoria y concentración').checked);
+test('multi-select clearing needs a new explicit response; None and declined contact complete without identifiers', () => {
+  const downloads = []; const ui = componentHarness();
+  mountEducationalAge(ui.root, { delivery: createMockDeliveryAdapter(), onDownload: copy => downloads.push(copy) });
+  const interestsIndex = questions.findIndex(q => q.id === 'interests'); const interests = questions[interestsIndex];
+  for (let index = 0; index < interestsIndex; index++) {
+    const current = questions[index];
+    if (current.id === 'age') { const input = ui.find(n => n.type === 'number')[0]; input.value = '50'; input.emit('input'); }
+    else answerAssessmentWithoutDisclosure(ui, current);
+    ui.click(text.next.en);
+  }
+  const currentTitle = () => ui.find(n => n.tagName === 'H2')[0].textContent;
+  ui.click(text.next.en); assert.equal(currentTitle(), interests.prompt.en);
+  assert.ok(ui.find(n => n.className === 'snapshot-error' && n.textContent).length);
+  const cooking = interests.options.find(option => option.id === 'healthyCooking');
+  const memory = interests.options.find(option => option.id === 'mentalPerformance');
+  ui.select(cooking.label.en); ui.select(memory.label.en); ui.click('Español');
+  assert.ok(ui.inputByLabel(cooking.label.es).checked); assert.ok(ui.inputByLabel(memory.label.es).checked);
   ui.click(text.clear.es); assert.equal(ui.find(n => n.type === 'checkbox' && n.checked).length, 0);
-  ui.click('Omitir los detalles opcionales restantes y ver resultados');
-  assert.match(ui.root.textContent, /Tu edad real: 50 años/); assert.ok(ui.root.textContent.includes(text.withheld.es));
+  ui.click(text.next.es); assert.equal(currentTitle(), interests.prompt.es);
+  ui.click(text.noneSelected.es); ui.click(text.next.es);
+  const contact = questions.find(q => q.id === 'reportContact'); assert.equal(currentTitle(), contact.prompt.es);
+  ui.click(text.finish.es); assert.equal(currentTitle(), contact.prompt.es);
+  const email = ui.find(n => n.type === 'email')[0]; email.value = 'invalid'; email.emit('input');
+  ui.click(text.finish.es); assert.equal(currentTitle(), contact.prompt.es);
+  ui.click(text.preferNot.es); ui.click(text.finish.es);
+  assert.ok(ui.root.textContent.includes(text.researchPending.es));
+  const comparison = ui.find(n => n.className === 'age-comparison')[0];
+  assert.deepEqual(comparison.children.map(card => card.children[1].children[0].textContent), ['50', text.pendingLabel.es]);
+  assert.equal(comparison.children[0].children[1].children[1].textContent, text.years.es);
+  assert.equal(ui.find(n => n.type === 'email').length, 0);
+  ui.click('Descargar mis resultados (.txt)');
+  assert.equal(downloads.length, 1); assert.ok(downloads[0].includes(text.noneSelected.es));
+  assert.equal(downloads[0].includes(cooking.label.es), false); assert.equal(downloads[0].includes(memory.label.es), false);
+  assert.equal(downloads[0].includes('invalid'), false);
 });

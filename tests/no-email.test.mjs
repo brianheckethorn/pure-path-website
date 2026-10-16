@@ -1,8 +1,9 @@
-import { questions } from '../components/educational-age/content.js';
+import { text } from '../components/educational-age/content.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { componentHarness } from './dom-harness.mjs';
+import { finishAssessmentWithExplicitResponses } from './assessment-harness.mjs';
 import { mountEducationalAge } from '../components/educational-age/component.js';
 import { mountWellnessSnapshot } from '../components/wellness-snapshot/component.js';
 import { snapshotContent } from '../components/wellness-snapshot/content.js';
@@ -14,7 +15,7 @@ for(const kind of ['age','snapshot']) {
     const downloads=[]; const ui=componentHarness();
     const delivery={...createMockDeliveryAdapter(),requestAddressVerification(){throw new Error('No public delivery call permitted');},requestResultEmail(){throw new Error('No public delivery call permitted');},requestMailingList(){throw new Error('No public delivery call permitted');}};
     const onDownload=(copy,name)=>downloads.push({copy,name});
-    if(kind==='age') {mountEducationalAge(ui.root,{delivery,onDownload});for(let i=0;i<questions.length-1;i++)ui.click('Next');ui.click('See my comparison');}
+    if(kind==='age') {mountEducationalAge(ui.root,{delivery,onDownload});finishAssessmentWithExplicitResponses(ui);}
     else {mountWellnessSnapshot(ui.root,{content:snapshotContent,delivery,onDownload});ui.select('Yes');ui.click('Start my snapshot');for(let i=0;i<7;i++)ui.click('Next');ui.click('See my snapshot');}
     assert.equal(ui.nodes().filter(n=>n.type==='email'||n.type==='checkbox').length,0);
     assert.doesNotMatch(ui.root.textContent,/Email \(optional\)|Newsletter topics|Preview my email choices|Want a copy by email/);
@@ -22,6 +23,10 @@ for(const kind of ['age','snapshot']) {
     assert.equal(downloads.length,2);assert.equal(downloads[0].copy,downloads[1].copy);assert.equal(downloads[0].name,'your-pure-path-results.txt');
     assert.doesNotMatch(downloads[0].copy,/Christ|God|spiritual|faith/i);
     assert.match(downloads[0].copy,kind==='age'?/custom lifestyle quiz/:/Your Wellness Snapshot/);
+    if(kind==='age') {
+      assert.ok(downloads[0].copy.includes(text.researchPending.en));
+      assert.equal(downloads[0].copy.split('\n').some(line=>line.startsWith(`${text.estimate.en}:`)),false);
+    }
     const link=ui.nodes().find(n=>n.tagName==='A'&&n.href===connectionFormURL);
     assert.ok(link);assert.equal(link.target,'_blank');assert.equal(link.referrerPolicy,'no-referrer');assert.match(link.rel,/noreferrer/);
     assert.equal(link.href,'https://forms.gle/Zcc9QZbo9N7NTQcj6');assert.match(link.textContent,/Health & Wellness Connection/);

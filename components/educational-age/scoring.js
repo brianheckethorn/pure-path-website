@@ -45,7 +45,7 @@ export function validateAnswers(answers) {
   }
   // Sex is retained from the original question set, but has no source coefficient.
   // It is optional; no inferred sex or extra age coefficient is introduced.
-  if (answers.sex !== undefined && !['female', 'male', 'unknown', 'skip'].includes(answers.sex)) errors.push({ id: 'sex', code: 'missingChoice' });
+  if (answers.sex !== undefined && !['female', 'male', 'unknown', 'skip', 'preferNot'].includes(answers.sex)) errors.push({ id: 'sex', code: 'missingChoice' });
   return errors;
 }
 

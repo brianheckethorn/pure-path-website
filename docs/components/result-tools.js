@@ -1,4 +1,5 @@
 import { createResultPDF, findUnsupportedPDFCharacters } from './result-pdf.js';
+import { appendResultReport, reportStyles } from './result-report.js';
 
 export const connectionFormURL = 'https://forms.gle/Zcc9QZbo9N7NTQcj6';
 
@@ -20,7 +21,7 @@ export function canSharePDF(view, file) {
   catch { return false; }
 }
 // Print only the report, with literal text nodes. Answers never become HTML or URLs.
-export function printResultText(document, text, language = 'en', container = document.body) {
+export function printResultText(document, text, language = 'en', container = document.body, model) {
   const frame = document.createElement('iframe');
   frame.title = language === 'es' ? 'Imprimir informe local' : 'Print local report';
   frame.setAttribute('aria-hidden', 'true');
@@ -33,16 +34,20 @@ export function printResultText(document, text, language = 'en', container = doc
     report.documentElement.lang = language;
     report.title = language === 'es' ? 'Informe de Your Pure Path' : 'Your Pure Path report';
     const style = report.createElement('style');
-    style.textContent = '@page{size:auto;margin:18mm}body{font:11pt/1.5 Arial,sans-serif;color:#26301a}h1{font-size:20pt;border-bottom:2pt solid #b9cf5c;padding-bottom:8pt}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}';
-    const heading = report.createElement('h1'); heading.textContent = 'Your Pure Path';
-    const copy = report.createElement('pre'); copy.textContent = text;
-    report.head.append(style); report.body.append(heading, copy);
+    style.textContent = model ? reportStyles : '@page{size:auto;margin:18mm}body{font:11pt/1.5 Arial,sans-serif;color:#26301a}h1{font-size:20pt;border-bottom:2pt solid #b9cf5c;padding-bottom:8pt}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}';
+    report.head.append(style);
+    if (model) appendResultReport(report.body, { document: report, model, language, collapsibleAnswers: false });
+    else { const heading = report.createElement('h1'); heading.textContent = 'Your Pure Path'; const copy = report.createElement('pre'); copy.textContent = text; report.body.append(heading, copy); }
     view.addEventListener('afterprint', () => frame.remove(), { once: true });
-    view.focus(); view.print();
+    if (model) {
+      // Print only after the local portrait and bundled fonts are ready.
+      const assets = [report.fonts?.load('16px Karla'), report.fonts?.load('24px "DM Serif Display"'), ...Array.from(report.images || []).map(image => image.decode?.())].filter(Boolean);
+      Promise.allSettled(assets).then(() => { if (frame.isConnected !== false) { view.focus(); view.print(); } }).catch(() => frame.remove());
+    } else { view.focus(); view.print(); }
   } catch (error) { frame.remove(); throw error; }
 }
 
-export function appendResultTools(parent, { document, text, language = 'en', onDownload }) {
+export function appendResultTools(parent, { document, text, reportModel, language = 'en', onDownload }) {
   const spanish = language === 'es'; const view = document.defaultView;
   const section = document.createElement('section'); section.className = 'result-tools';
   const heading = document.createElement('h3'); heading.textContent = spanish ? 'Guarda o comparte tu informe' : 'Keep or share your report';
@@ -60,7 +65,7 @@ export function appendResultTools(parent, { document, text, language = 'en', onD
   warning.textContent = hasUnsupportedCharacters ? fontWarning : '';
   const withWarning = copy => hasUnsupportedCharacters ? `${copy} ${fontWarning}` : copy;
   let bytes;
-  const pdfBytes = () => bytes ??= createResultPDF(text, { language });
+  const pdfBytes = () => bytes ??= createResultPDF(text, { language, model: reportModel });
   const pdfFile = () => new view.File([pdfBytes()], 'your-pure-path-results.pdf', { type: 'application/pdf' });
   let shareSupported = false;
   try { shareSupported = canSharePDF(view, new view.File([], 'your-pure-path-results.pdf', { type: 'application/pdf' })); } catch { /* File sharing is optional. */ }
@@ -78,7 +83,7 @@ export function appendResultTools(parent, { document, text, language = 'en', onD
   }
   action(spanish ? 'Guardar PDF' : 'Save PDF', savePDF);
   action(spanish ? 'Imprimir informe' : 'Print report', () => {
-    try { printResultText(document, text, language, section); status.textContent = spanish ? 'Se solicitó imprimir. También puedes guardar el PDF con el botón Guardar PDF.' : 'Print requested. You can also keep a PDF using Save PDF.'; }
+    try { printResultText(document, text, language, section, reportModel); status.textContent = spanish ? 'Se solicitó imprimir. También puedes guardar el PDF con el botón Guardar PDF.' : 'Print requested. You can also keep a PDF using Save PDF.'; }
     catch { status.textContent = spanish ? 'No se pudo abrir la impresión. Usa Guardar PDF e imprime el archivo.' : 'Printing could not open. Use Save PDF and print the file.'; }
   }, true);
   const share = action(shareSupported ? (spanish ? 'Compartir PDF con mis apps' : 'Share PDF with my apps') : (spanish ? 'Descargar PDF para adjuntarlo a un correo' : 'Download PDF to attach to email'), async () => {

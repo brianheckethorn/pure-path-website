@@ -27,7 +27,7 @@ function unitFor(questionId, answers) {
 }
 
 function canonicalHeight(answers) {
-  if (answers.height === 'unknown' || answers.height === 'skip') return null;
+  if (answers.height === 'unknown' || answers.height === 'skip' || answers.height === 'preferNot') return null;
   const unit = unitFor('height', answers);
   if (unit === 'ft-in') {
     const feet = number(answers.heightFeet);
@@ -101,6 +101,7 @@ export function measurementDisplay(questionId, answers = {}, language = 'en') {
   const raw = answers[questionId];
   if (raw === 'unknown') return labels.unknown;
   if (raw === 'skip') return labels.skip;
+  if (raw === 'preferNot') return locale === 'es' ? 'Prefiero no responder' : 'Prefer not to answer';
   const unit = unitFor(questionId, answers);
   const format = value => new Intl.NumberFormat(locale, { maximumFractionDigits: 10 }).format(value);
   if (questionId === 'height' && unit === 'ft-in') {

@@ -7,12 +7,12 @@ export const publicFiles = [
   '.nojekyll', 'CNAME', 'index.html', 'health-age.html', 'health-age-assessment.html',
   'health-age-assessment/index.html', 'health-age-assessment/page.js',
   'wellness-snapshot/index.html', 'wellness-snapshot/page.js',
-  'assets/a143c2a9960446d649523f272677f609.jpg',
+  'assets/a143c2a9960446d649523f272677f609.jpg', 'assets/mario-portrait.jpg',
   'assets/fonts/fonts.css', 'assets/fonts/DM-Serif-Display-OFL.txt', 'assets/fonts/Karla-OFL.txt',
   'assets/fonts/dm-serif-display-regular.ttf', 'assets/fonts/dm-serif-display-italic.ttf',
   'assets/fonts/karla-regular.ttf', 'assets/fonts/karla-medium.ttf', 'assets/fonts/karla-bold.ttf',
-  'components/support-preferences.js', 'components/result-tools.js', 'components/result-pdf.js',
-  ...['age.css', 'component.js', 'content.js', 'results.js', 'scoring.js', 'additional-questions.js', 'measurements.js', 'reading-context.js'].map(name => `components/educational-age/${name}`),
+  'components/support-preferences.js', 'components/result-tools.js', 'components/result-pdf.js', 'components/result-pdf-fonts.js', 'components/result-report.js', 'components/report-portrait.js',
+  ...['age.css', 'component.js', 'content.js', 'results.js', 'scoring.js', 'additional-questions.js', 'measurements.js', 'reading-context.js', 'response-policy.js', 'question-guidance.js'].map(name => `components/educational-age/${name}`),
   ...['component.js', 'content.js', 'delivery.js', 'model.js', 'snapshot.css'].map(name => `components/wellness-snapshot/${name}`)
 ];
 async function files(directory) {

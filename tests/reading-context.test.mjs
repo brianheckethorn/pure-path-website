@@ -85,3 +85,30 @@ test('issue messages are bilingual, deterministic, pure and safe for malformed g
     assert.match(readingEntryIssues({ waistMeasurement: value })[0].message, /clear and re-enter/);
   }
 });
+
+test('consolidated measured mode checks history and values; Not measured ignores stale raw fields', () => {
+  for (const id of ['bloodPressureReading', 'bloodGlucoseReading']) {
+    const raw = id === 'bloodPressureReading' ? { systolic: '120', diastolic: '80' } : { value: '100', unit: 'mgDl', timing: 'unsure' };
+    const stale = id === 'bloodPressureReading' ? { systolic: 'bad', diastolic: '0' } : { value: '1e99', unit: 'bad', timing: '' };
+    for (const history of ['diagnosed', 'borderline', 'normal', 'unknown', 'preferNot']) {
+      const notMeasured = { [id]: { readingStatus: 'notMeasured', history } };
+      assert.deepEqual(readingEntryIssues(notMeasured), []);
+      assert.equal(hasReadingContext(notMeasured), false);
+      const withStale = { [id]: { ...notMeasured[id], ...stale } };
+      assert.deepEqual(readingEntryIssues(withStale), []);
+      assert.equal(hasReadingContext(withStale), false);
+      const measured = { [id]: { readingStatus: 'measured', history, ...raw } };
+      assert.deepEqual(readingEntryIssues(measured), []);
+      assert.equal(hasReadingContext(measured), true);
+    }
+    assert.match(readingEntryIssues({ [id]: { readingStatus: 'notMeasured' } })[0].message, /health-history answer/);
+    assert.match(readingEntryIssues({ [id]: { readingStatus: 'measured', history: 'normal', ...stale } })[0].message, /plain decimal|choose mg\/dL/);
+    assert.match(readingEntryIssues({ [id]: { readingStatus: 'bad', history: 'normal', ...raw } })[0].message, /Measured or Not measured/);
+    assert.match(readingEntryIssues({ [id]: { readingStatus: 'measured', history: 'bad', ...raw } }, 'es')[0].message, /historial de salud/);
+    assert.deepEqual(readingEntryIssues({ [id]: raw }), [], 'legacy objects without status retain entry-only validation');
+    for (const value of ['unknown', 'preferNot', 'skip']) {
+      assert.deepEqual(readingEntryIssues({ [id]: value }), []);
+      assert.equal(hasReadingContext({ [id]: value }), false);
+    }
+  }
+});

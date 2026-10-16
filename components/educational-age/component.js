@@ -1,11 +1,13 @@
-import { questions, sections, text, disclosure } from './content.js';
-import { calculateIllustrativeAge, inputBounds, numericValue } from './scoring.js';
-import { discussionIdeas, answerText, reportAnswer, resultEmailText, readingSources } from './results.js';
+import { questions, sections, text } from './content.js';
+import { inputBounds } from './scoring.js';
+import { calculateAssessmentPreview, answerText, resultEmailText, resultPDFModel, readingSources } from './results.js';
 import { previewDelivery, isValidEmail } from '../wellness-snapshot/delivery.js';
 import { appendResultTools } from '../result-tools.js';
 import { appendSpiritualSupport, appendNewsletterTopics, newsletterConsentText, newsletterRequestText } from '../support-preferences.js';
 import { unitBounds } from './measurements.js';
-import { hasReadingContext, readingEntryIssues } from './reading-context.js';
+import { readingEntryIssues } from './reading-context.js';
+import { questionResponseIssue, assessmentResponseIssues } from './response-policy.js';
+import { appendResultReport, reportStyles } from '../result-report.js';
 
 let nextInstance = 0;
 export function mountEducationalAge(root, { delivery, onLanguage = () => {}, showDeliveryPreview = false, onDownload }) {
@@ -15,6 +17,7 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
   let state = fresh('en');
   let generation = 0;
   let updateEntryFeedback = () => {};
+  let navigationIssue = null;
   function fresh(language) { return { language, view: 'questions', answers: {}, step: 0, result: null, email: '', resultConsent: false, listConsent: false, newsletterTopics: [], spiritualSupport: '' }; }
   const t = key => text[key][state.language];
   function node(tag, copy, className) {
@@ -27,9 +30,9 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     const element = node('button', copy, secondary ? 'secondary-button' : undefined); element.type = 'button'; element.addEventListener('click', action); return element;
   }
   function actions(...buttons) { const row = node('div', undefined, 'snapshot-actions'); row.append(...buttons); return row; }
-  function begin() { generation++; updateEntryFeedback = () => {}; root.replaceChildren(); }
+  function begin() { generation++; updateEntryFeedback = () => {}; root.replaceChildren(); root.setAttribute('data-view', state.view); }
   function heading(copy) { const element = node('h2', copy); element.tabIndex = -1; root.append(element); return element; }
-  function reset(focus = true) { state = fresh(state.language); showQuestion(focus); }
+  function reset(focus = true) { navigationIssue = null; state = fresh(state.language); showQuestion(focus); }
   function languageToggle() {
     const row = node('div', undefined, 'language-row');
     const control = button(state.language === 'en' ? 'Español' : 'English', () => {
@@ -42,28 +45,16 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
   }
   function clearDelivery() { state.email = ''; state.resultConsent = false; state.listConsent = false; state.newsletterTopics = []; state.spiritualSupport = ''; }
   function optionalCopy(en, es) { return state.language === 'es' ? es : en; }
-  function setAnswer(id, value) { state.answers[id] = value; state.result = null; updateEntryFeedback(); }
+  function setAnswer(id, value) { state.answers[id] = value; state.result = null; navigationIssue = null; updateEntryFeedback(); }
   function sourceLink(source) {
     const link = node('a', source[state.language]); link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; return link;
-  }
-  function appendReadingContext() {
-    if (!hasReadingContext(state.answers)) return;
-    const section = node('section', undefined, 'reading-context');
-    section.append(node('p', t('readingNotice'), 'heuristic-disclosure'));
-    const issues = readingEntryIssues(state.answers, state.language);
-    if (issues.length) {
-      section.append(node('h3', t('readingIssues')));
-      for (const issue of issues) section.append(node('p', issue.message, 'snapshot-error'), button(questions.find(question => question.id === issue.id).prompt[state.language], () => { clearDelivery(); state.step = questions.findIndex(question => question.id === issue.id); showQuestion(true); }, true));
-    }
-    for (const source of readingSources) if (hasReadingContext({ [source.id]: state.answers[source.id] })) section.append(node('p', t(source.id === 'bloodPressureReading' ? 'bpSafety' : 'glucoseSafety'), 'snapshot-small'), sourceLink(source));
-    root.append(section);
   }
   function inputField(field, value, changed) {
     const label = node('label', field.label[state.language]);
     const input = node(field.type === 'select' ? 'select' : 'input');
     input.id = `${instance}-${field.id}`; label.htmlFor = input.id;
     if (field.type === 'select') {
-      const blank = node('option', optionalCopy('Choose (optional)', 'Elegir (opcional)')); blank.value = ''; input.append(blank);
+      const blank = node('option', optionalCopy('Choose', 'Elegir')); blank.value = ''; input.append(blank);
       for (const option of field.options) { const choice = node('option', option.label[state.language]); choice.value = option.id; input.append(choice); }
     } else {
       input.type = field.type; input.autocomplete = 'off'; input.maxLength = field.maxLength || 120;
@@ -76,14 +67,17 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
   function supplementalFields(question) {
     if (question.type === 'group') {
       const value = state.answers[question.id];
-      for (const field of question.fields) root.append(...inputField(field, value && typeof value === 'object' ? value[field.id] : '', next => {
-        const previous = state.answers[question.id]; setAnswer(question.id, { ...(previous && typeof previous === 'object' ? previous : {}), [field.id]: next });
+      for (const field of question.fields.filter(field => !field.whenReading || value?.readingStatus === field.whenReading)) root.append(...inputField(field, value && typeof value === 'object' ? value[field.id] : '', next => {
+        const previous = state.answers[question.id]; const updated = { ...(previous && typeof previous === 'object' ? previous : {}), [field.id]: next };
+        if (field.id === 'readingStatus' && next !== 'measured') for (const dependent of question.fields.filter(field => field.whenReading)) delete updated[dependent.id];
+        setAnswer(question.id, updated);
+        if (field.id === 'readingStatus') showQuestion(true);
       }));
     } else if (question.type === 'text') {
-      root.append(...inputField({ ...question, label: question.prompt }, state.answers[question.id], value => setAnswer(question.id, value)));
+      root.append(...inputField({ ...question, label: question.prompt }, ['unknown', 'preferNot', 'skip'].includes(state.answers[question.id]) ? '' : state.answers[question.id], value => setAnswer(question.id, value)));
     } else {
       const group = node('fieldset'); group.append(node('legend', question.prompt[state.language]));
-      for (const option of question.options) {
+      for (const option of question.options.filter(option => option.id !== 'preferNot')) {
         const label = node('label', undefined, 'snapshot-option'); const input = node('input');
         input.type = question.type === 'multi' ? 'checkbox' : 'radio'; input.name = `${instance}-${question.id}`; input.value = option.id;
         input.checked = question.type === 'multi' ? Array.isArray(state.answers[question.id]) && state.answers[question.id].includes(option.id) : state.answers[question.id] === option.id;
@@ -95,8 +89,12 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       }
       root.append(group);
     }
-    root.append(actions(button(t('unknown'), () => { setAnswer(question.id, 'unknown'); showQuestion(true); }, true), button(t('skip'), () => { setAnswer(question.id, 'skip'); showQuestion(true); }, true)));
-    if (['unknown', 'skip'].includes(state.answers[question.id])) root.append(node('p', answerText(question, state.answers[question.id], state.language), 'snapshot-small'));
+    const responses = [];
+    if (!['fullName', 'reportContact'].includes(question.id)) responses.push(button(t('unknown'), () => { setAnswer(question.id, 'unknown'); showQuestion(true); }, true));
+    if (question.type === 'multi') responses.push(button(t('noneSelected'), () => { setAnswer(question.id, 'none'); showQuestion(true); }, true));
+    responses.push(button(t('preferNot'), () => { setAnswer(question.id, 'preferNot'); showQuestion(true); }, true));
+    root.append(actions(...responses));
+    if (['unknown', 'preferNot', 'skip', 'none'].includes(state.answers[question.id])) root.append(node('p', answerText(question, state.answers[question.id], state.language), 'response-choice-note'));
   }
   function measurementUnits(question) {
     const height = question.id === 'height'; const key = height ? 'heightUnit' : 'weightUnit';
@@ -116,15 +114,20 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     begin(); languageToggle();
     const question = questions[state.step];
     root.append(node('p', `${sections[question.section][state.language]} · ${state.step + 1}/${questions.length}`, 'eyebrow'));
+    const progress = node('div', undefined, 'assessment-progress'); progress.setAttribute('role', 'progressbar'); progress.setAttribute('aria-valuemin', '0'); progress.setAttribute('aria-valuemax', String(questions.length)); progress.setAttribute('aria-valuenow', String(state.step + 1)); progress.setAttribute('aria-label', t('progress'));
+    const bar = node('span'); bar.style = `width:${(state.step + 1) / questions.length * 100}%`; progress.append(bar); root.append(progress);
     const title = heading(question.prompt[state.language]);
     const error = state.result?.errors?.find(entry => entry.id === question.id);
     if (question.help) root.append(node('p', question.help[state.language], 'question-help'));
+    for (const source of question.guidanceSources || []) {
+      const link = node('a', `${optionalCopy('Source', 'Fuente')}: ${new URL(source.url).hostname}`, 'question-source'); link.href = source.url; link.title = source.title; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.referrerPolicy = 'no-referrer'; root.append(link);
+    }
     if (['waistMeasurement', 'bloodPressureReading', 'bloodGlucoseReading'].includes(question.id)) {
-      root.append(node('p', optionalCopy('Copy the existing reading exactly as displayed. Use a positive number; leave it blank or skip if you are unsure. No clinical assessment is made here.', 'Copia la lectura existente tal como aparece. Usa un número positivo; déjalo en blanco u omítelo si no sabes. Aquí no se hace una evaluación clínica.'), 'snapshot-small'));
+      root.append(node('p', optionalCopy('Copy an existing reading exactly as displayed. If it was not measured or you do not know it, choose that response below. Do not invent a value. No clinical assessment is made here.', 'Copia una lectura existente tal como aparece. Si no se midió o no la conoces, elige esa respuesta abajo. No inventes un valor. Aquí no se hace una evaluación clínica.'), 'snapshot-small'));
       const source = readingSources.find(source => source.id === question.id);
       if (source) root.append(node('p', t(question.id === 'bloodPressureReading' ? 'bpSafety' : 'glucoseSafety'), 'snapshot-small'), sourceLink(source));
     }
-    root.append(node('p', question.supplemental ? optionalCopy('Optional. These details do not add or subtract health-age years.', 'Opcional. Estos detalles no suman ni restan años de edad de salud.') : t('adult'), 'snapshot-small'));
+    root.append(node('p', t('responseRequired'), 'snapshot-small'));
     if (question.supplemental) {
       supplementalFields(question);
       if (['waistMeasurement', 'bloodPressureReading', 'bloodGlucoseReading'].includes(question.id)) {
@@ -142,77 +145,51 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       const input = node('input'); input.id = `${instance}-${question.id}`; input.type = 'number'; input.autocomplete = 'off';
       const bounds = unit ? unitBounds(question.id, unit) : inputBounds[question.id];
       input.min = String(bounds.min); input.max = String(bounds.max); input.step = inputBounds[question.id].integer ? '1' : 'any'; input.inputMode = inputBounds[question.id].integer ? 'numeric' : 'decimal';
-      input.value = ['unknown', 'skip'].includes(state.answers[question.id]) ? '' : state.answers[question.id] ?? '';
+      input.value = ['unknown', 'skip', 'preferNot'].includes(state.answers[question.id]) ? '' : state.answers[question.id] ?? '';
       label.htmlFor = input.id;
       input.setAttribute('aria-describedby', `${instance}-status`);
       if (error) input.setAttribute('aria-invalid', 'true');
-      input.addEventListener('input', () => { state.answers[question.id] = input.value; state.result = null; });
+      input.addEventListener('input', () => setAnswer(question.id, input.value));
       root.append(label, input);
       }
-      if (['unknown', 'skip'].includes(state.answers[question.id])) root.append(node('p', answerText(question, state.answers[question.id], state.language), 'snapshot-small'));
-      root.append(actions(button(t('unknown'), () => { state.answers[question.id] = 'unknown'; showQuestion(true); }, true), button(t('skip'), () => { state.answers[question.id] = 'skip'; showQuestion(true); }, true)));
+      if (['unknown', 'skip', 'preferNot'].includes(state.answers[question.id])) root.append(node('p', answerText(question, state.answers[question.id], state.language), 'response-choice-note'));
+      root.append(actions(button(t('unknown'), () => { setAnswer(question.id, 'unknown'); showQuestion(true); }, true), button(t('preferNot'), () => { setAnswer(question.id, 'preferNot'); showQuestion(true); }, true)));
     } else {
       const group = node('fieldset'); group.append(node('legend', question.prompt[state.language]));
       if (error) group.setAttribute('aria-invalid', 'true');
       group.setAttribute('aria-describedby', `${instance}-status`);
-      for (const option of [...question.options, { id: 'unknown', label: text.unknown }, { id: 'skip', label: text.skip }]) {
+      for (const option of [...question.options, { id: 'unknown', label: text.unknown }, { id: 'preferNot', label: text.preferNot }]) {
         const label = node('label', undefined, 'snapshot-option'); const input = node('input');
         input.type = 'radio'; input.name = `${instance}-${question.id}`; input.value = option.id; input.checked = state.answers[question.id] === option.id;
-        input.addEventListener('change', () => { state.answers[question.id] = option.id; state.result = null; });
+        input.addEventListener('change', () => setAnswer(question.id, option.id));
         label.append(input, node('span', option.label[state.language])); group.append(label);
       }
       root.append(group);
     }
-    const status = node('p', error ? t(error.code === 'bounds' ? 'boundsError' : question.type === 'number' ? 'numberNeeded' : 'choiceNeeded') : '', error ? 'snapshot-error' : 'snapshot-small'); status.id = `${instance}-status`; status.setAttribute('role', 'status'); root.append(status);
+    const statusCopy = navigationIssue?.id === question.id ? questionResponseIssue(question, state.answers, state.language) : error ? t(error.code === 'bounds' ? 'boundsError' : question.type === 'number' ? 'numberNeeded' : 'choiceNeeded') : '';
+    const status = node('p', statusCopy || '', statusCopy ? 'snapshot-error' : 'snapshot-small'); status.id = `${instance}-status`; status.setAttribute('role', 'status'); root.append(status);
     root.append(actions(button(state.step === questions.length - 1 ? t('finish') : t('next'), () => {
-      if (state.step === questions.length - 1) { clearDelivery(); state.result = calculateIllustrativeAge(state.answers); showResults(true); }
-      else { state.step++; showQuestion(true); }
-    }), button(t('back'), () => { if (state.step > 0) state.step--; showQuestion(true); }, true), button(t('clear'), () => { delete state.answers[question.id]; if (question.id === 'height') { delete state.answers.heightFeet; delete state.answers.heightInches; } state.result = null; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
-    if (question.supplemental && state.step !== questions.length - 1) root.append(actions(button(optionalCopy('Skip remaining optional details and see results', 'Omitir los detalles opcionales restantes y ver resultados'), () => { clearDelivery(); state.result = calculateIllustrativeAge(state.answers); showResults(true); }, true)));
+      const issue = questionResponseIssue(question, state.answers, state.language);
+      if (issue) { navigationIssue = { id: question.id }; showQuestion(true); return; }
+      navigationIssue = null;
+      if (state.step === questions.length - 1) {
+        const remaining = assessmentResponseIssues(questions, state.answers, state.language);
+        if (remaining.length) { state.step = questions.findIndex(question => question.id === remaining[0].id); navigationIssue = { id: remaining[0].id }; showQuestion(true); return; }
+        clearDelivery(); state.result = calculateAssessmentPreview(state.answers); showResults(true);
+      } else { state.step++; showQuestion(true); }
+    }), button(t('back'), () => { navigationIssue = null; if (state.step > 0) state.step--; showQuestion(true); }, true), button(t('clear'), () => { delete state.answers[question.id]; if (question.id === 'height') { delete state.answers.heightFeet; delete state.answers.heightInches; } state.result = null; navigationIssue = null; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
     if (focus) title.focus();
   }
   function showResults(focus = false) {
     state.view = 'results';
     begin(); languageToggle();
     const result = state.result;
-    const title = heading(t('resultTitle'));
-    if (result.status === 'complete') {
-      const comparison = node('dl', undefined, 'age-comparison');
-      for (const [label, value] of [[t('actual'), result.actualAge], [t('estimate'), result.quizAge]]) {
-        const row = node('div'); const age = node('dd');
-        age.append(node('strong', String(value), 'age-number'), node('span', ` ${t('years')}`, 'age-unit'));
-        row.append(node('dt', label), age); comparison.append(row);
-      }
-      root.append(comparison);
-    } else {
-      const age = numericValue(state.answers.age);
-      if (age !== null && Number.isInteger(age) && age >= 18 && age <= 100) root.append(node('p', `${t('actual')}: ${age} ${t('years')}`, 'actual-age-known'));
-      root.append(node('h3', t('withheld')), node('p', t('withheldWhy')));
-      const errors = node('ul', undefined, 'missing-list');
-      for (const error of result.errors) {
-        const question = questions.find(question => question.id === error.id);
-        const item = node('li'); item.append(button(question.prompt[state.language], () => { clearDelivery(); state.step = questions.findIndex(candidate => candidate.id === error.id); showQuestion(true); }, true)); errors.append(item);
-      }
-      root.append(errors);
-    }
-    // Keep the unvalidated-estimate disclosure immediately below the age pair.
-    root.append(node('p', disclosure[state.language], 'heuristic-disclosure'));
-    appendReadingContext();
-    root.append(node('h3', t('suggestions')), node('p', t('care'), 'snapshot-small'));
-    const ideas = discussionIdeas(state.answers); const list = node('ol', undefined, 'health-next-steps');
-    for (const idea of ideas) list.append(node('li', idea[state.language]));
-    root.append(ideas.length ? list : node('p', t('none')));
-    if (result.status === 'complete') {
-      const details = node('details', undefined, 'comparison-details'); details.append(node('summary', t('calculationDetails')));
-      details.append(node('p', `${t('difference')}: ${result.difference > 0 ? '+' : ''}${result.difference} ${t('years')}`, 'snapshot-small'), node('p', t('comparisonNote'), 'snapshot-small'), node('p', `${t('bmi')}: ${result.bmi.toFixed(1)}`, 'snapshot-small'), node('p', t('bmiNote'), 'snapshot-small'));
-      const bmiLink = node('a', state.language === 'en' ? 'CDC: about BMI' : 'CDC: información sobre el IMC'); bmiLink.href = 'https://www.cdc.gov/bmi/about/index.html'; bmiLink.target = '_blank'; bmiLink.rel = 'noopener noreferrer'; details.append(bmiLink); root.append(details);
-    }
+    const model = resultPDFModel(result, state.answers, state.language);
+    const style = node('style'); style.textContent = reportStyles; root.append(style);
+    const { title } = appendResultReport(root, { document, model, language: state.language });
     root.append(actions(button(t('edit'), () => { clearDelivery(); state.step = 0; showQuestion(true); }, true), button(t('reset'), () => reset(), true)));
-    const summary = node('details'); summary.append(node('summary', t('review')));
-    for (const question of questions) { const paragraph = node('p', undefined, 'result-answer'); paragraph.append(node('span', question.prompt[state.language]), node('br'), node('strong', reportAnswer(question, state.answers, state.language))); summary.append(paragraph); }
-    root.append(summary);
     appendSpiritualSupport(root, { document, state, instance, language: state.language });
-    appendResultTools(root, { document, text: resultEmailText(state.result, state.answers, state.language), language: state.language, onDownload });
+    appendResultTools(root, { document, text: resultEmailText(state.result, state.answers, state.language), reportModel: model, language: state.language, onDownload });
     if (showDeliveryPreview) root.append(emailOptions());
     if (focus) { title.focus({ preventScroll: true }); title.scrollIntoView({ block: 'start', behavior: 'auto' }); }
   }

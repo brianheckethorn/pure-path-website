@@ -1,4 +1,5 @@
-// Browser-local English/Spanish PDF writer. Standard Helvetica, WinAnsi and a
+import { pdfFonts } from './result-pdf-fonts.js';
+// Browser-local English/Spanish PDF writer. Embedded brand fonts, WinAnsi and a
 // ToUnicode map preserve accented text without fetching fonts or using a service.
 const extraCodes = new Map([
   ['€', 128], ['‚', 130], ['ƒ', 131], ['„', 132], ['…', 133], ['†', 134], ['‡', 135],
@@ -6,13 +7,6 @@ const extraCodes = new Map([
   ['‘', 145], ['’', 146], ['“', 147], ['”', 148], ['•', 149], ['–', 150], ['—', 151],
   ['˜', 152], ['™', 153], ['š', 154], ['›', 155], ['œ', 156], ['ž', 158], ['Ÿ', 159]
 ]);
-const specialWidths = { ' ': 278, '!': 278, '"': 355, '#': 556, '$': 556, '%': 889, '&': 667, "'": 191, '(': 333, ')': 333, '*': 389, '+': 584, ',': 278, '-': 333, '.': 278, '/': 278, ':': 278, ';': 278, '<': 584, '=': 584, '>': 584, '?': 556, '@': 1015, '[': 278, '\\': 278, ']': 278, '^': 469, '_': 556, '`': 333, '{': 334, '|': 260, '}': 334, '~': 584 };
-const upperWidths = [667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611];
-const lowerWidths = [556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500];
-const width = character => {
-  const base = character.normalize('NFD')[0]; const code = base.charCodeAt(0);
-  return specialWidths[base] ?? (code >= 65 && code <= 90 ? upperWidths[code - 65] : code >= 97 && code <= 122 ? lowerWidths[code - 97] : 556);
-};
 const clean = text => String(text).normalize('NFC').replace(/\r\n?/g, '\n').replace(/\t/g, '    ').replace(/[\u2010-\u2015\u2212]/g, '-').replace(/\u00a0/g, ' ');
 const supportedCodeFor = character => {
   const code = character.codePointAt(0);
@@ -23,15 +17,17 @@ export const findUnsupportedPDFCharacters = text => [...new Set([...clean(text)]
 const hex = (value, length) => value.toString(16).padStart(length, '0').toUpperCase();
 const encoded = text => [...text].map(character => hex(codeFor(character), 2)).join('');
 
-function wrapped(text, size, bold = false) {
-  const limit = 508 / size * 1000 / (bold ? 1.1 : 1);
+function wrapped(text, size, bold = false, availableWidth = 508, font = 'F1') {
+  const metrics = pdfFonts[font === 'F3' ? 'serif' : bold ? 'bold' : 'regular'].widths;
+  const glyphWidth = character => metrics[codeFor(character)] || 556;
+  const limit = availableWidth / size * 1000;
   const lines = []; let line = ''; let used = 0;
   for (const word of text.trim().split(/ +/)) {
-    const wordWidth = [...word].reduce((sum, character) => sum + width(character), 0);
+    const wordWidth = [...word].reduce((sum, character) => sum + glyphWidth(character), 0);
     if (line && used + 278 + wordWidth > limit) { lines.push(line); line = ''; used = 0; }
     // Wrap long URLs and tokens as well as prose.
     for (const character of (line ? ` ${word}` : word)) {
-      const next = width(character);
+      const next = glyphWidth(character);
       if (line && used + next > limit) { lines.push(line); line = ''; used = 0; }
       line += character; used += next;
     }
@@ -40,56 +36,191 @@ function wrapped(text, size, bold = false) {
   return lines;
 }
 
-export function createResultPDF(text, { language = 'en' } = {}) {
-  const spanish = language === 'es';
-  const pages = [[]]; let y = 714;
-  const addPage = () => { pages.push([]); y = 714; };
-  const blocks = clean(text).trim().split(/\n{2,}/).filter(Boolean);
-  blocks.push(spanish
-    ? 'Opcional: inscríbete para futuros eventos\nhttps://forms.gle/Zcc9QZbo9N7NTQcj6\nEl formulario es voluntario y separado de este informe. No recibe tus respuestas automáticamente.'
-    : 'Optional: sign up for future events\nhttps://forms.gle/Zcc9QZbo9N7NTQcj6\nThe form is voluntary and separate from this report. Your answers are not sent to it automatically.');
-  const usedCharacters = new Set();
-  const draw = (copy, x, atY, size, bold = false, color = '0.15 0.19 0.10') => {
+// Optional structured model affects presentation only. The plain-text fallback is
+// retained for Wellness Snapshot. No measurements, scoring or clinical rules here.
+export function createResultPDF(text, { language = 'en', model } = {}) {
+  const es = language === 'es'; const pages = []; const usedCharacters = new Set();
+  const H = 792, margin = 42, contentWidth = 528, bottom = 727;
+  const colors = { forest: '0.149 0.188 0.102', ink: '0.122 0.149 0.086', muted: '0.294 0.325 0.251', line: '0.851 0.871 0.776', cream: '0.957 0.965 0.918', sage: '0.933 0.953 0.839', lime: '0.725 0.812 0.361', white: '1 1 1', warm: '0.957 0.945 0.902', brown: '0.306 0.247 0.09' };
+  const portrait = model?.portrait;
+  const hasPortrait = portrait?.bytes instanceof Uint8Array && portrait.bytes.length < 2_000_000 && portrait.bytes[0] === 255 && portrait.bytes[1] === 216 && Number.isInteger(portrait.width) && Number.isInteger(portrait.height) && portrait.width > 0 && portrait.height > 0;
+  let page; let y;
+  const draw = (copy, x, top, size = 10, font = 'F1', color = colors.ink) => {
+    copy = clean(copy);
     for (const character of copy) usedCharacters.add(character);
-    return `BT /${bold ? 'F2' : 'F1'} ${size} Tf ${color} rg 1 0 0 1 ${x} ${atY.toFixed(2)} Tm <${encoded(copy)}> Tj ET\n`;
+    page.commands.push(`BT /${font} ${size} Tf ${color} rg 1 0 0 1 ${x.toFixed(2)} ${(H - top).toFixed(2)} Tm <${encoded(copy)}> Tj ET\n`);
   };
-  for (const [blockIndex, block] of blocks.entries()) {
-    const segments = block.split('\n'); const lines = [];
-    for (const [index, segment] of segments.entries()) {
-      const size = blockIndex === 0 ? 18 : 10.5;
-      const bold = blockIndex === 0 || (segments.length > 1 && index === 0);
-      for (const copy of wrapped(segment, size, bold)) lines.push({ copy, size, bold, height: blockIndex === 0 ? 23 : 14.8 });
-    }
-    const height = lines.reduce((sum, line) => sum + line.height, 0) + 7;
-    if (height < 645 && y - height < 64) addPage();
-    for (const line of lines) {
-      if (y - line.height < 56) addPage();
-      pages.at(-1).push(draw(line.copy, 52, y, line.size, line.bold)); y -= line.height;
-    }
-    y -= 7;
+  const rect = (x, top, w, h, fill) => page.commands.push(`${fill} rg ${x} ${H - top - h} ${w} ${h} re f\n`);
+  const roundedPath = (x, top, w, h, radius = 10) => {
+    const b = H - top - h, r = Math.min(radius, w / 2, h / 2), k = r * 0.55228475;
+    return `${x + r} ${b} m ${x + w - r} ${b} l ${x + w - r + k} ${b} ${x + w} ${b + r - k} ${x + w} ${b + r} c ${x + w} ${b + h - r} l ${x + w} ${b + h - r + k} ${x + w - r + k} ${b + h} ${x + w - r} ${b + h} c ${x + r} ${b + h} l ${x + r - k} ${b + h} ${x} ${b + h - r + k} ${x} ${b + h - r} c ${x} ${b + r} l ${x} ${b + r - k} ${x + r - k} ${b} ${x + r} ${b} c h\n`;
+  };
+  const panel = (x, top, w, h, fill, stroke, radius = 10) => page.commands.push(`${fill} rg ${stroke || colors.line} RG 0.8 w\n${roundedPath(x, top, w, h, radius)}${stroke ? 'B' : 'f'}\n`);
+  const rule = (top, x = margin, w = contentWidth) => page.commands.push(`${colors.line} RG 0.6 w ${x} ${H - top} m ${x + w} ${H - top} l S\n`);
+  function newPage(label = '', cover = false) {
+    page = { commands: [], label }; pages.push(page); y = 118;
+    rect(0, 0, 612, cover ? 154 : 54, colors.forest);
+    draw('Your Pure Path', margin, 34, 16, 'F3', colors.warm);
+    panel(461, 20, 109, 19, colors.lime, undefined, 9.5);
+    draw(es ? 'COPIA PERSONAL' : 'PERSONAL COPY', 472, 32, 7.5, 'F2');
+    if (label) draw(label, margin, cover ? 69 : 85, 8, 'F2', cover ? colors.warm : colors.brown);
+    if (cover) y = 106;
   }
-  for (const [index, page] of pages.entries()) {
-    page.unshift(draw('YOUR PURE PATH', 52, 753, 10, true), '0.72 0.81 0.36 RG 1.4 w 52 739 m 560 739 l S\n');
-    page.push('0.82 0.86 0.75 RG 0.5 w 52 44 m 560 44 l S\n');
-    page.push(draw(spanish ? 'Creado localmente en tu dispositivo' : 'Created locally on your device', 52, 28, 8, false, '0.3 0.34 0.26'));
-    page.push(draw(`${spanish ? 'Página' : 'Page'} ${index + 1} / ${pages.length}`, 506, 28, 8, false, '0.3 0.34 0.26'));
+  const ensure = height => { if (y + height > bottom) newPage(page.label); };
+  const linesFor = (copy, size = 10, bold = false, w = contentWidth, font = 'F1') => clean(copy).split('\n').flatMap(line => wrapped(line, size, bold, w, font));
+  function paragraph(copy, { size = 10.4, bold = false, gap = 10, color = colors.ink, x = margin, w = contentWidth, lineHeight = size * 1.4 } = {}) {
+    const lines = linesFor(copy, size, bold, w); const height = lines.length * lineHeight + gap;
+    if (height < 615) ensure(height);
+    for (const line of lines) { ensure(lineHeight); draw(line, x, y, size, bold ? 'F2' : 'F1', color); y += lineHeight; }
+    y += gap;
   }
-  // Unsupported input renders as '?'; never remap ordinary question marks to it.
+  function heading(copy, size = 21, color = colors.ink) {
+    const lines = linesFor(copy, size, false, contentWidth, 'F3'); ensure(lines.length * size * 1.18 + 28);
+    for (const line of lines) { draw(line, margin, y, size, 'F3', color); y += size * 1.18; } y += 12;
+  }
+  function box(copy, label) {
+    const lines = linesFor(copy, 10.2, false, contentWidth - 32); const h = lines.length * 14.2 + (label ? 43 : 28);
+    if (h > 590) { if (label) paragraph(label, { bold: true }); paragraph(copy); return; }
+    ensure(h + 12);
+    panel(margin, y - 12, contentWidth, h, colors.cream, undefined, 10);
+    if (label) { draw(label, margin + 16, y + 6, 8, 'F2', colors.muted); y += 25; }
+    for (const line of lines) { draw(line, margin + 16, y + 3, 10.2); y += 14.2; } y += label ? 22 : 30;
+  }
+  function recommendation(copy, index) {
+    const body = clean(copy).replace(/^\d+\.\s*/, ''); const lines = linesFor(body, 10.4, false, contentWidth - 50);
+    const h = lines.length * 14.5 + 20;
+    if (h > 590) { paragraph(`${index + 1}. ${body}`); return; }
+    ensure(h + 7);
+    panel(margin, y - 9, 27, 27, colors.lime, undefined, 13.5);
+    draw(`${index + 1}.`, margin + 8, y + 9, 12, 'F3');
+    for (const line of lines) { draw(line, margin + 43, y + 3, 10.4); y += 14.5; } y += 24;
+    rule(y - 16, margin + 43, contentWidth - 43);
+  }
+  function answersRow(question, answer, index) {
+    const q = linesFor(question, 10.1, false, 338); const a = linesFor(answer, 10.1, true, 174);
+    const h = Math.max(q.length, a.length) * 14 + 16;
+    if (h > 590) { paragraph(question, { bold: true }); paragraph(answer); return; }
+    ensure(h + 5);
+    q.forEach((line, lineIndex) => draw(line, margin, y + 3 + lineIndex * 14, 10.1, 'F1', colors.muted));
+    a.forEach((line, lineIndex) => draw(line, margin + 354, y + 3 + lineIndex * 14, 10.1, 'F2'));
+    y += h; rule(y - 12);
+  }
+  function followup() {
+    if (hasPortrait) {
+      const copy = model.portraitCopy || '';
+      const lines = linesFor(copy, 10.7, false, contentWidth - 148);
+      const h = Math.max(112, lines.length * 15 + 48); ensure(h + 50); y += 16;
+      heading(es ? 'Tu próximo paso' : 'Your next step', 23);
+      panel(margin, y - 10, contentWidth, h, colors.sage, undefined, 13.5);
+      const s = 82, x = margin + 18, top = y + 5;
+      page.commands.push(`q\n${roundedPath(x, top, s, s, s / 2)}W n\n${s} 0 0 ${s} ${x} ${H - top - s} cm /Portrait Do\nQ\n`);
+      draw('Mario', margin + 122, y + 15, 20, 'F3');
+      lines.forEach((line, index) => draw(line, margin + 122, y + 39 + index * 15, 10.7));
+      y += h + 16;
+    }
+    ensure(126); y += 24; rule(y - 23);
+    heading(es ? 'Sigue en contacto, si lo deseas' : 'Stay connected, if you choose', 19);
+    paragraph(es ? 'Opcional: inscríbete para futuros eventos' : 'Optional: sign up for future events', { bold: true, gap: 6 });
+    paragraph('https://forms.gle/Zcc9QZbo9N7NTQcj6', { size: 9, gap: 8 });
+    paragraph(es ? 'El formulario es voluntario y separado de este informe. No recibe tus respuestas automáticamente.' : 'The form is voluntary and separate from this report. Your answers are not sent to it automatically.', { size: 9, color: colors.muted });
+  }
+  newPage(es ? 'TU INFORME DE BIENESTAR' : 'YOUR WELLNESS REPORT', true);
+  if (model) {
+    heading(model.title || clean(text).split('\n')[0], 30, colors.warm); y = Math.max(y, 178);
+    if (model.sampleNotice) paragraph(model.sampleNotice, { size: 9, bold: true, gap: 15 });
+    if (model.actual) {
+      const cards = [model.actual, model.estimate || {
+        label: es ? 'Tu edad de salud aproximada' : 'Your approximate health-age estimate',
+        pending: true
+      }]; ensure(139);
+      const top = y - 5;
+      cards.forEach((card, index) => {
+        const x = margin + index * 271; panel(x, top, 257, 119, index === 0 ? colors.white : colors.sage, index === 0 ? colors.line : '0.616 0.706 0.263');
+        const labels = linesFor(`${card.label}:`, 10, true, 225);
+        labels.forEach((line, row) => draw(line, x + 16, top + 22 + row * 14, 10, 'F2'));
+        if (card.pending) draw(model.estimatePending ? (es ? 'En revisión' : 'Pending review') : (es ? 'No disponible' : 'Not available'), x + 16, top + 87, 25, 'F3');
+        else {
+          draw(String(card.value), x + 16, top + 87, 43, 'F3');
+          draw(card.unit || (es ? 'años' : 'years'), x + 105, top + 86, 11);
+        }
+      }); y = top + 140;
+    }
+    if (model.disclosure) box(model.disclosure, es ? 'CÓMO ENTENDER ESTA ESTIMACIÓN' : 'HOW TO READ THIS ESTIMATE');
+    if (model.notice) paragraph(model.notice, { size: 9.3, color: colors.muted, gap: 16 });
+    if (model.recommendations) {
+      heading(model.recommendations.title, 21);
+      if (model.recommendations.intro) paragraph(model.recommendations.intro, { size: 9.8, color: colors.muted });
+      (model.recommendations.items || []).forEach(recommendation);
+    }
+    if (model.readingContext?.length) {
+      newPage(es ? 'LECTURAS Y ORIENTACIÓN' : 'READINGS AND GUIDANCE');
+      heading(es ? 'Sobre las lecturas que compartiste' : 'About the readings you shared', 27);
+      box(model.readingContext[0]);
+      for (const item of model.readingContext.slice(1)) {
+        if (/https:\/\//.test(item)) paragraph(item, { size: 8.8, gap: 18, color: colors.muted, lineHeight: 12.3 });
+        else paragraph(item, { size: 10.5, gap: 16, lineHeight: 15.2 });
+      }
+    }
+    if (model.interpretation) {
+      ensure(130); y += 5; heading(model.interpretation.title, 21);
+      for (const item of model.interpretation.paragraphs || []) paragraph(item, { size: 10, gap: 10 });
+    }
+    if (model.answerGroups?.length) {
+      newPage(es ? 'TUS RESPUESTAS' : 'YOUR ANSWERS');
+      heading(es ? 'Revisar mis respuestas' : 'Review my answers', 27);
+      for (const group of model.answerGroups) {
+        const first = group.answers[0];
+        const firstHeight = first ? Math.max(linesFor(first.question, 10.1, false, 338).length, linesFor(first.answer, 10.1, true, 174).length) * 14 + 16 : 0;
+        if (group.title) page.label = group.title;
+        ensure(Math.min(firstHeight + 42, 600));
+        if (group.title) { panel(margin, y - 7, 7.5, 7.5, colors.lime, undefined, 2); draw(group.title, margin + 15, y, 10, 'F2', colors.brown); y += 21; }
+        for (const [index, item] of group.answers.entries()) answersRow(item.question, item.answer, index);
+        y += 12;
+      }
+    }
+  } else {
+    const blocks = clean(text).trim().split(/\n{2,}/).filter(Boolean);
+    heading(blocks.shift() || (es ? 'Tu informe' : 'Your report'), 30, colors.warm); y = Math.max(y, 178);
+    for (const block of blocks) {
+      const segments = block.split('\n');
+      if (segments.length > 1) { ensure(80); paragraph(segments[0], { bold: true, gap: 5 }); paragraph(segments.slice(1).join('\n')); }
+      else paragraph(block, { bold: block.length < 65 && !/[.!?]$/.test(block) });
+    }
+  }
+  followup();
+  for (const [index, current] of pages.entries()) {
+    page = current; rule(747);
+    draw(es ? 'Creado localmente en tu dispositivo' : 'Created locally on your device', margin, 763, 7.5, 'F1', colors.muted);
+    draw(`${es ? 'Página' : 'Page'} ${index + 1} / ${pages.length}`, 506, 763, 7.5, 'F1', colors.muted);
+  }
   const mappings = [...usedCharacters].map(character => [codeFor(character), supportedCodeFor(character) === undefined ? 63 : character.codePointAt(0)]);
   const uniqueMappings = [...new Map(mappings).entries()].filter(([, unicode]) => unicode <= 65535);
   const cmap = '/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /LocalReportUnicode def\n/CMapType 2 def\n1 begincodespacerange\n<00> <FF>\nendcodespacerange\n'
     + uniqueMappings.map(([code, unicode]) => `1 beginbfchar\n<${hex(code, 2)}> <${hex(unicode, 4)}>\nendbfchar\n`).join('')
     + 'endcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n';
   const objects = [
-    `<< /Type /Catalog /Pages 2 0 R /Lang (${spanish ? 'es' : 'en'}) >>`,
-    `<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, index) => `${6 + index * 2} 0 R`).join(' ')}] >>`,
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding /ToUnicode 5 0 R >>',
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /ToUnicode 5 0 R >>',
-    `<< /Length ${cmap.length} >>\nstream\n${cmap}endstream`
+    `<< /Type /Catalog /Pages 2 0 R /Lang (${es ? 'es' : 'en'}) >>`,
+    '', '', '',
+    `<< /Length ${cmap.length} >>\nstream\n${cmap}endstream`,
+    ''
   ];
-  for (const [index, page] of pages.entries()) {
-    const stream = page.join('');
-    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${7 + index * 2} 0 R >>`, `<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
+  const bytesHex = bytes => [...bytes].map(value => hex(value, 2)).join('') + '>\n';
+  for (const [key, objectIndex] of [['regular', 3], ['bold', 4], ['serif', 6]]) {
+    const font = pdfFonts[key], descriptor = objects.length + 1, file = descriptor + 1;
+    const stream = bytesHex(font.bytes);
+    objects[objectIndex - 1] = `<< /Type /Font /Subtype /TrueType /BaseFont /${font.name} /Encoding /WinAnsiEncoding /FirstChar 0 /LastChar 255 /Widths [${font.widths.join(' ')}] /FontDescriptor ${descriptor} 0 R /ToUnicode 5 0 R >>`;
+    objects.push(`<< /Type /FontDescriptor /FontName /${font.name} /Flags ${font.flags} /FontBBox [${font.bbox.join(' ')}] /ItalicAngle 0 /Ascent ${font.ascent} /Descent ${font.descent} /CapHeight ${font.ascent} /StemV ${font.stemV} /FontFile2 ${file} 0 R >>`, `<< /Length ${stream.length} /Length1 ${font.bytes.length} /Filter /ASCIIHexDecode >>\nstream\n${stream}endstream`);
+  }
+  let portraitIndex;
+  if (hasPortrait) {
+    portraitIndex = objects.length + 1; const stream = bytesHex(portrait.bytes);
+    objects.push(`<< /Type /XObject /Subtype /Image /Width ${portrait.width} /Height ${portrait.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter [/ASCIIHexDecode /DCTDecode] /Length ${stream.length} >>\nstream\n${stream}endstream`);
+  }
+  const firstPage = objects.length + 1;
+  objects[1] = `<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, index) => `${firstPage + index * 2} 0 R`).join(' ')}] >>`;
+  for (const [index, current] of pages.entries()) {
+    const stream = current.commands.join('');
+    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 6 0 R >> ${portraitIndex ? `/XObject << /Portrait ${portraitIndex} 0 R >>` : ''} >> /Contents ${firstPage + 1 + index * 2} 0 R >>`, `<< /Length ${stream.length} >>\nstream\n${stream}endstream`);
   }
   let pdf = '%PDF-1.4\n%Local report - no remote resources\n'; const offsets = [0];
   for (const [index, object] of objects.entries()) { offsets.push(pdf.length); pdf += `${index + 1} 0 obj\n${object}\nendobj\n`; }
