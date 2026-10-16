@@ -12,7 +12,7 @@ export const publicFiles = [
   'assets/fonts/dm-serif-display-regular.ttf', 'assets/fonts/dm-serif-display-italic.ttf',
   'assets/fonts/karla-regular.ttf', 'assets/fonts/karla-medium.ttf', 'assets/fonts/karla-bold.ttf',
   'components/support-preferences.js', 'components/result-tools.js', 'components/result-pdf.js',
-  ...['age.css', 'component.js', 'content.js', 'results.js', 'scoring.js', 'additional-questions.js', 'measurements.js'].map(name => `components/educational-age/${name}`),
+  ...['age.css', 'component.js', 'content.js', 'results.js', 'scoring.js', 'additional-questions.js', 'measurements.js', 'reading-context.js'].map(name => `components/educational-age/${name}`),
   ...['component.js', 'content.js', 'delivery.js', 'model.js', 'snapshot.css'].map(name => `components/wellness-snapshot/${name}`)
 ];
 async function files(directory) {

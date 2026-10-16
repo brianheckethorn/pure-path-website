@@ -1,10 +1,11 @@
 import { questions, sections, text, disclosure } from './content.js';
 import { calculateIllustrativeAge, inputBounds, numericValue } from './scoring.js';
-import { discussionIdeas, answerText, reportAnswer, resultEmailText } from './results.js';
+import { discussionIdeas, answerText, reportAnswer, resultEmailText, readingSources } from './results.js';
 import { previewDelivery, isValidEmail } from '../wellness-snapshot/delivery.js';
 import { appendResultTools } from '../result-tools.js';
 import { appendSpiritualSupport, appendNewsletterTopics, newsletterConsentText, newsletterRequestText } from '../support-preferences.js';
 import { unitBounds } from './measurements.js';
+import { hasReadingContext, readingEntryIssues } from './reading-context.js';
 
 let nextInstance = 0;
 export function mountEducationalAge(root, { delivery, onLanguage = () => {}, showDeliveryPreview = false, onDownload }) {
@@ -13,6 +14,7 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
   const instance = `educational-age-${++nextInstance}`;
   let state = fresh('en');
   let generation = 0;
+  let updateEntryFeedback = () => {};
   function fresh(language) { return { language, view: 'questions', answers: {}, step: 0, result: null, email: '', resultConsent: false, listConsent: false, newsletterTopics: [], spiritualSupport: '' }; }
   const t = key => text[key][state.language];
   function node(tag, copy, className) {
@@ -25,7 +27,7 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     const element = node('button', copy, secondary ? 'secondary-button' : undefined); element.type = 'button'; element.addEventListener('click', action); return element;
   }
   function actions(...buttons) { const row = node('div', undefined, 'snapshot-actions'); row.append(...buttons); return row; }
-  function begin() { generation++; root.replaceChildren(); }
+  function begin() { generation++; updateEntryFeedback = () => {}; root.replaceChildren(); }
   function heading(copy) { const element = node('h2', copy); element.tabIndex = -1; root.append(element); return element; }
   function reset(focus = true) { state = fresh(state.language); showQuestion(focus); }
   function languageToggle() {
@@ -40,7 +42,22 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
   }
   function clearDelivery() { state.email = ''; state.resultConsent = false; state.listConsent = false; state.newsletterTopics = []; state.spiritualSupport = ''; }
   function optionalCopy(en, es) { return state.language === 'es' ? es : en; }
-  function setAnswer(id, value) { state.answers[id] = value; state.result = null; }
+  function setAnswer(id, value) { state.answers[id] = value; state.result = null; updateEntryFeedback(); }
+  function sourceLink(source) {
+    const link = node('a', source[state.language]); link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; return link;
+  }
+  function appendReadingContext() {
+    if (!hasReadingContext(state.answers)) return;
+    const section = node('section', undefined, 'reading-context');
+    section.append(node('p', t('readingNotice'), 'heuristic-disclosure'));
+    const issues = readingEntryIssues(state.answers, state.language);
+    if (issues.length) {
+      section.append(node('h3', t('readingIssues')));
+      for (const issue of issues) section.append(node('p', issue.message, 'snapshot-error'), button(questions.find(question => question.id === issue.id).prompt[state.language], () => { clearDelivery(); state.step = questions.findIndex(question => question.id === issue.id); showQuestion(true); }, true));
+    }
+    for (const source of readingSources) if (hasReadingContext({ [source.id]: state.answers[source.id] })) section.append(node('p', t(source.id === 'bloodPressureReading' ? 'bpSafety' : 'glucoseSafety'), 'snapshot-small'), sourceLink(source));
+    root.append(section);
+  }
   function inputField(field, value, changed) {
     const label = node('label', field.label[state.language]);
     const input = node(field.type === 'select' ? 'select' : 'input');
@@ -102,8 +119,20 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
     const title = heading(question.prompt[state.language]);
     const error = state.result?.errors?.find(entry => entry.id === question.id);
     if (question.help) root.append(node('p', question.help[state.language], 'question-help'));
+    if (['waistMeasurement', 'bloodPressureReading', 'bloodGlucoseReading'].includes(question.id)) {
+      root.append(node('p', optionalCopy('Copy the existing reading exactly as displayed. Use a positive number; leave it blank or skip if you are unsure. No clinical assessment is made here.', 'Copia la lectura existente tal como aparece. Usa un número positivo; déjalo en blanco u omítelo si no sabes. Aquí no se hace una evaluación clínica.'), 'snapshot-small'));
+      const source = readingSources.find(source => source.id === question.id);
+      if (source) root.append(node('p', t(question.id === 'bloodPressureReading' ? 'bpSafety' : 'glucoseSafety'), 'snapshot-small'), sourceLink(source));
+    }
     root.append(node('p', question.supplemental ? optionalCopy('Optional. These details do not add or subtract health-age years.', 'Opcional. Estos detalles no suman ni restan años de edad de salud.') : t('adult'), 'snapshot-small'));
-    if (question.supplemental) supplementalFields(question);
+    if (question.supplemental) {
+      supplementalFields(question);
+      if (['waistMeasurement', 'bloodPressureReading', 'bloodGlucoseReading'].includes(question.id)) {
+        const feedback = node('p', '', 'snapshot-error'); feedback.setAttribute('role', 'status'); root.append(feedback);
+        updateEntryFeedback = () => { feedback.textContent = readingEntryIssues(state.answers, state.language).find(issue => issue.id === question.id)?.message || ''; feedback.hidden = !feedback.textContent; };
+        updateEntryFeedback();
+      }
+    }
     else if (question.type === 'number') {
       const unit = ['height', 'weight'].includes(question.id) ? measurementUnits(question) : null;
       if (unit === 'ft-in') {
@@ -167,7 +196,9 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       root.append(errors);
     }
     // Keep the unvalidated-estimate disclosure immediately below the age pair.
-    root.append(node('p', disclosure[state.language], 'heuristic-disclosure'), node('h3', t('suggestions')), node('p', t('care'), 'snapshot-small'));
+    root.append(node('p', disclosure[state.language], 'heuristic-disclosure'));
+    appendReadingContext();
+    root.append(node('h3', t('suggestions')), node('p', t('care'), 'snapshot-small'));
     const ideas = discussionIdeas(state.answers); const list = node('ol', undefined, 'health-next-steps');
     for (const idea of ideas) list.append(node('li', idea[state.language]));
     root.append(ideas.length ? list : node('p', t('none')));

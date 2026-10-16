@@ -1,4 +1,4 @@
-// Transcribed from all 29 reference screenshots in healthage.pptx.
+// Additional owner-requested assessment topics.
 // Supplemental context only: none of these answers changes the age arithmetic.
 const pair = (en, es) => ({ en, es });
 const options = entries => entries.map(([id, en, es]) => ({ id, label: pair(en, es) }));

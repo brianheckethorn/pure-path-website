@@ -15,6 +15,7 @@ EXACT USER-FACING EFFECTS
 - Retain original 22 core questions, coefficients, input ranges, and bilingual flow.
 - Add 18 optional questions/groups: report name; waist; numeric blood pressure; glucose with unit/timing; breakfast; snacking; fruit/vegetable servings; whole grains; nuts/seeds; red meat; 20-30 minute exercise; weight self-description; 7-8 hour sleep frequency; detailed tobacco history; weekly alcohol; spirituality preference; 12 education/support interests; optional local contact notes.
 - Add feet/inches, centimeters, pounds and kilograms for original measurements. Changing a unit clears that measurement entry explicitly. Unit conversion does not add a health factor. A machine-epsilon snap at the existing BMI boundaries prevents conversion noise from changing a result.
+- Raw reading format, complete blood-pressure pairs, and explicit units/timing are checked without clinical cutoffs. Persistent unassessed-reading notices and source-linked AHA/NIDDK safety guidance appear beside the estimate and in exports; a favorable estimate does not establish that a reading is safe. Readings are copied as entered without added precision.
 - All additions remain outside age arithmetic. Faith/support choices always change age by zero years. Raw measures have no automatic diagnostic category. Unknown/missing core scoring answers withhold the estimate, while a valid actual age can still be shown.
 - Distinguish actual age and approximate health-age estimate. Explain the rough, unvalidated educational estimate immediately by the ages. No biological-age, diagnosis, lifespan, potential-age or years-gained promise.
 - Match up to three suggestions to explicit answers. Avoid blanket snacking claims, smoking advice to never-users, weight-loss pressure, and medication changes.
@@ -29,14 +30,14 @@ Coordinated research found Brevo Terms 10.4 prohibits sensitive health data. Con
 Secure provider-neutral design: task/review/source-email/SOURCE-AND-EMAIL-DESIGN.md. It is a design, not a live backend.
 
 VALIDATION
-npm run build: 33 allowlisted public runtime files in docs/; source/build parity tested.
-npm test: 67/67 passed, including local HTTP routes under approved loopback access.
+npm run build: 34 allowlisted public runtime files in docs/; source/build parity tested.
+npm test: 75/75 passed, including local HTTP routes under approved loopback access.
 npm run verify: preserved design/vendor hashes passed.
 git diff --check: passed.
-Distinct independent code review: 50 targeted tests passed, no remaining blocking finding after precision fix.
+Distinct independent code review: initial 50 targeted tests and subsequent 48 numeric-safety focused tests passed, no remaining blocking finding after precision and reading-safety fixes.
 Browser QA: Edge desktop 1440px and mobile 390px, English/Spanish, blank/complete, metric/mixed units, language retention, print payload, PDF, sharing success/cancel stubs, signup availability, reset and private-field exclusion. Zero JS errors, response failures, horizontal overflow, or unintended non-GET requests observed. Final browser record lives in task/review/browser-tools/built-qa/report.json.
-Both final synthetic English/Spanish sample PDFs: three pages each; all six pages rendered and visually reviewed, text comparison passed.
+Both final synthetic English/Spanish sample PDFs: four pages each; all eight pages rendered and visually reviewed, text comparison passed.
 Native iPhone/iPad print/share UI and actual Mail delivery still require device verification; desktop capability stubs do not prove those device actions or inbox arrival.
 
 DEPLOYMENT REVIEW
-Review the staged/local changes and supplied patch/public zip. Confirm exact effects above with Brian before pushing/merging or publishing. Do not deploy email. After approval, recheck origin/main freshness, rerun the current build/tests if upstream changed, publish only the reviewed candidate to existing main:/docs, and verify the deployed assets and assessment. The previously accepted 8b9c9d5e is the rollback baseline. No deployment was performed here.
+Review the staged/local changes and supplied patch/public zip. Confirm exact effects above with Brian before pushing/merging or publishing. Do not deploy email. After approval, recheck origin/main freshness, rerun the current build/tests if upstream changed, publish only the reviewed candidate to existing main:/docs, and verify the deployed assets and assessment. The previously accepted 8b9c9d5e is the rollback baseline. Revert all review candidate commits together, preserving history, after rollback authorization. No deployment was performed here.

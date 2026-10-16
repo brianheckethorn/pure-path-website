@@ -31,9 +31,24 @@ test('private faith/contact choices stay out of saved reports and entered units 
     assert.match(report, /Synthetic Ángela/); assert.match(report, /mmol\/L/);
     assert.doesNotMatch(report, /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
     assert.ok(report.includes(text.actual[language])); assert.ok(report.includes(text.estimate[language]));
+    assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.glucoseSafety[language]));
   }
   const glucose = questions.find(q => q.id === 'bloodGlucoseReading');
   assert.match(answerText(glucose, { value: '100' }, 'en'), /Unit: Not answered/);
+});
+
+test('unassessed readings and entry issues are always exported even with a favorable estimate', () => {
+  const best = { age: '45', height: '67', weight: '150', ...Object.fromEntries(Object.entries(scoringMaps).map(([id, choices]) => [id, Object.entries(choices).sort((a,b) => b[1]-a[1])[0][0]])) };
+  const answers = { ...best, waistMeasurement: { value: '-5' }, bloodPressureReading: { systolic: '200', diastolic: '130' }, bloodGlucoseReading: { value: '40' } };
+  const result = calculateIllustrativeAge(answers);
+  assert.equal(result.quizAge, 35);
+  for (const language of ['en', 'es']) {
+    const report = resultEmailText(result, answers, language);
+    assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.readingIssues[language]));
+    assert.ok(report.includes(text.bpSafety[language])); assert.ok(report.includes(text.glucoseSafety[language]));
+    assert.match(report, /https:\/\/www\.heart\.org/); assert.match(report, /https:\/\/www\.niddk\.nih\.gov/);
+    assert.ok(report.indexOf(text.readingNotice[language]) < report.indexOf(text.suggestions[language]));
+  }
 });
 
 test('additional recommendations follow explicit answers without assuming smoking or condemning snacks', () => {

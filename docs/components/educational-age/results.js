@@ -1,5 +1,19 @@
 import { questions, disclosure, text } from './content.js';
 import { measurementDisplay } from './measurements.js';
+import { hasReadingContext, readingEntryIssues } from './reading-context.js';
+
+export const readingSources = Object.freeze([
+  { id: 'bloodPressureReading', en: 'American Heart Association: blood pressure readings and urgent care', es: 'American Heart Association: presión arterial y atención urgente', url: 'https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings' },
+  { id: 'bloodGlucoseReading', en: 'NIDDK: diabetes testing and diagnosis', es: 'NIDDK: pruebas y diagnóstico de diabetes', url: 'https://www.niddk.nih.gov/health-information/diabetes/overview/tests-diagnosis' }
+]);
+
+export function readingContextText(answers, language) {
+  if (!hasReadingContext(answers)) return [];
+  const issues = readingEntryIssues(answers, language);
+  return [text.readingNotice[language], ...(issues.length ? [text.readingIssues[language], ...issues.map(issue => issue.message)] : []),
+    ...(hasReadingContext({ bloodPressureReading: answers.bloodPressureReading }) ? [text.bpSafety[language], `${readingSources[0][language]}: ${readingSources[0].url}`] : []),
+    ...(hasReadingContext({ bloodGlucoseReading: answers.bloodGlucoseReading }) ? [text.glucoseSafety[language], `${readingSources[1][language]}: ${readingSources[1].url}`] : [])];
+}
 
 const tip = (key, en, es) => ({ key, en, es });
 // Suggestions respond to the actual answer, not to the three lowest factors.
@@ -58,7 +72,7 @@ export function resultEmailText(result, answers, language) {
     `${text.difference[language]}: ${result.difference > 0 ? '+' : ''}${result.difference} ${text.years[language]}`,
     text.comparisonNote[language], `${text.bmi[language]}: ${result.bmi.toFixed(1)}`, text.bmiNote[language]
   ] : [];
-  return [text.resultTitle[language], ...ageLines, disclosure[language], text.suggestions[language], text.care[language],
+  return [text.resultTitle[language], ...ageLines, disclosure[language], ...readingContextText(answers, language), text.suggestions[language], text.care[language],
     ...discussionIdeas(answers).map((idea, index) => `${index + 1}. ${idea[language]}`), ...details,
     text.review[language], ...questions.filter(question => !question.privatePreference).map(question => `${question.prompt[language]}\n${reportAnswer(question, answers, language)}`)
   ].join('\n\n');
