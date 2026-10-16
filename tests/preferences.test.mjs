@@ -4,12 +4,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { componentHarness } from './dom-harness.mjs';
-import { finishAssessmentWithExplicitResponses } from './assessment-harness.mjs';
+import { finishAssessmentWithExplicitResponses, finishAssessmentWithAnswers } from './assessment-harness.mjs';
+import { candidateFixtures } from './candidate-fixtures.mjs';
 import { mountEducationalAge } from '../components/educational-age/component.js';
 import { mountWellnessSnapshot } from '../components/wellness-snapshot/component.js';
 import { snapshotContent } from '../components/wellness-snapshot/content.js';
 import { calculateIllustrativeAge, scoringMaps } from '../components/educational-age/scoring.js';
-import { discussionIdeas } from '../components/educational-age/results.js';
+import { discussionIdeas, calculateAssessmentPreview, resultPDFModel, resultEmailText } from '../components/educational-age/results.js';
 import { snapshotSteps } from '../components/wellness-snapshot/model.js';
 import { createMockDeliveryAdapter, previewDelivery } from '../components/wellness-snapshot/delivery.js';
 import { newsletterConsentText, validateNewsletterTopics, supportIdea, spiritualChoices } from '../components/support-preferences.js';
@@ -30,14 +31,17 @@ test('core scoring is unchanged by support preferences; spirituality cannot chan
   for(const choice of ['',...spiritualChoices.map(c=>c.id)]) assert.deepEqual(calculateIllustrativeAge({...answers,spiritualSupport:choice}),original);
   assert.equal(supportIdea('not-now'),''); assert.equal(supportIdea('prefer-not'),''); assert.equal(supportIdea(''),'');
 });
-test('practical health steps respond to explicit answers, prioritize at most three, and make no age-lowering promise',()=>{
+test('all relevant practical steps remain available and lifestyle priorities precede separate care guidance',()=>{
   const favorable=discussionIdeas({nicotine:'never',exercise:'5+',strength:'4+',dietQuality:'excellent',vegetables:'6+'});
-  assert.equal(favorable.length,2); assert.equal(favorable[0].key,'maintenance'); assert.match(favorable[0].en,/variety/);
-  assert.equal(favorable[1].key,'maintainMovement');
+  assert.ok(favorable.some(idea=>idea.key==='maintenance')); assert.match(favorable.find(idea=>idea.key==='maintenance').en,/variety/);
+  assert.ok(favorable.some(idea=>idea.key==='maintainMovement'));
   const ideas=discussionIdeas({dietQuality:'poor',exercise:'rarely',strength:'none'});
-  assert.equal(ideas.length,2); assert.match(ideas[0].en,/next meal/); assert.match(ideas[1].en,/movement break/);
+  assert.deepEqual(ideas.map(idea=>idea.key),['food','movement','strength']);
+  assert.match(ideas.find(idea=>idea.key==='food').en,/next meal/); assert.match(ideas.find(idea=>idea.key==='movement').en,/5[-\u2013]10 minutes/);
   const priority=discussionIdeas({nicotine:'current',bloodSugar:'diagnosed',sleepQuality:'poor',dietQuality:'poor',exercise:'rarely'});
-  assert.deepEqual(priority.map(idea=>idea.key),['nicotine','history','sleep']);
+  assert.deepEqual(priority.filter(idea=>idea.kind==='lifestyle').map(idea=>idea.key),['food','movement','sleep']);
+  assert.deepEqual(priority.filter(idea=>idea.kind==='care').map(idea=>idea.key),['nicotine','history']);
+  assert.equal(priority.length,5); assert.ok(priority.findIndex(idea=>idea.kind==='care')>priority.map(idea=>idea.kind).lastIndexOf('lifestyle'));
   assert.deepEqual(discussionIdeas({dietQuality:'unknown',sleepQuality:'skip',exercise:'unknown',nicotine:'never'}).map(idea=>idea.key),['general']);
   assert.match(snapshotSteps({fruit:'none'})[0],/next meal/);
   assert.match(snapshotSteps({movement:'none'})[0],/movement break/);
@@ -45,6 +49,40 @@ test('practical health steps respond to explicit answers, prioritize at most thr
   assert.equal(snapshotSteps({fruit:'none',movement:'none',rested:'hardly',tobacco:'most'}).length,2);
   assert.match(snapshotSteps({fruit:'unsure',movement:'skip'})[0],/^General idea/);
   assert.doesNotMatch(JSON.stringify([...ideas,...snapshotSteps({movement:'none'})]),/biological|younger|years|risk reduction|prescription/i);
+});
+
+test('mixed-risk reports show more than three concrete lifestyle tips and preserve allergy exclusions and scores',()=>{
+  const base={...candidateFixtures.find(fixture=>fixture.id==='metric-mixed').answers,nutSeedServings:'avoidsForCare'};
+  const untouched=structuredClone(base); const before=calculateAssessmentPreview(base);
+  assert.equal(before.status,'complete');
+  const ideas=discussionIdeas(base); const lifestyle=ideas.filter(idea=>idea.kind!=='care'); const care=ideas.filter(idea=>idea.kind==='care');
+  assert.ok(lifestyle.length>3); assert.ok(care.length>0);
+  for(const key of ['food','movement','wholeGrains','sleep','foodVariety','sittingBreaks','support','alcohol']) assert.ok(lifestyle.some(idea=>idea.key===key),key);
+  assert.equal(ideas.some(idea=>idea.key==='nutsSeeds'||idea.key==='maintainNutsSeeds'),false);
+  assert.doesNotMatch(JSON.stringify(ideas),/try a small handful|2 tablespoons of nut butter|consider nuts or seeds/i);
+  assert.equal(before.domains.find(domain=>domain.id==='nutSeedServings').assessed,false);
+  for(const language of ['en','es']) {
+    const model=resultPDFModel(before,base,language); const exported=resultEmailText(before,base,language);
+    for(const idea of ideas) {
+      assert.ok(JSON.stringify(model.recommendations).includes(idea[language]),`${idea.key} in report model`);
+      assert.ok(exported.includes(idea[language]),`${idea.key} in text export`);
+    }
+    const ui=componentHarness(); mountEducationalAge(ui.root,{delivery:createMockDeliveryAdapter()});
+    if(language==='es') ui.click('Español'); finishAssessmentWithAnswers(ui,base,language);
+    const primary=ui.find(node=>node.className==='health-next-steps')[0]; assert.equal(primary.children.length,3);
+    for(const idea of lifestyle.slice(0,3)) assert.ok(primary.textContent.includes(idea[language]));
+    for(const idea of care) assert.equal(primary.textContent.includes(idea[language]),false);
+    const outsideClosedDetails=node=>{
+      for(let ancestor=node;ancestor;ancestor=ancestor.parentNode) if(ancestor.hidden||(ancestor.tagName==='DETAILS'&&!ancestor.open)) return false;
+      return true;
+    };
+    for(const idea of ideas) {
+      const matches=ui.find(node=>['LI','P'].includes(node.tagName)&&node.textContent.includes(idea[language])&&outsideClosedDetails(node));
+      assert.ok(matches.length,`${idea.key} visible without opening details`);
+    }
+  }
+  assert.deepEqual(base,untouched); assert.deepEqual(calculateAssessmentPreview(base),before);
+  assert.deepEqual(calculateIllustrativeAge(base),calculateIllustrativeAge(untouched));
 });
 test('newsletter topics reject arbitrary tags; only explicit topics accompany consent and email',async()=>{
   assert.deepEqual(validateNewsletterTopics([]),[]);

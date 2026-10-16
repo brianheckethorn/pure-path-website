@@ -93,7 +93,8 @@ test('assessment has no native form, network submission, storage, or answer URL 
     assert.doesNotMatch(source, /<form\b|fetch\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|indexedDB|URLSearchParams|location\.(?:search|hash)\s*=/i, path);
   }
   const page = readFileSync(new URL('../wellness-snapshot/index.html', import.meta.url), 'utf8');
-  assert.match(page, /<noscript>/);
+  assert.match(page, /http-equiv="refresh" content="0; url=\.\.\/health-age-assessment\/"/);
+  assert.match(page, /Continue to the Health Age Assessment<\/a>/);
   assert.match(page, /assets\/fonts\/fonts\.css/);
   assert.doesNotMatch(page, /<input\b|<button\b/);
 });

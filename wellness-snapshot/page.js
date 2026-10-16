@@ -1,12 +1,5 @@
-import { mountWellnessSnapshot } from '../components/wellness-snapshot/component.js';
-import { snapshotContent } from '../components/wellness-snapshot/content.js';
-import { createMockDeliveryAdapter } from '../components/wellness-snapshot/delivery.js';
-
-const snapshot = mountWellnessSnapshot(document.querySelector('#wellness-snapshot'), {
-  content: snapshotContent,
-  delivery: createMockDeliveryAdapter(),
-  showDeliveryPreview: false
-});
-
-// Clear in-memory answers when leaving the page, including browser back-cache.
-window.addEventListener('pagehide', () => snapshot.reset(false));
+// Keep existing bookmarks working through the single primary assessment.
+// A fixed relative target drops any old query/hash and avoids a back-button
+// loop. The HTML meta refresh and visible link also work without this module.
+const assessmentURL = new URL('../health-age-assessment/', window.location.href);
+window.location.replace(assessmentURL.href);

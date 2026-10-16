@@ -10,12 +10,12 @@ test('local server serves homepage, direct route, modules, fonts and trailing-sl
   const base = `http://127.0.0.1:${server.address().port}`;
   try {
     for (const [route, contentType, sample] of [
-      ['/', 'text/html', 'Wellness Snapshot'],
-      ['/wellness-snapshot/', 'text/html', 'No email needed'],
+      ['/', 'text/html', 'Health Age Assessment'],
+      ['/wellness-snapshot/', 'text/html', 'Continue to the Health Age Assessment'],
       ['/health-age-assessment/', 'text/html', 'scoring model uses custom educational choices'],
       ['/health-age-assessment/page.js', 'text/javascript', 'mountEducationalAge'],
       ['/components/educational-age/scoring.js', 'text/javascript', 'calculateIllustrativeAge'],
-      ['/wellness-snapshot/page.js', 'text/javascript', 'mountWellnessSnapshot'],
+      ['/wellness-snapshot/page.js', 'text/javascript', 'location.replace'],
       ['/components/wellness-snapshot/snapshot.css', 'text/css', '#26301A'],
       ['/assets/fonts/fonts.css', 'text/css', 'Karla'],
       ['/assets/fonts/karla-regular.ttf', 'font/ttf', null]

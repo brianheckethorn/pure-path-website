@@ -33,11 +33,15 @@ for(const kind of ['age','snapshot']) {
     assert.equal(link.href,'https://forms.gle/Zcc9QZbo9N7NTQcj6');assert.match(link.textContent,/Health & Wellness Connection/);
   });
 }
-test('public entry points explicitly disable delivery preview and do not expose a Google Form embed',()=>{
+test('primary entry disables delivery preview and retired Snapshot redirects without health inputs or embeds',()=>{
+  const primary=readFileSync(new URL('../health-age-assessment/page.js',import.meta.url),'utf8');assert.match(primary,/showDeliveryPreview: false/);
   for(const folder of ['health-age-assessment','wellness-snapshot']) {
-    const page=readFileSync(new URL(`../${folder}/page.js`,import.meta.url),'utf8');assert.match(page,/showDeliveryPreview: false/);
     const html=readFileSync(new URL(`../${folder}/index.html`,import.meta.url),'utf8');assert.doesNotMatch(html,/<iframe|<form|<input/);
   }
+  const primaryHTML=readFileSync(new URL('../health-age-assessment/index.html',import.meta.url),'utf8');
+  assert.doesNotMatch(primaryHTML,/id="privacy-title"|id="event-signup"/);
+  const retired=readFileSync(new URL('../wellness-snapshot/index.html',import.meta.url),'utf8')+readFileSync(new URL('../wellness-snapshot/page.js',import.meta.url),'utf8');
+  assert.match(retired,/health-age-assessment\//);assert.doesNotMatch(retired,/mountWellnessSnapshot|createMockDeliveryAdapter/);
 });
 test('download creates a local text Blob, triggers a download, then revokes the opaque object URL',async()=>{
   let blob;let scheduled;const link={click(){this.clicked=true;},remove(){this.removed=true;}};

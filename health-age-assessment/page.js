@@ -14,9 +14,6 @@ const ui = mountEducationalAge(document.querySelector('#educational-age'), {
     document.querySelector('.snapshot-footer').textContent = language === 'en' ? 'Your Pure Path · Educational local preview' : 'Your Pure Path · Vista previa educativa local';
     document.getElementById('eyebrow').textContent = language === 'en' ? 'A conversation, not a medical test' : 'Una conversación, no una prueba médica';
     document.getElementById('home-link').textContent = language === 'en' ? 'Back to home' : 'Volver al inicio';
-    document.getElementById('privacy-title').textContent = language === 'en' ? 'Results without email.' : 'Resultados sin correo.';
-    document.getElementById('snapshot-link').textContent = language === 'en' ? 'Optional: 8-question Wellness Snapshot (no age estimate)' : 'Opcional: Wellness Snapshot de 8 preguntas (sin estimación de edad)';
-    document.getElementById('event-signup').textContent = language === 'en' ? 'Optional: sign up for future events' : 'Opcional: inscribirme para futuros eventos';
     document.querySelector('#educational-age').setAttribute('aria-label', language === 'en' ? 'Illustrative health-age quiz' : 'Cuestionario ilustrativo de edad de salud');
   }
 });

@@ -79,3 +79,36 @@ test('authorized portrait is embedded as a local JPEG with literal invitation te
   assert.match(reportText(pdf), /Talk with Mario about your goals and questions/);
   assert.doesNotMatch(copy, /mario-portrait\.jpg|\/URI|\/Launch/);
 });
+
+test('grouped recommendations keep three priorities, every additional lifestyle tip, and separate care topics without duplicate legacy items', () => {
+  const model = fixture();
+  const primary = ['Try a vegetable at lunch.', 'Choose a comfortable movement break.', 'Keep a regular wake-up cue.'];
+  const additional = ['Choose a whole-grain food.', 'Plan a breakfast you enjoy.', 'Consider an unsweetened drink.', 'Explore a small calming routine.', 'Talk with someone you trust.'];
+  const care = ['Bring your history questions to your care team.', 'Discuss persistent changes in energy with your care team.'];
+  model.recommendations = { title: 'Your next steps', primaryTitle: 'Three practical priorities', additionalTitle: 'Additional relevant lifestyle ideas', careTitle: 'Care discussion topics', primary, additional, care, items: [...primary, ...additional, ...care] };
+  const pdf = createResultPDF('', { model }); const rendered = normalize(reportText(pdf));
+  for (const text of [...primary, ...additional, ...care]) {
+    assert.equal(rendered.split(normalize(text)).length - 1, 1, text);
+  }
+  for (const title of ['Three practical priorities', 'Additional relevant lifestyle ideas', 'Care discussion topics']) assert.ok(rendered.includes(normalize(title)), title);
+  assert.ok(rendered.indexOf(normalize(primary[0])) < rendered.indexOf(normalize(additional[0])));
+  assert.ok(rendered.indexOf(normalize(additional[0])) < rendered.indexOf(normalize(care[0])));
+  const safetyPosition = rendered.indexOf(normalize(model.readingContext[0]));
+  assert.ok(rendered.indexOf(normalize(primary[0])) < safetyPosition);
+  assert.ok(safetyPosition < rendered.indexOf(normalize(additional[0])));
+});
+
+test('grouped priorities flow into reading guidance while keeping the heading with its first box', () => {
+  const model = {
+    title: 'Your Health Age Results',
+    recommendations: { title: 'Your next steps', primary: ['First priority.', 'Second priority.', 'Third priority.'], additional: [], care: [] },
+    readingContext: ['FIRST GUIDANCE BOX: readings are not clinically assessed here.']
+  };
+  const pdf = createResultPDF('', { model });
+  const streams = [...new TextDecoder().decode(pdf).matchAll(/stream\n([\s\S]*?)endstream/g)]
+    .map(match => reportText(new TextEncoder().encode(match[1]))).filter(text => text.includes('Your Pure Path'));
+  const primaryPage = streams.findIndex(text => text.includes('Third priority.'));
+  const guidancePage = streams.findIndex(text => normalize(text).includes(normalize('FIRST GUIDANCE BOX')));
+  assert.equal(guidancePage, primaryPage, 'short primary tips must not force a nearly blank page before guidance');
+  assert.ok(normalize(streams[guidancePage]).includes(normalize('About the readings you shared')));
+});

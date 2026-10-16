@@ -44,7 +44,7 @@ export function createResultPDF(text, { language = 'en', model } = {}) {
   const colors = { forest: '0.149 0.188 0.102', ink: '0.122 0.149 0.086', muted: '0.294 0.325 0.251', line: '0.851 0.871 0.776', cream: '0.957 0.965 0.918', sage: '0.933 0.953 0.839', lime: '0.725 0.812 0.361', white: '1 1 1', warm: '0.957 0.945 0.902', brown: '0.306 0.247 0.09' };
   const portrait = model?.portrait;
   const hasPortrait = portrait?.bytes instanceof Uint8Array && portrait.bytes.length < 2_000_000 && portrait.bytes[0] === 255 && portrait.bytes[1] === 216 && Number.isInteger(portrait.width) && Number.isInteger(portrait.height) && portrait.width > 0 && portrait.height > 0;
-  let page; let y;
+  let page; let y; let groupedRecommendations = false; let deferredRecommendations = () => {};
   const draw = (copy, x, top, size = 10, font = 'F1', color = colors.ink) => {
     copy = clean(copy);
     for (const character of copy) usedCharacters.add(character);
@@ -148,19 +148,50 @@ export function createResultPDF(text, { language = 'en', model } = {}) {
     if (model.disclosure) box(model.disclosure, es ? 'CÓMO ENTENDER ESTA ESTIMACIÓN' : 'HOW TO READ THIS ESTIMATE');
     if (model.notice) paragraph(model.notice, { size: 9.3, color: colors.muted, gap: 16 });
     if (model.recommendations) {
-      heading(model.recommendations.title, 21);
-      if (model.recommendations.intro) paragraph(model.recommendations.intro, { size: 9.8, color: colors.muted });
-      (model.recommendations.items || []).forEach(recommendation);
+      const recommendations = model.recommendations;
+      heading(recommendations.title, 21);
+      if (recommendations.intro) paragraph(recommendations.intro, { size: 9.8, color: colors.muted });
+      const grouped = ['primary', 'additional', 'care'].some(key => Array.isArray(recommendations[key]));
+      groupedRecommendations = grouped;
+      if (grouped) {
+        const groups = [
+          { key: 'primary', title: recommendations.primaryTitle || (es ? 'Empieza con estos pasos cotidianos' : 'Start with these everyday steps') },
+          { key: 'additional', title: recommendations.additionalTitle || (es ? 'Más ideas según tus respuestas' : 'More ideas from your answers') },
+          { key: 'care', title: recommendations.careTitle || (es ? 'Preguntas para tu equipo de atención' : 'Questions for your care team') }
+        ];
+        let recommendationIndex = 0;
+        const renderGroup = group => {
+          const items = recommendations[group.key] || [];
+          if (!items.length) return;
+          page.label = group.title;
+          // Keep each subgroup heading with its first complete practical step.
+          const firstHeight = linesFor(items[0], 10.4, false, contentWidth - 50).length * 14.5;
+          ensure(Math.min(600, firstHeight + 70)); heading(group.title, 16);
+          for (const item of items) recommendation(item, recommendationIndex++);
+        };
+        renderGroup(groups[0]);
+        // Keep safety notices near the front, ahead of the longer optional list.
+        deferredRecommendations = () => groups.slice(1).forEach(renderGroup);
+      } else (recommendations.items || []).forEach(recommendation);
     }
     if (model.readingContext?.length) {
-      newPage(es ? 'LECTURAS Y ORIENTACIÓN' : 'READINGS AND GUIDANCE');
-      heading(es ? 'Sobre las lecturas que compartiste' : 'About the readings you shared', 27);
+      const readingLabel = es ? 'LECTURAS Y ORIENTACIÓN' : 'READINGS AND GUIDANCE';
+      const readingTitle = es ? 'Sobre las lecturas que compartiste' : 'About the readings you shared';
+      if (groupedRecommendations) {
+        page.label = readingLabel;
+        const headingHeight = linesFor(readingTitle, 27, false, contentWidth, 'F3').length * 27 * 1.18 + 12;
+        const firstBoxHeight = linesFor(model.readingContext[0], 10.2, false, contentWidth - 32).length * 14.2 + 28;
+        // Flow after the priorities, keeping the guidance heading and first box together.
+        ensure(Math.min(609, headingHeight + firstBoxHeight + 26)); y += 14;
+      } else newPage(readingLabel);
+      heading(readingTitle, 27);
       box(model.readingContext[0]);
       for (const item of model.readingContext.slice(1)) {
         if (/https:\/\//.test(item)) paragraph(item, { size: 8.8, gap: 18, color: colors.muted, lineHeight: 12.3 });
         else paragraph(item, { size: 10.5, gap: 16, lineHeight: 15.2 });
       }
     }
+    deferredRecommendations();
     if (model.interpretation) {
       ensure(130); y += 5; heading(model.interpretation.title, 21);
       for (const item of model.interpretation.paragraphs || []) paragraph(item, { size: 10, gap: 10 });
