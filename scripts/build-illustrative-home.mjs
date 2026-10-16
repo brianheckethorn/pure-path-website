@@ -2,6 +2,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { homepageFromDesign } from './build-home.mjs';
 
+const decorativeBadge = (name, size) => `<img src="./assets/icons/${name}.svg" alt="" aria-hidden="true" width="${size}" height="${size}" style="display: block; flex: none">`;
+
 export function illustrativeHome(source) {
   const snapshot = homepageFromDesign(source);
   return snapshot
@@ -23,7 +25,12 @@ export function illustrativeHome(source) {
     .replace('Start my snapshot</a>', 'Start my Health Age Assessment</a>\n<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #E9E2CC">The scoring and conversion to years are custom educational choices. This quiz is not scientifically validated and does not measure biological age or diagnose health conditions.</p>')
     .replace('A question from your snapshot', 'A question from the Health Age Assessment')
     .replace('How many days a week do you eat fruit?', 'How would you describe your sleep?')
-    .replace('>No days</span>', '>Poor</span>').replace('>1–3 days</span>', '>Fair</span>').replace('>4–6 days</span>', '>Good</span>').replace('>Every day</span>', '>Excellent</span>');
+    .replace('>No days</span>', '>Poor</span>').replace('>1–3 days</span>', '>Fair</span>').replace('>4–6 days</span>', '>Good</span>').replace('>Every day</span>', '>Excellent</span>')
+    .replace(/(<h2[^>]*>Your Health Age Assessment<\/h2>)/, `${decorativeBadge('badge-health-age-light', 56)}\n$1`)
+    .replace('<a href="tel:+13047127873" style="text-decoration: none;', '<a href="tel:+13047127873" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;')
+    .replace('>Call (304) 712-7873</a>', `>${decorativeBadge('badge-phone-dark', 32)}<span>Call (304) 712-7873</span></a>`)
+    .replace('<a href="mailto:mario@yourpurepath.com" style="text-decoration: none; background:', '<a href="mailto:mario@yourpurepath.com" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background:')
+    .replace('>Email Mario</a>', `>${decorativeBadge('badge-email-dark', 32)}<span>Email Mario</span></a>`);
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const source = readFileSync(new URL('../Neighbor.dc.html', import.meta.url), 'utf8');

@@ -1,0 +1,17 @@
+Local icon candidate, October 16, 2026
+
+Baseline: published release 2dbb7bd2a4d32703874bb09f6afdc0e266022557.
+These three unchanged SVGs were selected from the Your Pure Path icon folder supplied by Brian on October 16. The supplied set contains 26 SVGs. No icon-specific README, license, usage or attribution file was included; this file does not claim an open-source license or independently verified authorship/font/social-mark rights.
+
+Selected originals (SHA256):
+badge-health-age-light.svg - 43006876092d12def3c481671daa259c88444e1cc760b4bade845f133ba03efe
+badge-phone-dark.svg - 81a2926e3ffd09cec3bda7275dfde80ea1aa5ec0880b6a743835b2977159581b
+badge-email-dark.svg - 81d977498e8d2560d796940dc65bb84684b41dadbb5542ba8af673097f4f3959
+
+Placements: health-age gauge above the homepage assessment callout and in the assessment introduction; phone badge beside the existing hero Call label; email badge beside the existing Email Mario label. Images are decorative (empty alt and aria-hidden) and existing labels and destinations are preserved. The originals' internal English titles are not used as accessible control labels.
+
+All 26 supplied SVGs were parsed and statically checked before rendering. Only svg/title/circle/g/rect/path elements were present. No scripts, event attributes, external references, embedded images, fonts, CSS loads, animation, foreignObject, DTDs, entities or processing instructions were found. Original source hashes were rechecked unchanged. Detailed safety and visual review evidence remains outside the public docs output in the task's review/icons folder.
+
+No assessment wording, questions, scoring, recommendations, language strings, report/PDF renderer, fonts, Mario portrait, tree branding or Facebook control changed. Only these three SVGs are added to the public-file allowlist. Local preview gains the correct image/svg+xml MIME type. No new dependency, email integration, network submission, account, spending or security setting was added.
+
+This is a local review candidate. Publishing requires separate approval of the exact candidate and effects. No icon follow-on public release has been authorized by the asset-supply request.

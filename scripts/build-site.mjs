@@ -8,6 +8,7 @@ export const publicFiles = [
   'health-age-assessment/index.html', 'health-age-assessment/page.js',
   'wellness-snapshot/index.html', 'wellness-snapshot/page.js',
   'assets/a143c2a9960446d649523f272677f609.jpg', 'assets/mario-portrait.jpg',
+  ...['badge-health-age-light.svg', 'badge-phone-dark.svg', 'badge-email-dark.svg'].map(name => `assets/icons/${name}`),
   'assets/fonts/fonts.css', 'assets/fonts/DM-Serif-Display-OFL.txt', 'assets/fonts/Karla-OFL.txt',
   'assets/fonts/dm-serif-display-regular.ttf', 'assets/fonts/dm-serif-display-italic.ttf',
   'assets/fonts/karla-regular.ttf', 'assets/fonts/karla-medium.ttf', 'assets/fonts/karla-bold.ttf',
