@@ -11,11 +11,6 @@ const unitOptions = options([['in', 'Inches', 'Pulgadas'], ['cm', 'Centimeters',
 
 export const additionalQuestions = [
   supplemental({
-    id: 'fullName', type: 'text',
-    prompt: pair('What name would you like on your report?', '¿Qué nombre quieres que aparezca en tu informe?'),
-    help: pair('A first name or nickname is enough. It stays in this page with your answers.', 'Basta con tu nombre o un apodo. Se queda en esta página junto con tus respuestas.')
-  }),
-  supplemental({
     id: 'waistMeasurement', type: 'group',
     prompt: pair('What is your waist circumference?', '¿Cuál es la medida de tu cintura?'),
     help: pair('Enter a measurement you already know and choose its unit. We show the value without assigning a health category or age adjustment.', 'Escribe una medida que ya conozcas y elige la unidad. Mostramos el dato sin asignarle una categoría de salud ni un ajuste de edad.'),
@@ -138,15 +133,5 @@ export const additionalQuestions = [
       ['other', 'Other', 'Otro']
     ])
   }),
-  supplemental({
-    id: 'reportContact', type: 'group', privatePreference: true,
-    prompt: pair('Would you like to note contact details for this session?', '¿Quieres anotar datos de contacto para esta sesión?'),
-    help: pair('Provide a note or choose Prefer not to answer; no contact identifier is needed to see results. These details stay only in this page and are omitted from saved or shared reports. Entering them does not send email, authorize delivery, contact you, or join a mailing list. Result-email consent is a separate choice.', 'Escribe una nota o elige Prefiero no responder; no necesitas datos de contacto para ver los resultados. Estos datos se quedan solo en esta página y se omiten de los informes guardados o compartidos. Escribirlos no envía correos, autoriza un envío, permite contactarte ni te añade a una lista. El consentimiento para recibir resultados por correo se elige por separado.'),
-    fields: [
-      { id: 'email', type: 'email', label: pair('Email', 'Correo electrónico') },
-      { id: 'address', type: 'text', label: pair('Address', 'Dirección') },
-      { id: 'phone', type: 'tel', label: pair('Phone', 'Teléfono') },
-      { id: 'zip', type: 'text', label: pair('ZIP / postal code', 'Código postal') }
-    ]
-  })
+
 ];

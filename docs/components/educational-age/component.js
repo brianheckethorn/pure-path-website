@@ -90,7 +90,7 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
       root.append(group);
     }
     const responses = [];
-    if (!['fullName', 'reportContact'].includes(question.id)) responses.push(button(t('unknown'), () => { setAnswer(question.id, 'unknown'); showQuestion(true); }, true));
+    responses.push(button(t('unknown'), () => { setAnswer(question.id, 'unknown'); showQuestion(true); }, true));
     if (question.type === 'multi') responses.push(button(t('noneSelected'), () => { setAnswer(question.id, 'none'); showQuestion(true); }, true));
     responses.push(button(t('preferNot'), () => { setAnswer(question.id, 'preferNot'); showQuestion(true); }, true));
     root.append(actions(...responses));

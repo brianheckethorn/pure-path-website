@@ -9,9 +9,9 @@ const issue = (id, value, extra = {}, language = 'en') => questionResponseIssue(
 function completeAnswers() {
   return {
     ...Object.fromEntries(questions.filter(entry => entry.type === 'radio').map(entry => [entry.id, entry.options[0].id])),
-    age: '42', height: '66', weight: '140', fullName: 'A nickname', interests: ['fitnessExercise'],
+    age: '42', height: '66', weight: '140', interests: ['fitnessExercise'],
     waistMeasurement: { value: '32', unit: 'in' }, bloodPressureReading: { readingStatus: 'measured', history: 'normal', systolic: '120', diastolic: '80' },
-    bloodGlucoseReading: { readingStatus: 'measured', history: 'normal', value: '100', unit: 'mgDl', timing: 'unsure' }, reportContact: 'preferNot'
+    bloodGlucoseReading: { readingStatus: 'measured', history: 'normal', value: '100', unit: 'mgDl', timing: 'unsure' }
   };
 }
 
@@ -60,14 +60,6 @@ test('radio and multi answers must use exact listed choices or an explicit respo
   for (const value of [[], ['unlisted'], ['fitnessExercise', 'unlisted'], ['fitnessExercise', 'fitnessExercise'], ['none'], ['unknown'], {}, true, 1]) assert.ok(issue('interests', value));
 });
 
-test('report name needs only bounded nonblank text or a decline, never a full identifier', () => {
-  for (const value of ['B', 'A nickname', '名字', 'x'.repeat(120), 'preferNot']) assert.equal(issue('fullName', value), null);
-  for (const value of ['', ' ', 'x'.repeat(121), {}, [], 42, true]) assert.ok(issue('fullName', value));
-  const custom = { id: 'fullName', type: 'text', maxLength: 5 };
-  assert.equal(questionResponseIssue(custom, { fullName: 'Brian' }), null);
-  assert.ok(questionResponseIssue(custom, { fullName: 'Longer' }));
-});
-
 test('reading groups require complete fields or explicit unknown/decline, with entry checks only', () => {
   for (const id of ['waistMeasurement', 'bloodPressureReading', 'bloodGlucoseReading']) {
     for (const value of ['unknown', 'preferNot']) assert.equal(issue(id, value), null);
@@ -111,15 +103,6 @@ test('consolidated reading modes require status/history and require raw fields o
   }
 });
 
-test('contact response can decline or provide one note; every entered field must be bounded and email valid', () => {
-  for (const value of ['preferNot', { phone: 'A phone note' }, { address: 'An address note', email: '' }, { zip: 'A1A 1A1' }, { email: 'test@example.test' }]) assert.equal(issue('reportContact', value), null);
-  for (const value of [{}, { email: ' ' }, { email: 'bad' }, { email: 'bad', phone: 'A note' }, { phone: 12345 }, { address: 'x'.repeat(121) }, 'unknown', [], true]) assert.ok(issue('reportContact', value));
-  for (const email of ['person@example/com.test', 'person@example..test', 'person@-example.test', 'person@example-.test', 'person@.test', '.person@example.test', 'person..name@example.test', 'person@' + 'a'.repeat(64) + '.test']) assert.ok(issue('reportContact', { email }), email);
-  assert.equal(issue('reportContact', { email: 'first.last+tag@sub.example.test' }), null);
-  assert.match(issue('reportContact', { email: 'bad' }), /does not authorize email delivery/);
-  assert.match(issue('reportContact', {}), /No email address or delivery consent is required/);
-});
-
 test('policy is bilingual and pure, and declining context never changes existing age math', () => {
   const answers = completeAnswers();
   const before = structuredClone(answers);
@@ -127,8 +110,7 @@ test('policy is bilingual and pure, and declining context never changes existing
   assert.deepEqual(assessmentResponseIssues(questions, answers), []);
   assert.deepEqual(answers, before);
   assert.match(issue('exercise', '', {}, 'es'), /Elige una respuesta/);
-  assert.match(issue('fullName', '', {}, 'es'), /nombre o apodo/);
-  assert.match(issue('reportContact', {}, {}, 'es'), /No se requiere correo ni consentimiento/);
+  assert.match(issue('bloodPressureReading', {}, {}, 'es'), /Completa/);
   const changed = { ...answers, ...Object.fromEntries(questions.filter(entry => entry.supplemental).map(entry => [entry.id, 'preferNot'])) };
   assert.deepEqual(assessmentResponseIssues(questions, changed), []);
   assert.deepEqual(calculateIllustrativeAge(changed), originalScore);

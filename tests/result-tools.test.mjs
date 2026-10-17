@@ -67,7 +67,8 @@ test('unsupported sharing downloads only after click, keeps signup ready immedia
   assert.match(link.className, /result-followup-button/);
   ui.click('Download PDF to attach to email');
   assert.equal(ui.downloads.length, 1); assert.match(ui.root.textContent, /attach it manually/);
-  assert.match(ui.root.textContent, /Automatic email from healthageresults@yourpurepath.com is not available yet/);
+  assert.match(ui.root.textContent, /save the PDF and attach it manually in your email app/);
+  assert.match(ui.root.textContent, /does not send email or keep a recipient address/);
   assert.equal(link.hidden, false);
 });
 

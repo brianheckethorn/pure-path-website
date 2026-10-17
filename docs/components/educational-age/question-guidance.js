@@ -23,10 +23,6 @@ const sources = {
 };
 
 export const questionGuidance = {
-  fullName: {
-    prompt: pair('What name would you like on your report?', '¿Qué nombre quieres que aparezca en tu informe?'),
-    help: pair('A first name or nickname is enough, or choose Prefer not to answer. A name is not needed to see results.', 'Basta con tu nombre o un apodo, o elige Prefiero no responder. No necesitas dar un nombre para ver los resultados.')
-  },
   age: {
     prompt: pair('What is your actual age, in years?', '¿Cuál es tu edad real, en años?'),
     help: pair('Enter the age you reached on your last birthday, as a whole number. This questionnaire is for adults ages 18–100; that input range does not establish scientific validity.', 'Escribe los años que cumpliste en tu último cumpleaños, sin decimales. Este cuestionario es para adultos de 18 a 100 años; ese intervalo de entrada no demuestra validez científica.')
@@ -156,11 +152,7 @@ export const questionGuidance = {
     prompt: pair('Which topics would you like to learn about?', '¿Sobre qué temas te gustaría aprender?'),
     help: pair('Select any topics, or choose None of these topics. These choices help identify education and support you may find useful. They do not diagnose a condition, promise treatment, change the age estimate, or sign you up for email.', 'Selecciona los temas que quieras o elige Ninguno de estos temas. Estas opciones ayudan a identificar educación y apoyo que podrían interesarte. No diagnostican problemas, prometen tratamientos, cambian la estimación de edad ni te suscriben a correos.')
   },
-  reportContact: {
-    prompt: pair('Would you like to note contact details for this session?', '¿Quieres anotar datos de contacto para esta sesión?'),
-    help: pair('Every field is optional. Enter only what you want to share, or choose Prefer not to answer if you want to provide none. These details stay on this page and are omitted from saved or shared reports. An email address alone does not send a report or join a mailing list; those permissions are separate choices.', 'Todos los campos son opcionales. Escribe solo lo que quieras compartir o elige Prefiero no responder si no quieres dar ningún dato. Estos datos se quedan en esta página y se omiten de los informes guardados o compartidos. Un correo por sí solo no envía un informe ni te añade a una lista; esos permisos se eligen por separado.'),
-    privatePreference: true, supplemental: true, score: 'none'
-  }
+
 };
 
 const references = {

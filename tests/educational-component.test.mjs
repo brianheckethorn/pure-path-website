@@ -46,11 +46,11 @@ function blocked(ui, id, language = 'en') {
   assert.equal(ui.find(n => n.tagName === 'DL').length, 0);
 }
 
-test('blank name and age 17 cannot advance; declined and unknown answers can', () => {
-  const ui = setup(); assert.equal(field(ui, 'fullName').value, '');
-  ui.click(text.next.en); blocked(ui, 'fullName');
-  ui.click('Español'); ui.click(text.next.es); blocked(ui, 'fullName', 'es'); assert.match(ui.root.textContent, /nombre|Prefiero/);
-  ui.click(text.preferNot.es); ui.click(text.next.es); assert.equal(title(ui), question('age').prompt.es);
+test('age is first and age 17 cannot advance; declined and unknown answers can', () => {
+  const ui = setup(); assert.equal(field(ui, 'age').value, '');
+  assert.equal(title(ui), question('age').prompt.en);
+  ui.click(text.next.en); blocked(ui, 'age');
+  ui.click('Español'); ui.click(text.next.es); blocked(ui, 'age', 'es');
   enter(ui, 'age', '17'); ui.click(text.next.es); blocked(ui, 'age', 'es'); assert.match(ui.root.textContent, /18.*100/);
   ui.click('English'); assert.equal(field(ui, 'age').value, '17');
   ui.click(text.unknown.en); ui.click(text.next.en); assert.equal(title(ui), question('sex').prompt.en);
@@ -88,11 +88,11 @@ test('actual age is distinct from incomplete estimate; language, edit, back and 
   assert.equal(cards[0].children[1].children[1].textContent, text.years.es);
   assert.ok(ui.root.textContent.includes(disclosure.es)); assert.ok(ui.root.textContent.includes(text.withheld.es));
   assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]);
-  ui.click(text.edit.es); assert.equal(title(ui), question('fullName').prompt.es); assert.equal(ui.find(n => n.tagName === 'DL').length, 0);
-  ui.click(text.next.es); assert.equal(field(ui, 'age').value, '42');
+  ui.click(text.edit.es); assert.equal(title(ui), question('age').prompt.es); assert.equal(ui.find(n => n.tagName === 'DL').length, 0);
+  assert.equal(field(ui, 'age').value, '42');
   ui.click(text.next.es); assert.equal(ui.inputByLabel(question('sex').options.find(option => option.id === 'female').label.es).checked, true);
   ui.click(text.back.es); assert.equal(field(ui, 'age').value, '42');
-  ui.click(text.reset.es); assert.equal(title(ui), question('fullName').prompt.es); assert.equal(field(ui, 'fullName').value, ''); assert.equal(ui.languages.at(-1), 'es');
+  ui.click(text.reset.es); assert.equal(title(ui), question('age').prompt.es); assert.equal(field(ui, 'age').value, ''); assert.equal(ui.languages.at(-1), 'es');
   finishAssessmentWithExplicitResponses(ui, 'es');
   assert.ok(ui.root.textContent.includes(text.withheld.es)); assert.equal(ui.find(n => n.className === 'age-number').length, 0);
   assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]);
@@ -181,7 +181,7 @@ for (const change of ['address', 'consent', 'topics', 'edit', 'reset']) {
     assert.equal(visibleButton(ui, text.verifyButton.en).length, 0); assert.equal(ui.root.textContent.includes(text.neutral.en), false);
     assert.deepEqual(calls, [['verification', { email: 'synthetic@example.test', consent: true }]]);
     if (change === 'edit' || change === 'reset') {
-      assert.equal(title(ui), question('fullName').prompt.en); finishAssessmentWithExplicitResponses(ui);
+      assert.equal(title(ui), question('age').prompt.en); finishAssessmentWithExplicitResponses(ui);
       assert.equal(ui.find(n => n.type === 'email')[0].value, ''); assert.deepEqual(emailChecks(ui).map(n => n.checked), [false, false]);
     }
     ui.controller.dispose(); assert.equal(ui.root.textContent, '');

@@ -30,15 +30,15 @@ export const originalQuestions = [
   { id: 'energy', section: 3, type: 'radio', prompt: pair('How is your energy on most days?', '¿Cómo es tu energía la mayoría de los días?'), options: options([['low', 'Low most days', 'Baja la mayoría de los días'], ['mixed', 'Up and down', 'Variable'], ['good', 'Good', 'Buena'], ['high', 'Consistently strong', 'Alta de forma constante']]) },
   { id: 'functionalFitness', section: 3, type: 'radio', prompt: pair('Which option best describes your ability to do everyday activities?', '¿Qué opción describe mejor tu capacidad para las actividades diarias?'), options: options([['limited', 'Often limited', 'A menudo limitada'], ['average', 'Adequate for daily life', 'Suficiente para la vida diaria'], ['good', 'Good mobility and stamina', 'Buena movilidad y resistencia'], ['excellent', 'Excellent strength and mobility', 'Excelente fuerza y movilidad']]) }
 ];
-export const sections = [pair('About you', 'Sobre ti'), pair('Health history and known readings', 'Historial y lecturas conocidas'), pair('Movement, sleep and energy', 'Movimiento, sueño y energía'), pair('Food and drinks', 'Alimentos y bebidas'), pair('Daily life and support', 'Vida diaria y apoyo'), pair('Preferences and contact choices', 'Preferencias y contacto')];
+export const sections = [pair('About you', 'Sobre ti'), pair('Health history and known readings', 'Historial y lecturas conocidas'), pair('Movement, sleep and energy', 'Movimiento, sueño y energía'), pair('Food and drinks', 'Alimentos y bebidas'), pair('Daily life and support', 'Vida diaria y apoyo'), pair('Preferences', 'Preferencias')];
 const available = new Map([...originalQuestions, ...additionalQuestions].map(question => [question.id, question]));
 const activeSections = [
-  ['fullName', 'age', 'sex', 'height', 'weight', 'waistMeasurement'],
+  ['age', 'sex', 'height', 'weight', 'waistMeasurement'],
   ['bloodPressureReading', 'bloodGlucoseReading', 'cholesterol', 'tobaccoHistory'],
   ['exercise', 'strength', 'sedentary', 'functionalFitness', 'sleepDuration', 'sleepQuality', 'energy'],
   ['breakfastFrequency', 'snackingFrequency', 'fruitVegetableServings', 'wholeGrainServings', 'nutSeedServings', 'redMeatFrequency', 'sugaryDrinks', 'water', 'alcoholServings'],
   ['stress', 'socialSupport'],
-  ['spiritualityPreference', 'interests', 'reportContact']
+  ['spiritualityPreference', 'interests']
 ];
 export const questions = activeSections.flatMap((ids, section) => ids.map(id => ({ ...available.get(id), section })));
 const exerciseQuestion = questions.find(question => question.id === 'exercise');

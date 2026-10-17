@@ -53,8 +53,8 @@ export function appendResultTools(parent, { document, text, reportModel, languag
   const heading = document.createElement('h3'); heading.textContent = spanish ? 'Guarda o comparte tu informe' : 'Keep or share your report';
   const privacy = document.createElement('p'); privacy.className = 'snapshot-small';
   privacy.textContent = spanish
-    ? 'El PDF se crea en este dispositivo. El informe permanece aquí hasta que decidas compartirlo. Puede incluir información personal de salud; elige con cuidado dónde lo guardas o compartes.'
-    : 'The PDF is created on this device. Your report stays here until you choose to share it. It may contain personal health information; choose carefully where you save or share it.';
+    ? 'El PDF se crea en este dispositivo. La edad y los datos de salud aún podrían identificarte, incluso sin un nombre. Elige con cuidado dónde lo guardas o compartes. Reiniciar borra esta página, pero no las copias descargadas, impresas o compartidas.'
+    : 'The PDF is created on this device. Age and health details may still identify you, even without a name. Choose carefully where you save or share it. Start over clears this page, but not downloaded, printed or shared copies.';
   const row = document.createElement('div'); row.className = 'snapshot-actions';
   const status = document.createElement('p'); status.className = 'snapshot-small'; status.setAttribute('role', 'status');
   const hasUnsupportedCharacters = findUnsupportedPDFCharacters(text).length > 0;
@@ -104,8 +104,8 @@ export function appendResultTools(parent, { document, text, reportModel, languag
   action(spanish ? 'Descargar mis resultados (.txt)' : 'Download my results (.txt)', () => (onDownload || ((copy, name) => downloadResultText(document, copy, name)))(text, 'your-pure-path-results.txt'), true);
   const email = document.createElement('p'); email.className = 'snapshot-small';
   email.textContent = spanish
-    ? 'El envío automático desde healthageresults@yourpurepath.com aún no está disponible. Si tu dispositivo permite compartir archivos, puedes elegir Mail u otra app. Si no, descarga el PDF y adjúntalo tú mismo. Compartir un informe no te inscribe en una lista de correo.'
-    : 'Automatic email from healthageresults@yourpurepath.com is not available yet. If your device supports file sharing, you can choose Mail or another app. Otherwise, download the PDF and attach it yourself. Sharing a report does not sign you up for a mailing list.';
+    ? 'Para enviar una copia por correo, guarda el PDF y adjúntalo manualmente en tu aplicación de correo. Este sitio no envía correos ni guarda una dirección de destinatario. Compartir un informe no te inscribe en una lista de correo.'
+    : 'To email a copy, save the PDF and attach it manually in your email app. This site does not send email or keep a recipient address. Sharing a report does not sign you up for a mailing list.';
   const followupHeading = document.createElement('h3'); followupHeading.textContent = spanish ? 'Opcional: próximos eventos y contacto' : 'Optional: future events and staying in touch';
   const description = document.createElement('p'); description.className = 'snapshot-small';
   description.textContent = spanish

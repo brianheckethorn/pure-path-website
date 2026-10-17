@@ -4,8 +4,7 @@ import { questions, text } from '../components/educational-age/content.js';
 // measurements. These tests exercise delivery/preferences, so explicit unknown
 // and declined answers keep that setup independent of scoring assumptions.
 export function answerAssessmentWithoutDisclosure(ui, question, language = 'en') {
-  if (question.id === 'fullName' || question.id === 'reportContact') ui.click(text.preferNot[language]);
-  else if (question.type === 'multi') ui.click(text.noneSelected[language]);
+  if (question.type === 'multi') ui.click(text.noneSelected[language]);
   else if (question.supplemental || question.type === 'number') ui.click(text.unknown[language]);
   else ui.select(text.unknown[language]);
 }

@@ -1,0 +1,48 @@
+UNPUBLISHED LOCAL PRIVACY CANDIDATE
+Prepared October 17, 2026 UTC (October 16 Eastern).
+Accepted live/source baseline: 02177b77f6393684e0a37385a5eccd1aef4399cb.
+
+Changes for review:
+- Remove the participant name/nickname and contact-detail questions (email,
+  address, phone, postal code). The assessment now has 29 questions, starting
+  with actual age. The retained health questions, scoring and recommendations
+  are unchanged.
+- Exclude retired identity keys and arbitrary text from standard report exports.
+  Canonical health-question labels and typed answers are used for HTML, print,
+  PDF and TXT. Keep generic report titles and PDF/TXT filenames.
+- Explain manual PDF saving and attachment in the user's email app without
+  naming a sender or capturing a recipient address. No automatic website email.
+- Clear answers on persisted back/forward restoration, in addition to existing
+  Start over, reload and leaving-page behavior. Internal assessment Back still
+  retains answers for editing. Explain shared-device handling in both languages.
+- Keep the independent optional future-event Google Form readily accessible:
+  https://forms.gle/Zcc9QZbo9N7NTQcj6
+  No assessment answers or consent are submitted or prefilled into that form.
+
+Validation:
+- npm test: 131 passed, 0 failed.
+- npm run build: 45 public files. npm run verify and git diff --check passed.
+- Independent review found no blockers. Retained questions and score/result/
+  recommendation comparisons match the accepted baseline in English/Spanish.
+- Isolated synthetic browser QA passed English desktop and Spanish 390px flows,
+  local downloads, no external/non-GET requests, and actual persisted browser
+  Back restoration clearing answers. No authenticated user browser was touched.
+- Four synthetic normal/stale-identity PDFs contain no test identity markers;
+  PDF filenames are generic, and no Author/Creator/Info/XMP metadata is emitted.
+  Detailed visual PDF evidence is kept outside the source tree with the review
+  package. Browser sample outputs have six English and seven Spanish pages.
+
+Limits:
+Removing direct identifiers does not make a health report fully deidentified.
+Age and health answers may identify someone. A numeric identifier deliberately
+entered in a numeric health field cannot be distinguished automatically from a
+measurement. Start over cannot delete saved, printed or shared copies. Manual
+sharing leaves the page through a user-selected application; delivery is not
+verified. The approximate health-age estimate remains a rough, unvalidated
+educational estimate, not biological age or a diagnosis.
+
+This candidate has no public deployment authorization. No push, publication,
+mailbox action, real recipient send, new credential, DNS/security/account change,
+or spending was performed. Existing previews and original project/history stay
+intact; all work is isolated from TrailMark. Any publication must use the exact
+reviewed candidate after Brian confirms its changes and effects.

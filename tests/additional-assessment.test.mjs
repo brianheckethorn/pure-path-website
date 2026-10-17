@@ -12,10 +12,10 @@ import { candidateFixtures } from './candidate-fixtures.mjs';
 
 const core = () => ({ age: '50', height: '67', weight: '160', ...Object.fromEntries(Object.entries(scoringMaps).map(([id, choices]) => [id, Object.keys(choices)[0]])) });
 
-test('31 active questions use unique bilingual inputs; expanded answers cannot alter frozen legacy arithmetic', () => {
-  assert.equal(questions.length, 31); assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
+test('29 active questions use unique bilingual inputs; expanded answers cannot alter frozen legacy arithmetic', () => {
+  assert.equal(questions.length, 29); assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
   assert.equal(originalQuestions.length, 22);
-  for (const id of ['dietQuality', 'vegetables', 'nicotine', 'bloodPressure', 'bloodSugar', 'alcohol', 'exerciseTwentyThirty', 'sleepSevenEightFrequency']) {
+  for (const id of ['dietQuality', 'vegetables', 'nicotine', 'bloodPressure', 'bloodSugar', 'alcohol', 'exerciseTwentyThirty', 'sleepSevenEightFrequency', 'fullName', 'reportContact']) {
     assert.equal(questions.some(q => q.id === id), false, `No duplicate/removed active question: ${id}`);
   }
   const base = core(); const expected = calculateIllustrativeAge(base);
@@ -48,13 +48,13 @@ test('private faith/contact choices stay out of incomplete saved reports and ent
   const answers = { ...core(), fullName: 'Synthetic Angela', spiritualityPreference: 'deep', reportContact: { email: 'synthetic@example.test', address: 'PRIVATE_CONTACT_SENTINEL' }, bloodGlucoseReading: { readingStatus: 'measured', history: 'normal', value: '5.4', unit: 'mmolL', timing: 'fasting' } };
   for (const language of ['en', 'es']) {
     const result = calculateAssessmentPreview(answers); const report = resultEmailText(result, answers, language);
-    assert.match(report, /Synthetic Angela/); assert.match(report, /mmol\/L/);
-    assert.doesNotMatch(report, /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
+    assert.doesNotMatch(report, /Synthetic Angela/); assert.match(report, /mmol\/L/);
+    assert.doesNotMatch(report, /Synthetic Angela|synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
     assert.ok(report.includes(text.actual[language])); assert.ok(report.includes(text.withheld[language]));
     assert.ok(report.includes(text.readingNotice[language])); assert.ok(report.includes(text.glucoseSafety[language]));
     const model = resultPDFModel(result, answers, language);
     assert.equal(model.actual.value, 50); assert.equal(model.estimate, undefined);
-    assert.doesNotMatch(JSON.stringify(model), /synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
+    assert.doesNotMatch(JSON.stringify(model), /Synthetic Angela|synthetic@example|PRIVATE_CONTACT_SENTINEL|Deeply spiritual|Profundamente espiritual/);
   }
   const glucose = questions.find(q => q.id === 'bloodGlucoseReading');
   assert.match(answerText(glucose, { readingStatus: 'measured', value: '100' }, 'en'), /Unit: Not answered/);
@@ -93,7 +93,7 @@ test('unit conversion machine noise cannot cross an existing BMI factor boundary
   }
 });
 
-test('multi-select clearing needs a new explicit response; None and declined contact complete without identifiers', () => {
+test('multi-select clearing needs a new explicit response; None finishes without requesting identifiers', () => {
   const downloads = []; const ui = componentHarness();
   mountEducationalAge(ui.root, { delivery: createMockDeliveryAdapter(), onDownload: copy => downloads.push(copy) });
   const interestsIndex = questions.findIndex(q => q.id === 'interests'); const interests = questions[interestsIndex];
@@ -104,20 +104,15 @@ test('multi-select clearing needs a new explicit response; None and declined con
     ui.click(text.next.en);
   }
   const currentTitle = () => ui.find(n => n.tagName === 'H2')[0].textContent;
-  ui.click(text.next.en); assert.equal(currentTitle(), interests.prompt.en);
+  ui.click(text.finish.en); assert.equal(currentTitle(), interests.prompt.en);
   assert.ok(ui.find(n => n.className === 'snapshot-error' && n.textContent).length);
   const cooking = interests.options.find(option => option.id === 'healthyCooking');
   const memory = interests.options.find(option => option.id === 'mentalPerformance');
   ui.select(cooking.label.en); ui.select(memory.label.en); ui.click('Español');
   assert.ok(ui.inputByLabel(cooking.label.es).checked); assert.ok(ui.inputByLabel(memory.label.es).checked);
   ui.click(text.clear.es); assert.equal(ui.find(n => n.type === 'checkbox' && n.checked).length, 0);
-  ui.click(text.next.es); assert.equal(currentTitle(), interests.prompt.es);
-  ui.click(text.noneSelected.es); ui.click(text.next.es);
-  const contact = questions.find(q => q.id === 'reportContact'); assert.equal(currentTitle(), contact.prompt.es);
-  ui.click(text.finish.es); assert.equal(currentTitle(), contact.prompt.es);
-  const email = ui.find(n => n.type === 'email')[0]; email.value = 'invalid'; email.emit('input');
-  ui.click(text.finish.es); assert.equal(currentTitle(), contact.prompt.es);
-  ui.click(text.preferNot.es); ui.click(text.finish.es);
+  ui.click(text.finish.es); assert.equal(currentTitle(), interests.prompt.es);
+  ui.click(text.noneSelected.es); ui.click(text.finish.es);
   assert.ok(ui.root.textContent.includes(text.withheld.es));
   const comparison = ui.find(n => n.className === 'age-comparison')[0];
   assert.equal(comparison.children[0].children[1].children[0].textContent, '50');
