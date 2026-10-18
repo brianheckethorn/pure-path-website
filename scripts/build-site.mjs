@@ -7,6 +7,7 @@ export const publicFiles = [
   '.nojekyll', 'CNAME', 'index.html', 'health-age.html', 'health-age-assessment.html',
   'health-age-assessment/index.html', 'health-age-assessment/page.js',
   'wellness-snapshot/index.html', 'wellness-snapshot/page.js',
+  ...['index.html', 'style.css', 'app.js', 'questions.js', 'pdf.js'].map(name => `consultation/${name}`),
   'assets/a143c2a9960446d649523f272677f609.jpg', 'assets/mario-portrait.jpg',
   ...['badge-health-age-light.svg', 'badge-phone-dark.svg', 'badge-email-dark.svg'].map(name => `assets/icons/${name}`),
   'assets/fonts/fonts.css', 'assets/fonts/DM-Serif-Display-OFL.txt', 'assets/fonts/Karla-OFL.txt',

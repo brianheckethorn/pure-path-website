@@ -10,6 +10,7 @@ export function illustrativeHome(source) {
     .replace('href="#" lang="es"', 'href="./health-age-assessment/" lang="es"')
     .replace('Ver en español</a>', 'Quiz: English / Español</a>')
     .replace('</nav>', '<a href="https://www.facebook.com/YourPurePath" style="color: #F4F1E6; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 8px 14px; box-sizing: border-box; border: 1.5px solid #B9CF5C; border-radius: 8px; font-weight: 700"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="5" fill="#1877F2"/><path d="M14.5 22V13.1h3l.5-3.5h-3.5V7.3c0-1 .3-1.8 1.8-1.8H18V2.4c-.6-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.9H8v3.5h3V22h3.5Z" fill="#FFFFFF"/></svg><span>Facebook</span></a>\n</nav>')
+    .replace('</nav>', '<a href="./consultation/" style="color: #F4F1E6; text-decoration: none">Prepare for your consultation</a>\n</nav>')
     .replace("Let's talk — it's free", "Let's talk")
     .replace('[WARM PORTRAIT OF MARIO — in the office or outdoors]', '<img src="./assets/mario-portrait.jpg" alt="Mario" width="360" height="360" style="width: 100%; height: auto; max-width: 360px; border-radius: 50%">')
     .replace('<p style="margin: 0">[2–3 SENTENCES IN MARIO\'S OWN VOICE: why he started Your Pure Path and who he loves working with.]</p>', '')
