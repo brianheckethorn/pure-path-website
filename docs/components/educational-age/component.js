@@ -112,6 +112,14 @@ export function mountEducationalAge(root, { delivery, onLanguage = () => {}, sho
   function showQuestion(focus = false) {
     state.view = 'questions';
     begin(); languageToggle();
+    if (state.step === 0) {
+      const signup = node('aside', undefined, 'assessment-signup');
+      const link = node('a', optionalCopy('Sign up for health information & classes', 'Inscríbete para recibir información de salud y clases'));
+      link.href = 'https://docs.google.com/forms/d/e/1FAIpQLSf-ajVNWx12BAnw7AzLw9BaV0RMhvQgNPoP45kP_Qk4PYSkiA/viewform?usp=send_form';
+      link.target = '_blank'; link.rel = 'noopener noreferrer'; link.referrerPolicy = 'no-referrer';
+      signup.append(link, node('p', optionalCopy('Optional — no assessment needed. Opens a separate Google Form; no assessment answers are sent.', 'Opcional: no necesitas hacer la evaluación. Abre un formulario de Google aparte; no se envían respuestas de la evaluación.')));
+      root.append(signup);
+    }
     const question = questions[state.step];
     root.append(node('p', `${sections[question.section][state.language]} · ${state.step + 1}/${questions.length}`, 'eyebrow'));
     const progress = node('div', undefined, 'assessment-progress'); progress.setAttribute('role', 'progressbar'); progress.setAttribute('aria-valuemin', '0'); progress.setAttribute('aria-valuemax', String(questions.length)); progress.setAttribute('aria-valuenow', String(state.step + 1)); progress.setAttribute('aria-label', t('progress'));

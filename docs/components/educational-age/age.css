@@ -25,3 +25,10 @@
 @media (max-width: 860px) { .educational-age .snapshot-layout { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .educational-age .snapshot-card[data-view=results] { padding: 20px 16px; } }
 @media print { .educational-age .language-row { display: none; } .educational-age .heuristic-disclosure { display: block; } }
+
+/* Optional first-page signup is independent of assessment participation. */
+.educational-age .assessment-signup { padding: 18px; margin: 0 0 24px; border: 1px solid #9AAA60; border-radius: 12px; background: #EEF3D6; }
+.educational-age .assessment-signup a { display: block; padding: 14px 18px; min-height: 48px; border-radius: 8px; background: #B9CF5C; color: #26301A; font-weight: 700; line-height: 1.45; text-align: center; text-decoration: none; overflow-wrap: anywhere; }
+.educational-age .assessment-signup a:hover { background: #A8C044; }
+.educational-age .assessment-signup a:focus-visible { outline: 3px solid #4E3F17; outline-offset: 4px; }
+.educational-age .assessment-signup p { margin: 12px 0 0; font-size: 15px; line-height: 1.5; }
