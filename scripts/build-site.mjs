@@ -4,6 +4,7 @@ import path from 'node:path';
 
 const root = path.resolve(fileURLToPath(new URL('../', import.meta.url)));
 export const publicFiles = [
+  'home/home.css', 'home/navigation.js',
   '.nojekyll', 'CNAME', 'index.html', 'health-age.html', 'health-age-assessment.html',
   'health-age-assessment/index.html', 'health-age-assessment/page.js',
   'wellness-snapshot/index.html', 'wellness-snapshot/page.js',

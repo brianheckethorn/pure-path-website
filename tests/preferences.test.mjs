@@ -142,7 +142,8 @@ test('Spanish support choices and newsletter consent preserve explicit choices w
 test('published homepage generation has working routes/contact and no unfinished design placeholders',()=>{
   const home=readFileSync(new URL('../index.html',import.meta.url),'utf8');
   assert.doesNotMatch(home,/\[WARM|\[HOURS|\[CREDENTIAL|\[2–3|Book online|free 15-minute|it's free/);
-  assert.match(home,/href="\.\/health-age-assessment\/" lang="es"/);
+  assert.equal([...home.matchAll(/href="\.\/health-age-assessment\/"/g)].length,1);
+  assert.match(home,/English \/ Español/);
   assert.match(home,/href="mailto:mario@yourpurepath.com"[^>]*>Arrange a conversation/);
   for(const file of ['health-age.html','health-age-assessment.html']) {
     const redirect=readFileSync(new URL(`../${file}`,import.meta.url),'utf8'); assert.match(redirect,/url=\.\/health-age-assessment\//); assert.doesNotMatch(redirect,/<form|<input/);

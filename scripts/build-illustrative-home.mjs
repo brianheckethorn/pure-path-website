@@ -1,12 +1,13 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { homepageFromDesign } from './build-home.mjs';
+import { reframeHome } from './homepage-layout.mjs';
 
 const decorativeBadge = (name, size) => `<img src="./assets/icons/${name}.svg" alt="" aria-hidden="true" width="${size}" height="${size}" style="display: block; flex: none">`;
 
 export function illustrativeHome(source) {
   const snapshot = homepageFromDesign(source);
-  return snapshot
+  const revised = snapshot
     .replace('href="#" lang="es"', 'href="./health-age-assessment/" lang="es"')
     .replace('Ver en español</a>', 'Quiz: English / Español</a>')
     .replace('</nav>', '<a href="https://www.facebook.com/YourPurePath" style="color: #F4F1E6; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 8px 14px; box-sizing: border-box; border: 1.5px solid #B9CF5C; border-radius: 8px; font-weight: 700"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="5" fill="#1877F2"/><path d="M14.5 22V13.1h3l.5-3.5h-3.5V7.3c0-1 .3-1.8 1.8-1.8H18V2.4c-.6-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.9H8v3.5h3V22h3.5Z" fill="#FFFFFF"/></svg><span>Facebook</span></a>\n</nav>')
@@ -32,6 +33,7 @@ export function illustrativeHome(source) {
     .replace('>Call (304) 712-7873</a>', `>${decorativeBadge('badge-phone-dark', 32)}<span>Call (304) 712-7873</span></a>`)
     .replace('<a href="mailto:mario@yourpurepath.com" style="text-decoration: none; background:', '<a href="mailto:mario@yourpurepath.com" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background:')
     .replace('>Email Mario</a>', `>${decorativeBadge('badge-email-dark', 32)}<span>Email Mario</span></a>`);
+  return reframeHome(revised);
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const source = readFileSync(new URL('../Neighbor.dc.html', import.meta.url), 'utf8');

@@ -13,42 +13,32 @@ body{margin:0}
 a{color:#4E3F17}a:hover{color:#26301A}
 </style>
 
+<link rel="stylesheet" href="./home/home.css">
+<script src="./home/navigation.js" defer></script>
 </head>
 <body>
+<a class="home-skip" href="#main">Skip to main content</a>
 
-<div style="font-family: 'Karla', sans-serif; color: #26301A; background: #F5F7EC; min-height: 100vh">
+<main class="home-page" style="font-family: 'Karla', sans-serif; color: #26301A; background: #F5F7EC; min-height: 100vh">
 
-<section style="background: #26301A; color: #F4F1E6">
-<header style="max-width: 1280px; margin: 0 auto; padding: 22px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
-<a href="#" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #F4F1E6">
-<img src="./assets/a143c2a9960446d649523f272677f609.jpg" alt="" style="width: 46px; height: 46px; border-radius: 50%; object-fit: cover">
-<span style="font-family: 'DM Serif Display', serif; font-size: 24px">Your Pure Path</span>
-</a>
-<nav aria-label="Main" style="display: flex; flex-wrap: wrap; align-items: center; gap: 26px; font-size: 16px">
-<a href="#story" style="color: #F4F1E6; text-decoration: none">My story</a>
-<a href="#help" style="color: #F4F1E6; text-decoration: none">How I help</a>
-<a href="./health-age-assessment/" style="color: #F4F1E6; text-decoration: none">Health Age Assessment</a>
-<a href="#talk" style="color: #F4F1E6; text-decoration: none">Let's talk</a>
-<a href="./health-age-assessment/" lang="es" style="color: #26301A; background: #B9CF5C; text-decoration: none; font-weight: 700; padding: 10px 16px; border-radius: 8px; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center">Quiz: English / Español</a>
-<a href="https://www.facebook.com/YourPurePath" style="color: #F4F1E6; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 8px 14px; box-sizing: border-box; border: 1.5px solid #B9CF5C; border-radius: 8px; font-weight: 700"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="5" fill="#1877F2"/><path d="M14.5 22V13.1h3l.5-3.5h-3.5V7.3c0-1 .3-1.8 1.8-1.8H18V2.4c-.6-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.9H8v3.5h3V22h3.5Z" fill="#FFFFFF"/></svg><span>Facebook</span></a>
-<a href="./consultation/" style="color: #F4F1E6; text-decoration: none">Prepare for your consultation</a>
-</nav>
+
+<section class="home-opening" aria-labelledby="intro-heading">
+<header class="site-header">
+<a class="brand" href="#" aria-label="Your Pure Path home"><img src="./assets/a143c2a9960446d649523f272677f609.jpg" alt="" width="38" height="38"><span>Your Pure Path</span></a>
+<nav id="site-navigation" aria-label="Main"><a href="#story">My story</a><a href="#help">How I help</a><a href="#talk">Let's talk</a></nav>
+<a class="social" href="https://www.facebook.com/YourPurePath" aria-label="Your Pure Path on Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="5" fill="#1877F2"/><path d="M14.5 22V13.1h3l.5-3.5h-3.5V7.3c0-1 .3-1.8 1.8-1.8H18V2.4c-.6-.1-1.7-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.9H8v3.5h3V22h3.5Z" fill="#FFFFFF"/></svg><span>Facebook</span></a>
+<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Menu</span></button>
 </header>
-<div style="max-width: 1280px; margin: 0 auto; padding: 56px 24px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 56px; align-items: end">
-<div style="display: flex; flex-direction: column; gap: 28px; padding-bottom: 96px">
-<p style="margin: 0; font-family: 'DM Serif Display', serif; font-style: italic; font-size: 26px; color: #B9CF5C" lang="es">Hola — I'm Mario.</p>
-<h1 style="margin: 0; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: clamp(48px, 6.4vw, 88px); line-height: 0.98; letter-spacing: -0.01em">Let's find your path to feeling well.</h1>
-<p style="margin: 0; font-size: 21px; line-height: 1.55; color: #DCDFC9; max-width: 36ch">I'm a Functional Nutritional Counselor in Kearneysville. I listen first, then help you make small changes to food and habits that actually stick.</p>
-<div style="display: flex; flex-wrap: wrap; gap: 14px">
-<a href="#talk" style="text-decoration: none; background: #B9CF5C; color: #26301A; padding: 17px 30px; border-radius: 10px; font-weight: 700; font-size: 18px">Let's talk</a>
-<a href="tel:+13047127873" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; border: 1.5px solid #F4F1E6; color: #F4F1E6; padding: 17px 30px; border-radius: 10px; font-weight: 700; font-size: 18px"><img src="./assets/icons/badge-phone-dark.svg" alt="" aria-hidden="true" width="32" height="32" style="display: block; flex: none"><span>Call (304) 712-7873</span></a>
-</div>
-</div>
-<div style="aspect-ratio: 4 / 5; background: #3C4A2A; border-radius: 240px 240px 0 0; display: flex; align-items: center; justify-content: center; color: #DCDFC9; font-size: 17px; text-align: center; padding: 24px; box-sizing: border-box; max-width: 540px; width: 100%; justify-self: center"><img src="./assets/mario-portrait.jpg" alt="Mario" width="360" height="360" style="width: 100%; height: auto; max-width: 360px; border-radius: 50%"></div>
-</div>
-</section>
+<div class="home-hero" id="main" tabindex="-1">
+<div class="hero-copy"><p class="hero-greeting"><span lang="es">Hola</span> — I'm Mario.</p><h1 id="intro-heading">Let's find your path to feeling well.</h1><p class="hero-intro">I'm a Functional Nutritional Counselor in Kearneysville. I listen first, then help you make small changes to food and habits that actually stick.</p><a class="hero-contact" href="#talk">Prefer to talk first? Let's talk <span aria-hidden="true">↗</span></a></div>
+<div class="hero-portrait"><img src="./assets/mario-portrait.jpg" alt="Mario" width="360" height="360"></div>
+</div></section>
+<section id="quiz" class="path-choices" aria-labelledby="choices-heading"><div class="choices-inner"><p class="section-eyebrow">A starting point that fits you</p><h2 id="choices-heading">How would you like to begin?</h2>
+<div class="choices-grid"><article class="choice-card"><p class="choice-number">01 · Explore your everyday habits</p><h3>Take the Health Age Assessment</h3><p>Explore 29 questions about your daily habits and health history, with a rough educational health-age estimate when enough scoring information is available.</p><p class="choice-detail">English / Español · Not known and prefer not to answer are valid responses.</p><a href="./health-age-assessment/" class="choice-action">Start my Health Age Assessment</a><details><summary>About this assessment</summary><p>Get practical next steps matched to your answers and a personal report you can print, save as a PDF, or share yourself. The scoring and conversion to years are custom educational choices. This quiz is not scientifically validated and does not measure biological age or diagnose health conditions.</p></details></article>
+<article class="choice-card consultation-choice"><p class="choice-number">02 · Get ready for a conversation</p><h3>Prepare for Your Consultation</h3><p>Reflect on what you'd like to discuss with Mario before a teleconsult or an in-person consultation. Answer only what feels useful.</p><p class="choice-detail">All questions are optional · Review, download or print your notes.</p><a href="./consultation/" class="choice-action">Prepare for my consultation</a><p class="choice-privacy">Answers stay in page memory and are not sent to or retained by this website. You choose whether to share your downloaded or printed copy.</p></article></div>
+</div></section>
 
-<section id="story" style="max-width: 1280px; margin: 0 auto; padding: 120px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 72px">
+<section id="story" tabindex="-1" style="max-width: 1280px; margin: 0 auto; padding: 120px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 72px">
 <p style="margin: 0; font-family: 'DM Serif Display', serif; font-size: clamp(34px, 3.8vw, 50px); line-height: 1.15; color: #4E3F17">“Better health is a path, not a quick fix. I'll walk it with you.”</p>
 <div style="display: flex; flex-direction: column; gap: 20px; font-size: 19px; line-height: 1.7; color: #3B4530">
 
@@ -57,7 +47,7 @@ a{color:#4E3F17}a:hover{color:#26301A}
 </div>
 </section>
 
-<section id="help" style="background: #FFFFFF">
+<section id="help" tabindex="-1" style="background: #FFFFFF">
 <div style="max-width: 1280px; margin: 0 auto; padding: 112px 24px">
 <h2 style="margin: 0 0 56px; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: clamp(38px, 4.4vw, 58px); line-height: 1.05">Where we can start</h2>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 48px">
@@ -93,27 +83,7 @@ a{color:#4E3F17}a:hover{color:#26301A}
 </div>
 </section>
 
-<section id="quiz" style="background: #4E3F17; color: #F4F1E6">
-<div style="max-width: 1280px; margin: 0 auto; padding: 104px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 56px; align-items: center">
-<div style="display: flex; flex-direction: column; gap: 20px">
-<img src="./assets/icons/badge-health-age-light.svg" alt="" aria-hidden="true" width="56" height="56" style="display: block; flex: none">
-<h2 style="margin: 0; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: clamp(38px, 4.4vw, 58px); line-height: 1.05">Your Health Age Assessment</h2>
-<p style="margin: 0; font-size: 19px; line-height: 1.6; color: #E9E2CC">Explore 29 questions about your daily habits and health history. Compare your actual age with a rough educational health-age estimate when enough scoring information is available. Get practical next steps matched to your answers and a personal report you can print, save as a PDF, or share yourself. Not known and prefer not to answer are valid responses.</p>
-<a href="./health-age-assessment/" style="align-self: flex-start; text-decoration: none; background: #B9CF5C; color: #26301A; padding: 17px 30px; border-radius: 10px; font-weight: 700; font-size: 18px">Start my Health Age Assessment</a>
-<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #E9E2CC">The scoring and conversion to years are custom educational choices. This quiz is not scientifically validated and does not measure biological age or diagnose health conditions.</p>
-</div>
-<div style="background: #F5F7EC; color: #26301A; border-radius: 20px; padding: 36px; display: flex; flex-direction: column; gap: 18px">
-<p style="margin: 0; font-size: 14px; font-weight: 700; color: #4E3F17">A question from the Health Age Assessment</p>
-<p style="margin: 0; font-size: 22px; font-weight: 700">How would you describe your sleep?</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px">
-<span style="font: inherit; font-size: 17px; padding: 14px; min-height: 48px; border: 1.5px solid #B9C38F; border-radius: 10px; background: #FFFFFF; color: #26301A; display: block; text-align: center">Poor</span>
-<span style="font: inherit; font-size: 17px; padding: 14px; min-height: 48px; border: 1.5px solid #B9C38F; border-radius: 10px; background: #FFFFFF; color: #26301A; display: block; text-align: center">Fair</span>
-<span style="font: inherit; font-size: 17px; padding: 14px; min-height: 48px; border: 1.5px solid #B9C38F; border-radius: 10px; background: #FFFFFF; color: #26301A; display: block; text-align: center">Good</span>
-<span style="font: inherit; font-size: 17px; padding: 14px; min-height: 48px; border: 1.5px solid #B9C38F; border-radius: 10px; background: #FFFFFF; color: #26301A; display: block; text-align: center">Excellent</span>
-</div>
-</div>
-</div>
-</section>
+
 
 <section aria-labelledby="kind-h" style="max-width: 1280px; margin: 0 auto; padding: 112px 24px">
 <h2 id="kind-h" style="margin: 0 0 48px; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: clamp(38px, 4.4vw, 58px); line-height: 1.05">Kind words</h2>
@@ -134,7 +104,7 @@ a{color:#4E3F17}a:hover{color:#26301A}
 <a href="https://www.facebook.com/YourPurePath/reviews" style="display: inline-block; margin-top: 40px; font-weight: 700; font-size: 17px">More reviews on Facebook</a>
 </section>
 
-<section id="talk" style="background: #26301A; color: #F4F1E6">
+<section id="talk" tabindex="-1" style="background: #26301A; color: #F4F1E6">
 <div style="max-width: 1280px; margin: 0 auto; padding: 112px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px">
 <h2 style="margin: 0; font-family: 'DM Serif Display', serif; font-weight: 400; font-size: clamp(42px, 5.2vw, 72px); line-height: 1.02; max-width: 16ch">Ready when you are.</h2>
 <p style="margin: 0; font-size: 20px; line-height: 1.6; color: #DCDFC9; max-width: 44ch">Start with a conversation. Contact Mario to discuss the support you're looking for.</p>
@@ -151,7 +121,7 @@ a{color:#4E3F17}a:hover{color:#26301A}
 </div>
 </footer>
 </section>
-</div>
+</main>
 
 </body>
 </html>
